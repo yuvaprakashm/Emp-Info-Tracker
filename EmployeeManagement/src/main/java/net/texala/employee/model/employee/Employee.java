@@ -38,4 +38,12 @@ public class Employee {
 	@Column(name = "Salary")
 	private Integer salary;
 
+	@Column(name = "Active")
+	private Boolean active = false;
+
+/*	public Boolean isActive() {
+
+		return getActive();
+	}   */
+ 
 }

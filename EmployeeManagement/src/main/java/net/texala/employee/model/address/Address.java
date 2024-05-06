@@ -30,4 +30,7 @@ public class Address {
 
     @Column(name = "ZipCode")
     private Long zipcode;
+    
+    @Column(name = "Active")
+    private Boolean active = false;
 }

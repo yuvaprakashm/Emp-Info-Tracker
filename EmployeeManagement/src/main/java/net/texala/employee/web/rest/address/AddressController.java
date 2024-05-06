@@ -65,8 +65,9 @@ public class AddressController {
 		}
 
 	}
+
 	@PatchMapping("/api/address/{id}")
-	public ResponseEntity<String> updatePatch(@PathVariable("id") int addressId,@RequestBody Address address){
+	public ResponseEntity<String> updatePatch(@PathVariable("id") int addressId, @RequestBody Address address) {
 		try {
 			Address updatedAddress = addressService.update(address, addressId);
 			return ResponseEntity.ok().body("Address with ID " + addressId + " updated successfully");
@@ -75,4 +76,27 @@ public class AddressController {
 		}
 	}
 
+	@PostMapping("/add/activate/{id}")
+	public ResponseEntity<String> activateRecord(@PathVariable("id") Integer addressId) {
+		try {
+			addressService.activateRecord(addressId);
+			return ResponseEntity.ok("Record activated successfully");
+		} catch (NoSuchElementException e) {
+			return ResponseEntity.notFound().build();
+		} catch (RuntimeException e) {
+			return ResponseEntity.badRequest().body("Record is already active");
+		}
+	}
+
+	@PostMapping("/add/deactivate/{id}")
+	public ResponseEntity<String> deactivateRecord(@PathVariable("id") Integer addressId) {
+        try {
+            addressService.deactivateRecord(addressId);
+            return ResponseEntity.ok("Record deactivated successfully");
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.notFound().build();  
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body("Record is already deactive");
+        }
+    }
 }

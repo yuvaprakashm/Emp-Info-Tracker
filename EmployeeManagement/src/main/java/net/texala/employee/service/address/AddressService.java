@@ -16,4 +16,8 @@ public interface AddressService {
 	Address update(Address address,int addressId);
 	
 	Address updatePatch(Address address,int addressId);
+	
+	Address activateRecord(Integer addressId);
+	
+	Address deactivateRecord(Integer addressId); 
 }

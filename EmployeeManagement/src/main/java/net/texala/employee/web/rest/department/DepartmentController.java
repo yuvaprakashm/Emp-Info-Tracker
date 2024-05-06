@@ -2,6 +2,8 @@ package net.texala.employee.web.rest.department;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.NoSuchElementException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import net.texala.employee.model.department.Department;
 import net.texala.employee.service.department.DepartmentService;
+import net.texala.employee.service.employee.EmployeeService;
 
 @RestController
 public class DepartmentController {
@@ -68,6 +71,30 @@ public class DepartmentController {
 			return ResponseEntity.ok().body("Department with ID " + deptId + " updated successfully");
 		} catch (RuntimeException e) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Department with ID " + deptId + " not found");
+		}
+	}
+
+	@PostMapping("/dept/activate/{id}")
+	public ResponseEntity<String> activateRecord(@PathVariable("id") Integer deptId) {
+		try {
+			departmentService.activateRecord(deptId);
+			return ResponseEntity.ok("Record activated successfully");
+		} catch (NoSuchElementException e) {
+			return ResponseEntity.notFound().build();
+		} catch (RuntimeException e) {
+			return ResponseEntity.badRequest().body("Record is already active");
+		}
+	}
+
+	@PostMapping("/dept/deactivate/{id}")
+	public ResponseEntity<String> deactivateRecord(@PathVariable("id") Integer deptId) {
+		try {
+			departmentService.deactivateRecord(deptId);
+			return ResponseEntity.ok("Record deactivated successfully");
+		} catch (NoSuchElementException e) {
+			return ResponseEntity.notFound().build();
+		} catch (RuntimeException e) {
+			return ResponseEntity.badRequest().body("Record is already deactive");
 		}
 	}
 }

@@ -16,4 +16,8 @@ public interface DepartmentService {
 	
 	Department updatePatch(Department department, int deptId);
 	
+	Department activateRecord(Integer deptId);
+	
+	Department deactivateRecord(Integer deptId);
+	
 }
