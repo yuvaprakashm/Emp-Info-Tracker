@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import net.texala.employee.model.employee.Employee;
 import net.texala.employee.service.employee.EmployeeService;
+
 @RestController
 public class EmployeeController {
 	@Autowired
@@ -26,13 +27,13 @@ public class EmployeeController {
 		return ResponseEntity.ok(find);
 
 	}
-	
+
 	@PostMapping("/api/employee")
-	public ResponseEntity<Employee> save(@RequestBody Employee employee){
+	public ResponseEntity<Employee> save(@RequestBody Employee employee) {
 		Employee saved = employeeService.save(employee);
 		if (saved != null) {
 			return ResponseEntity.status(HttpStatus.CREATED).body(saved);
-		}else {
+		} else {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
 		}
 	}

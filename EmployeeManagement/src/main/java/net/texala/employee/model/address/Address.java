@@ -29,5 +29,5 @@ public class Address {
     private String state;
 
     @Column(name = "ZipCode")
-    private String zipCode;
+    private Long zipcode;
 }

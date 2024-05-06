@@ -7,4 +7,6 @@ import net.texala.employee.model.department.Department;
 
 public interface DepartmentService {
 	List<Department> findAll();
+	
+	Department save(Department department);
 }
