@@ -22,5 +22,7 @@ public class Department {
 
 	@Column(name = "DepartmentName")
 	private String deptName;
-
+	
+	@Column(name = "Active")
+	private Boolean active = false;
 }

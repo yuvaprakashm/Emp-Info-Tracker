@@ -1,11 +1,9 @@
 package net.texala.employee.service.impl.employee;
 
 import java.util.List;
-
+import java.util.NoSuchElementException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.RuntimeBeanNameReference;
 import org.springframework.stereotype.Service;
-
 import net.texala.employee.model.employee.Employee;
 import net.texala.employee.repository.employee.EmployeeRepository;
 import net.texala.employee.service.employee.EmployeeService;
@@ -63,14 +61,32 @@ public class EmployeeServiceImpl implements EmployeeService {
 		if (employee.getEmail() != null) {
 			existingEmployee.setEmail(employee.getEmail());
 		}
-	/*	if (employee.getGender() != null) {
-			existingEmployee.setGender(employee.getGender());
-		}
-		if (employee.getSalary() != null) {
-			existingEmployee.setSalary(employee.getSalary());
-		}  */
 
 		return employeeRepository.save(existingEmployee);
+	}
+
+	@Override
+	public Employee activateRecord(Integer id) {
+		Employee emp = employeeRepository.findById(id)
+				.orElseThrow(() -> new NoSuchElementException("Employee with ID " + id + " not found"));
+		if (emp.getActive() == null || !emp.getActive()) {
+			emp.setActive(true);
+			return employeeRepository.save(emp);
+		} else {
+			throw new RuntimeException("Record is already active");
+		}
+	}
+
+	@Override
+	public Employee deactivateRecord(Integer id) {
+		Employee emp = employeeRepository.findById(id)
+				.orElseThrow(() -> new NoSuchElementException("Employee with ID " + id + " not found"));
+		if (emp.getActive() != null && emp.getActive()) {
+			emp.setActive(false);
+			return employeeRepository.save(emp);
+		} else {
+			throw new RuntimeException("Record is already deactive");
+		}
 	}
 
 }

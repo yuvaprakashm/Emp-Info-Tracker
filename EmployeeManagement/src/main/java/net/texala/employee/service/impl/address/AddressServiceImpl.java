@@ -1,6 +1,7 @@
 package net.texala.employee.service.impl.address;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -48,15 +49,42 @@ public class AddressServiceImpl implements AddressService {
 
 	@Override
 	public Address updatePatch(Address address, int addressId) {
-		Address existingAddress = addressRepository.findById(addressId).orElseThrow(() -> new RuntimeException("Address with Id " + addressId + " not found"));
+		Address existingAddress = addressRepository.findById(addressId)
+				.orElseThrow(() -> new RuntimeException("Address with Id " + addressId + " not found"));
 		if (address.getStreet() != null) {
 			existingAddress.setStreet(address.getStreet());
-		}if (address.getCity() != null) {
+		}
+		if (address.getCity() != null) {
 			existingAddress.setCity(address.getCity());
-		}if (address.getState()  != null) {
+		}
+		if (address.getState() != null) {
 			existingAddress.setState(address.getState());
 		}
 		return addressRepository.save(existingAddress);
 	}
 
+	@Override
+	public Address activateRecord(Integer addressId) {
+		Address add = addressRepository.findById(addressId)
+				.orElseThrow(() -> new NoSuchElementException("Address with ID " + addressId + " not found"));
+		if (add.getActive() == null || !add.getActive()) {
+			add.setActive(true);
+			return addressRepository.save(add);
+		} else {
+			throw new RuntimeException("Record is already active");
+		}
+	}
+
+	@Override
+	public Address deactivateRecord(Integer addressId) {
+		Address add = addressRepository.findById(addressId)
+				.orElseThrow(() -> new NoSuchElementException("Address with ID " + addressId + " not found"));
+		if (add.getActive() != null && add.getActive()) {
+			add.setActive(false);
+			return addressRepository.save(add);
+		} else {
+			throw new RuntimeException("Record is already deactive");
+		}
+
+	}
 }
