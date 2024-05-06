@@ -40,10 +40,6 @@ public class Employee {
 
 	@Column(name = "Active")
 	private Boolean active = false;
-
-/*	public Boolean isActive() {
-
-		return getActive();
-	}   */
+ 
  
 }
