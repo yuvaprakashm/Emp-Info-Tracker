@@ -8,4 +8,10 @@ public interface EmployeeService {
 	List<Employee> findAll();
 
 	Employee save(Employee employee);
+	
+	boolean deleteById(int id);
+	
+	Employee update(Employee employee,int id);
+
+	Employee updatePatch(Employee employee, int id);
 }

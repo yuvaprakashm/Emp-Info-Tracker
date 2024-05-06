@@ -10,4 +10,10 @@ public interface AddressService {
 	List<Address> findAll();
 
 	Address save(Address address);
+	
+	boolean deleteById(int addressId);
+	
+	Address update(Address address,int addressId);
+	
+	Address updatePatch(Address address,int addressId);
 }

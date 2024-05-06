@@ -9,4 +9,11 @@ public interface DepartmentService {
 	List<Department> findAll();
 	
 	Department save(Department department);
+	
+	boolean deleteById(int deptId);
+	
+	Department update(Department department, int deptId);
+	
+	Department updatePatch(Department department, int deptId);
+	
 }

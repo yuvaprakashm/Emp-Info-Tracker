@@ -3,10 +3,15 @@ package net.texala.employee.web.rest.employee;
 import java.util.Collections;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -35,6 +40,36 @@ public class EmployeeController {
 			return ResponseEntity.status(HttpStatus.CREATED).body(saved);
 		} else {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+		}
+	}
+
+	@DeleteMapping("/api/employee/{id}")
+	public ResponseEntity<String> deleteById(@PathVariable("id") int id) {
+		try {
+			boolean deleted = employeeService.deleteById(id);
+			return ResponseEntity.ok("Employee " + id + "Deleted successfully");
+		} catch (EmptyResultDataAccessException e) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Employee with Id " + id + " not found");
+		}
+	}
+
+	@PutMapping("/api/employee/{id}")
+	public ResponseEntity<String> update(@RequestBody Employee employee, @PathVariable("id") int id) {
+		try {
+			Employee update = employeeService.update(employee, id);
+			return ResponseEntity.ok("Employee" + id + " updated successfully");
+		} catch (RuntimeException e) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Employee with Id" + id + "not found");
+		}
+	}
+	
+	@PatchMapping("/api/employee/{id}")
+	public ResponseEntity<String> updatePatch(@PathVariable("id") int id,@RequestBody Employee employee){
+		try {
+			Employee updatedEmployee = employeeService.update(employee, id);
+			return ResponseEntity.ok().body("Employee with ID " + id + " updated successfully");
+		} catch (RuntimeException e) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Employee with ID " + id + " not found");
 		}
 	}
 }

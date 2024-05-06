@@ -36,6 +36,6 @@ public class Employee {
 	private String gender;
 
 	@Column(name = "Salary")
-	private int salary;
+	private Integer salary;
 
 }

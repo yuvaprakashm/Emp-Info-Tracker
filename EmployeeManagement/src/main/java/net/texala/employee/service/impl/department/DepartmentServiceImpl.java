@@ -25,4 +25,26 @@ public class DepartmentServiceImpl implements DepartmentService {
 		return departmentRepository.save(department);
 	}
 
+	@Override
+	public boolean deleteById(int deptId) {
+		  departmentRepository.deleteById(deptId);
+		return false;
+	}
+
+	@Override
+	public Department update(Department department, int deptId) {
+		Department existingDepartment = departmentRepository.findById(deptId).orElseThrow(() -> new  RuntimeException("Department with Id" + deptId + "not found"));
+		existingDepartment.setDeptName(department.getDeptName());
+		return departmentRepository.save(existingDepartment);
+	}
+
+	@Override
+	public Department updatePatch(Department department, int deptId) {
+		Department existingDepartment = departmentRepository.findById(deptId).orElseThrow(() -> new RuntimeException("Department with Id " + deptId + " not found"));
+		 if (department.getDeptName() != null) {
+			existingDepartment.setDeptName(department.getDeptName());
+		}
+		return departmentRepository.save(existingDepartment);
+	}
+
 }
