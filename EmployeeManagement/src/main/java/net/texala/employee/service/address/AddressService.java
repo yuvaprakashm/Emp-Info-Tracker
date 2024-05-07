@@ -3,21 +3,22 @@ package net.texala.employee.service.address;
 import java.util.List;
 
 import net.texala.employee.model.address.Address;
+import net.texala.employee.vo.address.AddressVo;
 
  
 
 public interface AddressService {
-	List<Address> findAll();
+	List<AddressVo> findAll();
 
-	Address save(Address address);
+	AddressVo save(AddressVo address);
 	
-	boolean deleteById(int addressId);
+	String deleteById(int addressId);
 	
-	Address update(Address address,int addressId);
+	AddressVo update(AddressVo addressVo,int addressId);
 	
-	Address updatePatch(Address address,int addressId);
+	AddressVo updatePatch(AddressVo addressVo,int addressId);
 	
-	Address activateRecord(Integer addressId);
+	AddressVo activateRecord(Integer addressId);
 	
-	Address deactivateRecord(Integer addressId); 
+	AddressVo deactivateRecord(Integer addressId); 
 }

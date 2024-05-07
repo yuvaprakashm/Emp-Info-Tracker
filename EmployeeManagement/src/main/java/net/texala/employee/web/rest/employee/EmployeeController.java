@@ -14,7 +14,8 @@ import org.springframework.web.bind.annotation.RestController;
 import net.texala.employee.mapper.EmployeeMapper;
 import net.texala.employee.model.employee.Employee;
 import net.texala.employee.service.employee.EmployeeService;
-import net.texala.employee.vo.EmployeeVo;
+import net.texala.employee.vo.employee.EmployeeVo;
+ 
 
 @RestController
 public class EmployeeController {
@@ -43,9 +44,9 @@ public class EmployeeController {
 	}
 
 	@PutMapping("/api/employee/{id}")
-	public ResponseEntity<String> update(@RequestBody EmployeeVo employeeVo, @PathVariable("id") int id) {
+	public ResponseEntity<EmployeeVo> update(@RequestBody EmployeeVo employeeVo, @PathVariable("id") int id) {
 		Employee employee = employeeMapper.toEntity(employeeVo);
-		String updatedVo = employeeService.update(employeeVo, id);
+		EmployeeVo updatedVo = employeeService.update(employeeVo, id);
 		return ResponseEntity.ok(updatedVo);
 	}
 

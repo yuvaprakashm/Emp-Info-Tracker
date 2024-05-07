@@ -11,7 +11,7 @@ import net.texala.employee.mapper.EmployeeMapper;
 import net.texala.employee.model.employee.Employee;
 import net.texala.employee.repository.employee.EmployeeRepository;
 import net.texala.employee.service.employee.EmployeeService;
-import net.texala.employee.vo.EmployeeVo;
+import net.texala.employee.vo.employee.EmployeeVo;
 
 @Service
 public class EmployeeServiceImpl implements EmployeeService {
@@ -52,7 +52,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 	}
 
 	@Override
-	public String update(EmployeeVo employeeVo, int id) {
+	public EmployeeVo update(EmployeeVo employeeVo, int id) {
 		try {
 			Employee existingEmployee = employeeRepository.findById(id)
 					.orElseThrow(() -> new RuntimeException("Employee with Id " + id + " not found"));
@@ -62,10 +62,10 @@ public class EmployeeServiceImpl implements EmployeeService {
 			existingEmployee.setEmail(employeeVo.getEmail());
 			existingEmployee.setGender(employeeVo.getGender().toString());
 			existingEmployee.setSalary(employeeVo.getSalary());
-			employeeRepository.save(existingEmployee);
-			return "Employee " + id + " updated successfully";
+			existingEmployee = employeeRepository.save(existingEmployee);
+			return employeeMapper.toVo(existingEmployee);
 		} catch (RuntimeException e) {
-			return "Employee with ID " + id + " not found";
+			throw new RuntimeException("Error updating employee with ID " + id + ": " + e.getMessage(), e);
 		}
 	}
 
@@ -122,4 +122,5 @@ public class EmployeeServiceImpl implements EmployeeService {
 			throw new RuntimeException("Error deactivating employee with ID " + id + ": " + e.getMessage(), e);
 		}
 	}
+ 
 }
