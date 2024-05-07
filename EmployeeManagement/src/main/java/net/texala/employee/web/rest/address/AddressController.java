@@ -16,87 +16,61 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import net.texala.employee.mapper.address.AddressMapper;
 import net.texala.employee.model.address.Address;
 import net.texala.employee.service.address.AddressService;
+import net.texala.employee.vo.address.AddressVo;
+import net.texala.employee.vo.employee.EmployeeVo;
 
 @RestController
 public class AddressController {
 	@Autowired
 	private AddressService addressService;
+	@Autowired
+	private AddressMapper addressMapper;
 
 	@GetMapping("/api/address")
-	public ResponseEntity<List<Address>> findAll() {
-
-		List<Address> find = addressService.findAll();
-		if (find.isEmpty()) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.emptyList());
-		}
-		return ResponseEntity.ok(find);
-
+	public ResponseEntity<List<AddressVo>> findAll() {
+		List<AddressVo> addressVo = addressService.findAll();
+		return ResponseEntity.ok(addressVo);
 	}
 
 	@PostMapping("/api/address")
-	public ResponseEntity<Address> save(@RequestBody Address address) {
-		Address saved = addressService.save(address);
-		if (saved != null) {
-			return ResponseEntity.status(HttpStatus.CREATED).body(saved);
-		} else {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-		}
+	public ResponseEntity<AddressVo> save(@RequestBody AddressVo addressVo) {
+		AddressVo savedVo = addressService.save(addressVo);
+		return ResponseEntity.ok(savedVo);
 	}
 
 	@DeleteMapping("/api/address/{id}")
 	public ResponseEntity<String> deleteById(@PathVariable("id") int addressId) {
-		try {
-			boolean deleted = addressService.deleteById(addressId);
-			return ResponseEntity.ok("Address " + addressId + "Deleted successfully");
-		} catch (EmptyResultDataAccessException e) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Address with Id " + addressId + " not found");
-		}
+		String deleteVo = addressService.deleteById(addressId);
+		return ResponseEntity.ok(deleteVo);
 	}
 
 	@PutMapping("/api/address/{id}")
-	public ResponseEntity<String> update(@RequestBody Address address, @PathVariable("id") int addressId) {
-		try {
-			Address update = addressService.update(address, addressId);
-			return ResponseEntity.ok("Address" + addressId + " updated successfully");
-		} catch (RuntimeException e) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Address with Id" + addressId + "not found");
-		}
+	public ResponseEntity<AddressVo> update(@RequestBody AddressVo addressVo, @PathVariable("id") int addressId) {
+		Address address = addressMapper.toEntity(addressVo);
+		AddressVo addresVo = addressService.update(addressVo, addressId);
+		return ResponseEntity.ok(addresVo);
 
 	}
 
 	@PatchMapping("/api/address/{id}")
-	public ResponseEntity<String> updatePatch(@PathVariable("id") int addressId, @RequestBody Address address) {
-		try {
-			Address updatedAddress = addressService.update(address, addressId);
-			return ResponseEntity.ok().body("Address with ID " + addressId + " updated successfully");
-		} catch (RuntimeException e) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Address with ID " + addressId + " not found");
-		}
+	public ResponseEntity<AddressVo> updatePatch(@PathVariable("id") int addressId, @RequestBody AddressVo addressVo) {
+		AddressVo patchVo = addressService.updatePatch(addressVo, addressId);
+		return ResponseEntity.ok(patchVo);
 	}
 
 	@PostMapping("/add/activate/{id}")
-	public ResponseEntity<String> activateRecord(@PathVariable("id") Integer addressId) {
-		try {
-			addressService.activateRecord(addressId);
-			return ResponseEntity.ok("Record activated successfully");
-		} catch (NoSuchElementException e) {
-			return ResponseEntity.notFound().build();
-		} catch (RuntimeException e) {
-			return ResponseEntity.badRequest().body("Record is already active");
-		}
+	public ResponseEntity<AddressVo> activateRecord(@PathVariable("id") Integer addressId) {
+		AddressVo activate = addressService.activateRecord(addressId);
+		return ResponseEntity.ok(activate);
 	}
 
 	@PostMapping("/add/deactivate/{id}")
-	public ResponseEntity<String> deactivateRecord(@PathVariable("id") Integer addressId) {
-        try {
-            addressService.deactivateRecord(addressId);
-            return ResponseEntity.ok("Record deactivated successfully");
-        } catch (NoSuchElementException e) {
-            return ResponseEntity.notFound().build();  
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body("Record is already deactive");
-        }
-    }
+	public ResponseEntity<AddressVo> deactivateRecord(@PathVariable("id") Integer addressId) {
+		AddressVo deactivate = addressService.activateRecord(addressId);
+		return ResponseEntity.ok(deactivate);
+	}
 }

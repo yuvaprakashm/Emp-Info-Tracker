@@ -1,4 +1,4 @@
-package net.texala.employee.vo;
+package net.texala.employee.vo.employee;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

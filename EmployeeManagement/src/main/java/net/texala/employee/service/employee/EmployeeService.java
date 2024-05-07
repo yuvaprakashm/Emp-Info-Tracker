@@ -2,7 +2,9 @@ package net.texala.employee.service.employee;
 
 import java.util.List;
 
-import net.texala.employee.vo.EmployeeVo;
+import net.texala.employee.vo.employee.EmployeeVo;
+
+ 
 
 public interface EmployeeService {
 	List<EmployeeVo> findAll();
@@ -11,7 +13,7 @@ public interface EmployeeService {
 
 	String deleteById(int id);
 
-	String update(EmployeeVo employeeVo, int id);
+	EmployeeVo update(EmployeeVo employeeVo, int id);
 
 	EmployeeVo updatePatch(EmployeeVo employeeVo, int id);
 

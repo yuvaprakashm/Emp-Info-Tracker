@@ -4,7 +4,8 @@ import org.springframework.stereotype.Component;
 import net.texala.employee.enums.Gender;
 import net.texala.employee.mapper.EmployeeMapper;
 import net.texala.employee.model.employee.Employee;
-import net.texala.employee.vo.EmployeeVo;
+import net.texala.employee.vo.employee.EmployeeVo;
+ 
 
 @Component
 public class EmployeeMapperImpl implements EmployeeMapper {

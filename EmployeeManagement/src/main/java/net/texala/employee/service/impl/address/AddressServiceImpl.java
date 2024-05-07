@@ -1,90 +1,126 @@
 package net.texala.employee.service.impl.address;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
+import net.texala.employee.mapper.address.AddressMapper;
 import net.texala.employee.model.address.Address;
+import net.texala.employee.model.employee.Employee;
 import net.texala.employee.repository.address.AddressRepository;
 import net.texala.employee.service.address.AddressService;
+import net.texala.employee.vo.address.AddressVo;
 
 @Service
 public class AddressServiceImpl implements AddressService {
 
 	@Autowired
 	private AddressRepository addressRepository;
+	@Autowired
+	private AddressMapper addressMapper;
 
 	@Override
-	public List<Address> findAll() {
+	public List<AddressVo> findAll() {
+		List<Address> address = addressRepository.findAll();
+		if (address.isEmpty()) {
 
-		return (List<Address>) addressRepository.findAll();
-	}
-
-	@Override
-	public Address save(Address address) {
-
-		return addressRepository.save(address);
-	}
-
-	@Override
-	public boolean deleteById(int addressId) {
-		addressRepository.deleteById(addressId);
-		return false;
-	}
-
-	@Override
-	public Address update(Address address, int addressId) {
-		Address existingAddress = addressRepository.findById(addressId)
-				.orElseThrow(() -> new RuntimeException("Address with Id" + addressId + "not found"));
-		existingAddress.setStreet(address.getStreet());
-		existingAddress.setCity(address.getCity());
-		existingAddress.setState(address.getState());
-		existingAddress.setZipcode(address.getZipcode());
-
-		return addressRepository.save(existingAddress);
-
-	}
-
-	@Override
-	public Address updatePatch(Address address, int addressId) {
-		Address existingAddress = addressRepository.findById(addressId)
-				.orElseThrow(() -> new RuntimeException("Address with Id " + addressId + " not found"));
-		if (address.getStreet() != null) {
-			existingAddress.setStreet(address.getStreet());
+			return Collections.emptyList();
 		}
-		if (address.getCity() != null) {
-			existingAddress.setCity(address.getCity());
-		}
-		if (address.getState() != null) {
-			existingAddress.setState(address.getState());
-		}
-		return addressRepository.save(existingAddress);
+		return address.stream().map(addressMapper::toVo).collect(Collectors.toList());
 	}
 
 	@Override
-	public Address activateRecord(Integer addressId) {
-		Address add = addressRepository.findById(addressId)
-				.orElseThrow(() -> new NoSuchElementException("Address with ID " + addressId + " not found"));
-		if (add.getActive() == null || !add.getActive()) {
-			add.setActive(true);
-			return addressRepository.save(add);
+	public AddressVo save(AddressVo addressVo) {
+		Address address = addressMapper.toEntity(addressVo);
+		address = addressRepository.save(address);
+		if (address != null) {
+			return addressMapper.toVo(address);
 		} else {
-			throw new RuntimeException("Record is already active");
+			return null;
+		}
+
+	}
+
+	@Override
+	public String deleteById(int addressId) {
+		try {
+			addressRepository.deleteById(addressId);
+			return "Address " + addressId + " deleted successfully";
+		} catch (EmptyResultDataAccessException e) {
+			return "Address with ID " + addressId + " not found";
 		}
 	}
 
 	@Override
-	public Address deactivateRecord(Integer addressId) {
+	public AddressVo update(AddressVo addressVo, int addressId) {
+		try {
+			Address existingAddress = addressRepository.findById(addressId)
+					.orElseThrow(() -> new RuntimeException("Address with Id" + addressId + "not found"));
+			existingAddress.setStreet(addressVo.getStreet());
+			existingAddress.setCity(addressVo.getCity());
+			existingAddress.setState(addressVo.getState());
+			existingAddress.setZipcode(addressVo.getZipcode());
+			existingAddress = addressRepository.save(existingAddress);
+			return addressMapper.toVo(existingAddress);
+
+		} catch (RuntimeException e) {
+			throw new RuntimeException("Error updating employee with ID " + addressId + ": " + e.getMessage(), e);
+		}
+	}
+
+	@Override
+	public AddressVo updatePatch(AddressVo addressVo, int addressId) {
+		try {
+			Address existingAddress = addressRepository.findById(addressId)
+					.orElseThrow(() -> new RuntimeException("Address with Id " + addressId + " not found"));
+			existingAddress.setStreet(addressVo.getStreet());
+			existingAddress.setCity(addressVo.getCity());
+			existingAddress.setState(addressVo.getState());
+			existingAddress = addressRepository.save(existingAddress);
+			return addressMapper.toVo(existingAddress);
+		} catch (RuntimeException e) {
+			throw new RuntimeException("Error updating address with ID " + addressId + ": " + e.getMessage(), e);
+		}
+	}
+
+	@Override
+	public AddressVo activateRecord(Integer addressId) {
+		try {
+			Address add = addressRepository.findById(addressId)
+					.orElseThrow(() -> new NoSuchElementException("Address with ID " + addressId + " not found"));
+			if (add.getActive() == null || !add.getActive()) {
+				add.setActive(true);
+				return addressMapper.toVo(addressRepository.save(add));
+			} else {
+				throw new RuntimeException("Record is already active");
+			}
+		} catch (NoSuchElementException e) {
+			throw new NoSuchElementException("Address with ID " + addressId + " not found");
+		} catch (RuntimeException e) {
+			throw new RuntimeException("Error activating employee with ID " + addressId + ": " + e.getMessage(), e);
+		}
+	}
+
+	@Override
+	public AddressVo deactivateRecord(Integer addressId) {
+		try {
 		Address add = addressRepository.findById(addressId)
 				.orElseThrow(() -> new NoSuchElementException("Address with ID " + addressId + " not found"));
 		if (add.getActive() != null && add.getActive()) {
 			add.setActive(false);
-			return addressRepository.save(add);
+			return addressMapper.toVo(addressRepository.save(add));
 		} else {
 			throw new RuntimeException("Record is already deactive");
+		} }catch (NoSuchElementException e) {
+			throw new NoSuchElementException("Employee with ID " + addressId + " not found");
+		} catch (RuntimeException e) {
+			throw new RuntimeException("Error deactivating employee with ID " + addressId + ": " + e.getMessage(), e);
 		}
 
-	}
+}
 }
