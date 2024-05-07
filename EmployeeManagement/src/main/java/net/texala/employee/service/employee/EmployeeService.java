@@ -2,20 +2,20 @@ package net.texala.employee.service.employee;
 
 import java.util.List;
 
-import net.texala.employee.model.employee.Employee;
+import net.texala.employee.vo.EmployeeVo;
 
 public interface EmployeeService {
-	List<Employee> findAll();
+	List<EmployeeVo> findAll();
 
-	Employee save(Employee employee);
+	EmployeeVo save(EmployeeVo employeeVo);
 
-	boolean deleteById(int id);
+	String deleteById(int id);
 
-	Employee update(Employee employee, int id);
+	String update(EmployeeVo employeeVo, int id);
 
-	Employee updatePatch(Employee employee, int id);
+	EmployeeVo updatePatch(EmployeeVo employeeVo, int id);
 
-	Employee activateRecord(Integer id);
-	
-	Employee deactivateRecord(Integer id);
+	EmployeeVo activateRecord(Integer id);
+
+	EmployeeVo deactivateRecord(Integer id);
 }

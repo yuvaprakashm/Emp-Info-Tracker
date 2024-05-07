@@ -1,11 +1,7 @@
 package net.texala.employee.web.rest.employee;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.NoSuchElementException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,83 +11,60 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import net.texala.employee.mapper.EmployeeMapper;
 import net.texala.employee.model.employee.Employee;
 import net.texala.employee.service.employee.EmployeeService;
+import net.texala.employee.vo.EmployeeVo;
 
 @RestController
 public class EmployeeController {
 	@Autowired
 	private EmployeeService employeeService;
+	@Autowired
+	private EmployeeMapper employeeMapper;
 
 	@GetMapping("/api/employee")
-	public ResponseEntity<List<Employee>> findAll() {
-		List<Employee> find = employeeService.findAll();
-		if (find.isEmpty()) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.emptyList());
-		}
-		return ResponseEntity.ok(find);
-
+	public ResponseEntity<List<EmployeeVo>> findAll() {
+		List<EmployeeVo> employeeVo = employeeService.findAll();
+		return ResponseEntity.ok(employeeVo);
 	}
 
 	@PostMapping("/api/employee")
-	public ResponseEntity<Employee> save(@RequestBody Employee employee) {
-		Employee saved = employeeService.save(employee);
-		if (saved != null) {
-			return ResponseEntity.status(HttpStatus.CREATED).body(saved);
-		} else {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-		}
+	public ResponseEntity<EmployeeVo> save(@RequestBody EmployeeVo employeeVo) {
+		EmployeeVo savedVo = employeeService.save(employeeVo);
+		return ResponseEntity.ok(savedVo);
+
 	}
 
 	@DeleteMapping("/api/employee/{id}")
 	public ResponseEntity<String> deleteById(@PathVariable("id") int id) {
-		try {
-			boolean deleted = employeeService.deleteById(id);
-			return ResponseEntity.ok("Employee " + id + "Deleted successfully");
-		} catch (EmptyResultDataAccessException e) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Employee with Id " + id + " not found");
-		}
+		String deleteVo = employeeService.deleteById(id);
+		return ResponseEntity.ok(deleteVo);
 	}
 
 	@PutMapping("/api/employee/{id}")
-	public ResponseEntity<String> update(@RequestBody Employee employee, @PathVariable("id") int id) {
-		try {
-			Employee update = employeeService.update(employee, id);
-			return ResponseEntity.ok("Employee" + id + " updated successfully");
-		} catch (RuntimeException e) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Employee with Id" + id + "not found");
-		}
+	public ResponseEntity<String> update(@RequestBody EmployeeVo employeeVo, @PathVariable("id") int id) {
+		Employee employee = employeeMapper.toEntity(employeeVo);
+		String updatedVo = employeeService.update(employeeVo, id);
+		return ResponseEntity.ok(updatedVo);
 	}
-	
+
 	@PatchMapping("/api/employee/{id}")
-	public ResponseEntity<String> updatePatch(@PathVariable("id") int id,@RequestBody Employee employee){
-		try {
-			Employee updatedEmployee = employeeService.update(employee, id);
-			return ResponseEntity.ok().body("Employee with ID " + id + " updated successfully");
-		} catch (RuntimeException e) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Employee with ID " + id + " not found");
-		}
+	public ResponseEntity<EmployeeVo> updatePatch(@PathVariable("id") int id, @RequestBody EmployeeVo employeeVo) {
+		EmployeeVo patchVo = employeeService.updatePatch(employeeVo, id);
+		return ResponseEntity.ok(patchVo);
 	}
+
 	@PostMapping("/api/activate/{id}")
-    public ResponseEntity<String> activateRecord(@PathVariable("id") Integer id) {
-        try {
-            employeeService.activateRecord(id);
-            return ResponseEntity.ok("Record activated successfully");
-        } catch (NoSuchElementException e) {
-            return ResponseEntity.notFound().build();  
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body("Record is already active");
-        }
-    }
+	public ResponseEntity<EmployeeVo> activateRecord(@PathVariable("id") Integer id) {
+		EmployeeVo activate = employeeService.activateRecord(id);
+		return ResponseEntity.ok(activate);
+	}
+
 	@PostMapping("/api/deactivate/{id}")
-    public ResponseEntity<String> deactivateRecord(@PathVariable("id") Integer id) {
-        try {
-            employeeService.deactivateRecord(id);
-            return ResponseEntity.ok("Record deactivated successfully");
-        } catch (NoSuchElementException e) {
-            return ResponseEntity.notFound().build();  
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body("Record is already deactive");
-        }
-    }
+	public ResponseEntity<EmployeeVo> deactivateRecord(@PathVariable("id") Integer id) {
+		EmployeeVo deactivate = employeeService.deactivateRecord(id);
+		return ResponseEntity.ok(deactivate);
+	}
+
 }
