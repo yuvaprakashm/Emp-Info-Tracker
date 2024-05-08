@@ -1,4 +1,4 @@
-package net.texala.employee.rest.response;
+package net.texala.employee.restresponse;
 
 import java.util.Map;
 
@@ -6,8 +6,8 @@ import org.springframework.http.HttpStatus;
 
 import lombok.Getter;
 import lombok.Setter;
-import net.texala.employee.rest.custom.RestCustom;
-import net.texala.employee.rest.status.RestStatus;
+import net.texala.employee.restcustom.RestCustom;
+import net.texala.employee.reststatus.RestStatus;
 
 @Getter
 @Setter

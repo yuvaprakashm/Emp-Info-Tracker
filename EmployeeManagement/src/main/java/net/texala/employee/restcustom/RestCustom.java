@@ -1,4 +1,4 @@
-package net.texala.employee.rest.custom;
+package net.texala.employee.restcustom;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

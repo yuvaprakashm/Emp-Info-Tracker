@@ -1,5 +1,7 @@
 package net.texala.employee.address.model;
 
+import java.time.LocalDateTime;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -33,4 +35,8 @@ public class Address {
     
     @Column(name = "Active")
     private Boolean active = false;
+    
+    @Column(name = "CreatedDate")
+    private LocalDateTime createdDate;
+     
 }

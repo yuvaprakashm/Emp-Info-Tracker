@@ -63,6 +63,7 @@ public class DepartmentServiceImpl implements DepartmentService {
 			Department existingDepartment = departmentRepository.findById(deptId)
 					.orElseThrow(() -> new RuntimeException("Department with Id " + deptId + " not found"));
 			existingDepartment.setDeptName(departmentVo.getDeptName());
+			existingDepartment.setActive(departmentVo.getActive());
 			existingDepartment = departmentRepository.save(existingDepartment);
 			return departmentMapper.toVo(existingDepartment);
 		} catch (RuntimeException e) {

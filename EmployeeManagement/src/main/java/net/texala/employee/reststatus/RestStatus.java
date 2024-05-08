@@ -1,4 +1,4 @@
-package net.texala.employee.rest.status;
+package net.texala.employee.reststatus;
 
 import java.util.Map;
 

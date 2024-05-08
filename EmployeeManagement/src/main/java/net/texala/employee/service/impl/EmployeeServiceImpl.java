@@ -63,6 +63,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 			existingEmployee.setEmail(employeeVo.getEmail());
 			existingEmployee.setGender(employeeVo.getGender().toString());
 			existingEmployee.setSalary(employeeVo.getSalary());
+			existingEmployee.setActive(employeeVo.getActive());
 			existingEmployee = employeeRepository.save(existingEmployee);
 			return employeeMapper.toVo(existingEmployee);
 		} catch (RuntimeException e) {

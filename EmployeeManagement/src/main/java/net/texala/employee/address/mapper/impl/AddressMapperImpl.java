@@ -14,8 +14,9 @@ public class AddressMapperImpl implements AddressMapper {
 		vo.setAddressId(address.getAddressId());
 		vo.setStreet(address.getStreet());
 		vo.setCity(address.getCity());
-		vo.setState(address.getStreet());
+		vo.setState(address.getState());
 		vo.setZipcode(address.getZipcode());
+		vo.setActive(address.getActive());
 		return vo;
 	}
 
@@ -27,6 +28,7 @@ public class AddressMapperImpl implements AddressMapper {
 		address.setCity(addressVo.getCity());
 		address.setState(addressVo.getState());
 		address.setZipcode(addressVo.getZipcode());
+		address.setActive(addressVo.getActive());
 		return address;
 	}
 }
