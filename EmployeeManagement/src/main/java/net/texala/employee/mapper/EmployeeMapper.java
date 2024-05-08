@@ -1,7 +1,7 @@
 package net.texala.employee.mapper;
 
-import net.texala.employee.model.employee.Employee;
-import net.texala.employee.vo.employee.EmployeeVo;
+import net.texala.employee.model.Employee;
+import net.texala.employee.vo.EmployeeVo;
  
 
 public interface EmployeeMapper {
