@@ -1,18 +1,17 @@
 package net.texala.employee.address.vo;
 
-import lombok.AllArgsConstructor;
+import java.util.Date;
+
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class AddressVo {
-	private int addressId;
+
+	private Long id;
 	private String street;
 	private String city;
 	private String state;
-	private Long zipcode;
-	private Boolean active = false;
-	
+	private String zipcode;
+	private Boolean active;
+	private Date createdDate = new Date();
 }

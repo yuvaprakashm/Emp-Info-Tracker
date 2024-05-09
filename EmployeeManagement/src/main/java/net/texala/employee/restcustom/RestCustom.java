@@ -7,12 +7,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-/**
- * Wrapped in Rest Entity, contains case of exception to be send as response
- * 
- * @author satyam.kumar
- *
- */
 @Getter
 @Setter
 @Builder
