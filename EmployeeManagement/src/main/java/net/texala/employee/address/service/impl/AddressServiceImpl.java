@@ -11,7 +11,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-
 import net.texala.employee.Specification.CommonSpecification;
 import net.texala.employee.Util.Utility;
 import net.texala.employee.address.mapper.AddressMapper;
@@ -30,7 +29,6 @@ public class AddressServiceImpl implements AddressService {
 
 	@Override
 	public Page<AddressVo> search(Integer pageNo, Integer pageSize, String sortBy, String filterBy, String searchText) {
-
 		final Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(Utility.sortByValues(sortBy)));
 		final Specification<Address> joins = CommonSpecification.searchAddress(searchText, filterBy);
 		final Page<Address> page = repo.findAll(joins, pageable);
@@ -55,8 +53,17 @@ public class AddressServiceImpl implements AddressService {
 	}
 
 	@Override
-	public AddressVo update(AddressVo addressVo) {
-		return null;
+	public AddressVo update(AddressVo addressVo, Long id) {
+		Address  existingAddress = repo.findById(id)
+				.orElseThrow(() -> new RuntimeException("Address not found with id: " + id));
+		existingAddress.setStreet(addressVo.getStreet());
+		existingAddress.setCity(addressVo.getCity());
+		existingAddress.setState(addressVo.getState());
+		existingAddress.setZipcode(addressVo.getZipcode());
+		existingAddress.setStatus(addressVo.getStatus());
+		existingAddress.setCreatedDate(addressVo.getCreatedDate());
+		Address updatedAddress = repo.save(existingAddress);
+		return mapper.toDto(updatedAddress);
 	}
 
 	@Override

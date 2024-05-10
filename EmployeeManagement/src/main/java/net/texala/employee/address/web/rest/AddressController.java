@@ -2,6 +2,7 @@ package net.texala.employee.address.web.rest;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,18 +17,17 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
 import lombok.RequiredArgsConstructor;
 import net.texala.employee.address.service.AddressService;
 import net.texala.employee.address.vo.AddressVo;
 import net.texala.employee.restresponse.RestResponse;
 import net.texala.employee.reststatus.RestStatus;
-
+ 
 @RestController
 @RequestMapping("/address")
 @RequiredArgsConstructor
 public class AddressController {
-
+	@Autowired
 	private AddressService addressService;
 
 	@GetMapping("/search")
@@ -69,7 +69,7 @@ public class AddressController {
 
 		RestStatus<?> restStatus = new RestStatus<>(HttpStatus.OK, "Record update Succesfully");
 		addressVo.setId(id);
-		final RestResponse<AddressVo> response = new RestResponse<>(addressService.update(addressVo), restStatus);
+		final RestResponse<AddressVo> response = new RestResponse<>(addressService.update(addressVo, id), restStatus);
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 

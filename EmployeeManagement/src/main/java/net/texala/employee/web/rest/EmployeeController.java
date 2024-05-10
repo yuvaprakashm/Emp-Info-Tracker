@@ -1,7 +1,9 @@
 package net.texala.employee.web.rest;
 
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,8 +13,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import net.texala.employee.mapper.EmployeeMapper;
-import net.texala.employee.model.Employee;
+import net.texala.employee.restresponse.RestResponse;
+import net.texala.employee.reststatus.RestStatus;
 import net.texala.employee.service.EmployeeService;
 import net.texala.employee.vo.EmployeeVo;
  
@@ -21,8 +23,7 @@ import net.texala.employee.vo.EmployeeVo;
 public class EmployeeController {
 	@Autowired
 	private EmployeeService employeeService;
-	@Autowired
-	private EmployeeMapper employeeMapper;
+	 
 
 	@GetMapping("/api/employee")
 	public ResponseEntity<List<EmployeeVo>> findAll() {
@@ -30,42 +31,49 @@ public class EmployeeController {
 		return ResponseEntity.ok(employeeVo);
 	}
 
-	@PostMapping("/api/employee")
-	public ResponseEntity<EmployeeVo> save(@RequestBody EmployeeVo employeeVo) {
-		EmployeeVo savedVo = employeeService.save(employeeVo);
-		return ResponseEntity.ok(savedVo);
+	@PostMapping("/add")
+	public ResponseEntity<RestResponse<EmployeeVo>> add(@RequestBody(required = true) EmployeeVo employeeVo) {
 
+		RestStatus<?> restStatus = new RestStatus<>(HttpStatus.OK, "Record add Succesfully");
+		final RestResponse<EmployeeVo> response = new RestResponse<>(employeeService.add(employeeVo), restStatus);
+		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
-	@DeleteMapping("/api/employee/{id}")
-	public ResponseEntity<String> deleteById(@PathVariable("id") int id) {
-		String deleteVo = employeeService.deleteById(id);
-		return ResponseEntity.ok(deleteVo);
+	@DeleteMapping("/{id}")
+	public ResponseEntity<RestResponse<Void>> delete(@PathVariable(name = "id", required = true) Long id) {
+
+		RestStatus<?> restStatus = new RestStatus<>(HttpStatus.OK, "Record Deleted Succesfully");
+		employeeService.delete(id);
+		final RestResponse<Void> response = new RestResponse<>(null, restStatus);
+		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
-	@PutMapping("/api/employee/{id}")
-	public ResponseEntity<EmployeeVo> update(@RequestBody EmployeeVo employeeVo, @PathVariable("id") int id) {
-		Employee employee = employeeMapper.toEntity(employeeVo);
-		EmployeeVo updatedVo = employeeService.update(employeeVo, id);
-		return ResponseEntity.ok(updatedVo);
+	@PutMapping("/{id}")
+	public ResponseEntity<RestResponse<EmployeeVo>> update(@PathVariable(name = "id", required = true) Long id,
+			@RequestBody(required = true) EmployeeVo employeeVo) {
+
+		RestStatus<?> restStatus = new RestStatus<>(HttpStatus.OK, "Record update Succesfully");
+		employeeVo.setId(id);
+		final RestResponse<EmployeeVo> response = new RestResponse<>(employeeService.update(employeeVo, id), restStatus);
+		return new ResponseEntity<>(response, HttpStatus.OK);
+	}
+ 
+	@PatchMapping("/activate/{id}")
+	public ResponseEntity<RestResponse<Void>> activate(@PathVariable(name = "id", required = true) Long id) {
+
+		RestStatus<?> restStatus = new RestStatus<>(HttpStatus.OK, "Record activate Succesfully");
+		employeeService.active(id);
+		final RestResponse<Void> response = new RestResponse<>(null, restStatus);
+		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
-	@PatchMapping("/api/employee/{id}")
-	public ResponseEntity<EmployeeVo> updatePatch(@PathVariable("id") int id, @RequestBody EmployeeVo employeeVo) {
-		EmployeeVo patchVo = employeeService.updatePatch(employeeVo, id);
-		return ResponseEntity.ok(patchVo);
-	}
+	@PatchMapping("/deactivate/{id}")
+	public ResponseEntity<RestResponse<Void>> deactivate(@PathVariable(name = "id", required = true) Long id) {
 
-	@PostMapping("/api/activate/{id}")
-	public ResponseEntity<EmployeeVo> activateRecord(@PathVariable("id") Integer id) {
-		EmployeeVo activate = employeeService.activateRecord(id);
-		return ResponseEntity.ok(activate);
-	}
-
-	@PostMapping("/api/deactivate/{id}")
-	public ResponseEntity<EmployeeVo> deactivateRecord(@PathVariable("id") Integer id) {
-		EmployeeVo deactivate = employeeService.deactivateRecord(id);
-		return ResponseEntity.ok(deactivate);
+		RestStatus<?> restStatus = new RestStatus<>(HttpStatus.OK, "Record deactivate Succesfully");
+		employeeService.deactive(id);
+		final RestResponse<Void> response = new RestResponse<>(null, restStatus);
+		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
 }

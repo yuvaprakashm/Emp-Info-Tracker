@@ -1,13 +1,21 @@
 package net.texala.employee.service.impl;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.stream.Collectors;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.stereotype.Service;
 
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import net.texala.employee.Specification.CommonSpecification;
+import net.texala.employee.Util.Utility;
+import net.texala.employee.enums.GenericStatus;
 import net.texala.employee.mapper.EmployeeMapper;
 import net.texala.employee.model.Employee;
 import net.texala.employee.repository.EmployeeRepository;
@@ -17,112 +25,65 @@ import net.texala.employee.vo.EmployeeVo;
 @Service
 public class EmployeeServiceImpl implements EmployeeService {
 	@Autowired
-	private EmployeeRepository employeeRepository;
+	private EmployeeRepository repo;
 	@Autowired
-	private EmployeeMapper employeeMapper;
+	private EmployeeMapper mapper;
+
+	@Override
+	public Page<EmployeeVo> search(Integer pageNo, Integer pageSize, String sortBy, String filterBy,
+			String searchText) {
+		final Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(Utility.sortByValues(sortBy)));
+		final Specification<Employee> joins = CommonSpecification.searchEmployee(searchText, filterBy);
+		final Page<Employee> page = repo.findAll(joins, pageable);
+		return new PageImpl<>(mapper.toDtos(page.getContent()), pageable, page.getTotalElements());
+	}
+
+	@Override
+	public Employee findById(Long id) {
+		return repo.findById(id).orElseThrow(() -> new RuntimeException("Id not Found"));
+	}
+
+	@Override
+	public EmployeeVo add(EmployeeVo employeeVo) {
+		Employee employee = new Employee();
+		BeanUtils.copyProperties(employeeVo, employee);
+		return mapper.toDto(repo.save(employee));
+	}
+	@Transactional
+	@Override
+	public int active(Long id) {
+		return repo.updateStatus(GenericStatus.ACTIVE, id);
+	}
+	
+	@Transactional
+	@Override
+	public int deactive(Long id) {
+		return repo.updateStatus(GenericStatus.DEACTIVE, id);
+	}
+
+	@Override
+	public void delete(Long id) {
+		findById(id);
+		repo.deleteById(id);
+	}
 
 	@Override
 	public List<EmployeeVo> findAll() {
-		List<Employee> employees = employeeRepository.findAll();
-		if (employees.isEmpty()) {
-
-			return Collections.emptyList();
-		}
-		return employees.stream().map(employeeMapper::toVo).collect(Collectors.toList());
+		return mapper.toDtos(repo.findAll());
 	}
 
 	@Override
-	public EmployeeVo save(EmployeeVo employeeVo) {
-		Employee employee = employeeMapper.toEntity(employeeVo);
-		employee = employeeRepository.save(employee);
-		if (employee != null) {
-			return employeeMapper.toVo(employee);
-		} else {
-			return null;
-		}
+	public EmployeeVo update(EmployeeVo employeeVo, Long id) {
+		Employee existingEmployee = repo.findById(id)
+				.orElseThrow(() -> new RuntimeException("Employee not found with id: " + id));
+		existingEmployee.setFirstName(employeeVo.getFirstName());
+		existingEmployee.setLastName(employeeVo.getLastName());
+		existingEmployee.setEmail(employeeVo.getEmail());
+		existingEmployee.setAge(employeeVo.getAge());
+		existingEmployee.setStatus(employeeVo.getStatus());
+		existingEmployee.setCreatedDate(employeeVo.getCreatedDate());
+		Employee updatedEmployee = repo.save(existingEmployee);
+		return mapper.toDto(updatedEmployee);
 	}
 
-	@Override
-	public String deleteById(int id) {
-		try {
-			employeeRepository.deleteById(id);
-			return "Employee " + id + " deleted successfully";
-		} catch (EmptyResultDataAccessException e) {
-			return "Employee with ID " + id + " not found";
-		}
-	}
-
-	@Override
-	public EmployeeVo update(EmployeeVo employeeVo, int id) {
-		try {
-			Employee existingEmployee = employeeRepository.findById(id)
-					.orElseThrow(() -> new RuntimeException("Employee with Id " + id + " not found"));
-			existingEmployee.setFirstName(employeeVo.getFirstName());
-			existingEmployee.setLastName(employeeVo.getLastName());
-			existingEmployee.setAge(employeeVo.getAge());
-			existingEmployee.setEmail(employeeVo.getEmail());
-			existingEmployee.setGender(employeeVo.getGender().toString());
-			existingEmployee.setSalary(employeeVo.getSalary());
-			existingEmployee.setActive(employeeVo.getActive());
-			existingEmployee = employeeRepository.save(existingEmployee);
-			return employeeMapper.toVo(existingEmployee);
-		} catch (RuntimeException e) {
-			throw new RuntimeException("Error updating employee with ID " + id + ": " + e.getMessage(), e);
-		}
-	}
-
-	@Override
-	public EmployeeVo updatePatch(EmployeeVo employeeVo, int id) {
-		try {
-			Employee existingEmployee = employeeRepository.findById(id)
-					.orElseThrow(() -> new RuntimeException("Employee with Id " + id + " not found"));
-
-			existingEmployee.setFirstName(employeeVo.getFirstName());
-			existingEmployee.setLastName(employeeVo.getLastName());
-			existingEmployee.setAge(employeeVo.getAge());
-			existingEmployee.setEmail(employeeVo.getEmail());
-
-			existingEmployee = employeeRepository.save(existingEmployee);
-			return employeeMapper.toVo(existingEmployee);
-		} catch (RuntimeException e) {
-			throw new RuntimeException("Error updating employee with ID " + id + ": " + e.getMessage(), e);
-		}
-	}
-
-	@Override
-	public EmployeeVo activateRecord(Integer id) {
-		try {
-			Employee emp = employeeRepository.findById(id)
-					.orElseThrow(() -> new NoSuchElementException("Employee with ID " + id + " not found"));
-			if (emp.getActive() == null || !emp.getActive()) {
-				emp.setActive(true);
-				return employeeMapper.toVo(employeeRepository.save(emp));
-			} else {
-				throw new RuntimeException("Record is already active");
-			}
-		} catch (NoSuchElementException e) {
-			throw new NoSuchElementException("Employee with ID " + id + " not found");
-		} catch (RuntimeException e) {
-			throw new RuntimeException("Error activating employee with ID " + id + ": " + e.getMessage(), e);
-		}
-	}
-
-	@Override
-	public EmployeeVo deactivateRecord(Integer id) {
-		try {
-			Employee emp = employeeRepository.findById(id)
-					.orElseThrow(() -> new NoSuchElementException("Employee with ID " + id + " not found"));
-			if (emp.getActive() != null && emp.getActive()) {
-				emp.setActive(false);
-				return employeeMapper.toVo(employeeRepository.save(emp));
-			} else {
-				throw new RuntimeException("Record is already deactive");
-			}
-		} catch (NoSuchElementException e) {
-			throw new NoSuchElementException("Employee with ID " + id + " not found");
-		} catch (RuntimeException e) {
-			throw new RuntimeException("Error deactivating employee with ID " + id + ": " + e.getMessage(), e);
-		}
-	}
- 
 }

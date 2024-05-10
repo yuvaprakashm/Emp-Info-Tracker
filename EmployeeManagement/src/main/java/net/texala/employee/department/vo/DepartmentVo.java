@@ -1,15 +1,16 @@
 package net.texala.employee.department.vo;
 
-import lombok.AllArgsConstructor;
+import java.util.Date;
+
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import net.texala.employee.enums.GenericStatus;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
+ 
 public class DepartmentVo {
 
-	private int deptId;
+	private Long deptId;
 	private String deptName;
-	private Boolean active = false;
+	private Date createdDate = new Date();
+	private GenericStatus status;
 }

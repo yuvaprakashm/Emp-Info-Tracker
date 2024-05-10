@@ -42,7 +42,7 @@ public class Address {
 	private String zipcode;
 
 	@Enumerated(EnumType.STRING)
-	@Column(name = "status", length = 20, nullable = false)
+	@Column(name = "status")
 	private GenericStatus status;
 
 	@DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)

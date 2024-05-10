@@ -1,8 +1,7 @@
 package net.texala.employee.department.web.rest;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.NoSuchElementException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,67 +12,70 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import net.texala.employee.department.mapper.DepartmentMapper;
-import net.texala.employee.department.model.Department;
+import lombok.RequiredArgsConstructor;
 import net.texala.employee.department.service.DepartmentService;
 import net.texala.employee.department.vo.DepartmentVo;
-import net.texala.employee.service.EmployeeService;
-import net.texala.employee.vo.EmployeeVo;
+import net.texala.employee.restresponse.RestResponse;
+import net.texala.employee.reststatus.RestStatus;
 
 @RestController
+@RequestMapping("/dept")
+@RequiredArgsConstructor
 public class DepartmentController {
 	@Autowired
 	private DepartmentService departmentService;
-	@Autowired
-	private DepartmentMapper departmentMapper;
 
 	@GetMapping("/api/department")
 	public ResponseEntity<List<DepartmentVo>> findAll() {
-		List<DepartmentVo> employeeVo = departmentService.findAll();
-		return ResponseEntity.ok(employeeVo);
+		List<DepartmentVo> departmentVo = departmentService.findAll();
+		return ResponseEntity.ok(departmentVo);
 	}
 
-	@PostMapping("/api/department")
-	public ResponseEntity<DepartmentVo> save(@RequestBody DepartmentVo departmentVo) {
-		DepartmentVo savedVo = departmentService.save(departmentVo);
-		return ResponseEntity.ok(savedVo);
+	@PostMapping("/add")
+	public ResponseEntity<RestResponse<DepartmentVo>> add(@RequestBody(required = true) DepartmentVo departmentVo) {
 
+		RestStatus<?> restStatus = new RestStatus<>(HttpStatus.OK, "Record add Succesfully");
+		final RestResponse<DepartmentVo> response = new RestResponse<>(departmentService.add(departmentVo), restStatus);
+		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
-	@DeleteMapping("/api/department/{id}")
-	public ResponseEntity<String> deleteById(@PathVariable("id") int deptId) {
-		String deleteVo = departmentService.deleteById(deptId);
-		return ResponseEntity.ok(deleteVo);
+	@DeleteMapping("/{id}")
+	public ResponseEntity<RestResponse<Void>> delete(@PathVariable(name = "id", required = true) Long id) {
+
+		RestStatus<?> restStatus = new RestStatus<>(HttpStatus.OK, "Record Deleted Succesfully");
+		departmentService.delete(id);
+		final RestResponse<Void> response = new RestResponse<>(null, restStatus);
+		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
-	@PutMapping("/api/department/{id}")
-	public ResponseEntity<DepartmentVo> update(@RequestBody DepartmentVo departmentVo, @PathVariable("id") int deptId) {
-		Department department = departmentMapper.toEntity(departmentVo);
-		DepartmentVo updatedVo = departmentService.update(departmentVo, deptId);
-		return ResponseEntity.ok(updatedVo);
+	@PutMapping("/{id}")
+	public ResponseEntity<RestResponse<DepartmentVo>> update(@PathVariable(name = "id", required = true) Long id,
+			@RequestBody(required = true) DepartmentVo departmentVo) {
+
+		RestStatus<?> restStatus = new RestStatus<>(HttpStatus.OK, "Record update Succesfully");
+		departmentVo.setDeptId(id);
+		final RestResponse<DepartmentVo> response = new RestResponse<>(departmentService.update(departmentVo, id),
+				restStatus);
+		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
-	@PatchMapping("/api/department/{id}")
-	public ResponseEntity<DepartmentVo> updatePatch(@PathVariable("id") int deptId,
-			@RequestBody DepartmentVo departmentVo) {
-		Department department = departmentMapper.toEntity(departmentVo);
-		DepartmentVo patchVo = departmentService.updatePatch(departmentVo, deptId);
-		return ResponseEntity.ok(patchVo);
+	@PatchMapping("/activate/{id}")
+	public ResponseEntity<RestResponse<Void>> activate(@PathVariable(name = "id", required = true) Long id) {
+
+		RestStatus<?> restStatus = new RestStatus<>(HttpStatus.OK, "Record activate Succesfully");
+		departmentService.active(id);
+		final RestResponse<Void> response = new RestResponse<>(null, restStatus);
+		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
-	@PostMapping("/dept/activate/{id}")
-	public ResponseEntity<DepartmentVo> activateRecord(@PathVariable("id") Integer deptId) {
-		DepartmentVo activate = departmentService.activateRecord(deptId);
-		return ResponseEntity.ok(activate);
-	}
+	@PatchMapping("/deactivate/{id}")
+	public ResponseEntity<RestResponse<Void>> deactivate(@PathVariable(name = "id", required = true) Long id) {
 
-	@PostMapping("/dept/deactivate/{id}")
-	public ResponseEntity<DepartmentVo> deactivateRecord(@PathVariable("id") Integer deptId) {
-
-		DepartmentVo deactivate = departmentService.deactivateRecord(deptId);
-		return ResponseEntity.ok(deactivate);
-
+		RestStatus<?> restStatus = new RestStatus<>(HttpStatus.OK, "Record deactivate Succesfully");
+		departmentService.deactive(id);
+		final RestResponse<Void> response = new RestResponse<>(null, restStatus);
+		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 }

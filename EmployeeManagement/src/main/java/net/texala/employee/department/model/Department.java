@@ -1,13 +1,22 @@
 package net.texala.employee.department.model;
 
+import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.format.annotation.DateTimeFormat;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import net.texala.employee.enums.GenericStatus;
 
 @Entity
 @Data
@@ -16,13 +25,18 @@ import lombok.NoArgsConstructor;
 public class Department {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "deptId")
+	private Long deptId;
 
-	@Column(name = "DepartmentId")
-	private int deptId;
-
-	@Column(name = "DepartmentName")
+	@Column(name = "deptName")
 	private String deptName;
 	
-	@Column(name = "Active")
-	private Boolean active = false;
+	@Enumerated(EnumType.STRING)
+	@Column(name = "status")
+	private GenericStatus status;
+	
+	@DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+	@CreatedDate
+	@Column(name = "created_date", nullable = false, updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+	private Date createdDate = new Date();
 }

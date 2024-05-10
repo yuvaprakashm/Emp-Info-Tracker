@@ -2,22 +2,27 @@ package net.texala.employee.department.service;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+
 import net.texala.employee.department.model.Department;
 import net.texala.employee.department.vo.DepartmentVo;
+ 
 
 public interface DepartmentService {
-	List<DepartmentVo> findAll();
+	public Page<DepartmentVo> search(Integer pageNo, Integer pageSize, String sortBy, String filterBy, String searchText);
 
-	DepartmentVo save(DepartmentVo departmentVo);
+	public List<DepartmentVo> findAll();
 
-	String deleteById(int deptId);
+	public Department findById(Long id);
 
-	DepartmentVo update(DepartmentVo departmentVo, int deptId);
+	public DepartmentVo add(DepartmentVo departmentVo);
 
-	DepartmentVo updatePatch(DepartmentVo departmentVo, int deptId);
+	public DepartmentVo update(DepartmentVo departmentVo, Long id);
 
-	DepartmentVo activateRecord(Integer deptId);
+	public int active(Long id);
 
-	DepartmentVo deactivateRecord(Integer deptId);
+	public int deactive(Long id);
+
+	public void delete(Long id);
 
 }

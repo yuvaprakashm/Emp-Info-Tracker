@@ -2,22 +2,27 @@ package net.texala.employee.service;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import net.texala.employee.model.Employee;
 import net.texala.employee.vo.EmployeeVo;
 
  
 
 public interface EmployeeService {
-	List<EmployeeVo> findAll();
+	public Page<EmployeeVo> search(Integer pageNo, Integer pageSize, String sortBy, String filterBy, String searchText);
 
-	EmployeeVo save(EmployeeVo employeeVo);
+	public List<EmployeeVo> findAll();
 
-	String deleteById(int id);
+	public Employee findById(Long id);
 
-	EmployeeVo update(EmployeeVo employeeVo, int id);
+	public EmployeeVo add(EmployeeVo employeeVo);
 
-	EmployeeVo updatePatch(EmployeeVo employeeVo, int id);
+	public EmployeeVo update(EmployeeVo employeeVo, Long id);
 
-	EmployeeVo activateRecord(Integer id);
+	public int active(Long id);
 
-	EmployeeVo deactivateRecord(Integer id);
+	public int deactive(Long id);
+
+	public void delete(Long id);
+		
 }
