@@ -1,8 +1,8 @@
 package net.texala.employee.web.rest;
 
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -12,18 +12,31 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import net.texala.employee.restresponse.RestResponse;
 import net.texala.employee.reststatus.RestStatus;
 import net.texala.employee.service.EmployeeService;
 import net.texala.employee.vo.EmployeeVo;
- 
 
 @RestController
 public class EmployeeController {
 	@Autowired
 	private EmployeeService employeeService;
-	 
+
+	@GetMapping("/search")
+	public ResponseEntity<RestResponse<Page<EmployeeVo>>> search(
+			@RequestParam(name = "pageNo", required = false, defaultValue = "0") Integer pageNo,
+			@RequestParam(name = "pageSize", required = false, defaultValue = "" + Integer.MAX_VALUE) Integer pageSize,
+			@RequestParam(name = "sortBy", required = false, defaultValue = "createdDate:asc") String sortBy,
+			@RequestParam(name = "filterBy", required = false, defaultValue = "") String filterBy,
+			@RequestParam(name = "searchText", required = false) String searchText) {
+
+		final RestStatus<?> restStatus = new RestStatus<>(HttpStatus.OK, "Record fetch Succesfully");
+		final Page<EmployeeVo> search = employeeService.search(pageNo, pageSize, sortBy, filterBy, searchText);
+		final RestResponse<Page<EmployeeVo>> response = new RestResponse<>(search, restStatus);
+		return new ResponseEntity<>(response, HttpStatus.OK);
+	}
 
 	@GetMapping("/api/employee")
 	public ResponseEntity<List<EmployeeVo>> findAll() {
@@ -54,10 +67,11 @@ public class EmployeeController {
 
 		RestStatus<?> restStatus = new RestStatus<>(HttpStatus.OK, "Record update Succesfully");
 		employeeVo.setId(id);
-		final RestResponse<EmployeeVo> response = new RestResponse<>(employeeService.update(employeeVo, id), restStatus);
+		final RestResponse<EmployeeVo> response = new RestResponse<>(employeeService.update(employeeVo, id),
+				restStatus);
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
- 
+
 	@PatchMapping("/activate/{id}")
 	public ResponseEntity<RestResponse<Void>> activate(@PathVariable(name = "id", required = true) Long id) {
 

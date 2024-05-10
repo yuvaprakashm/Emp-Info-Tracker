@@ -3,6 +3,7 @@ package net.texala.employee.department.web.rest;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 import net.texala.employee.department.service.DepartmentService;
@@ -26,7 +28,22 @@ import net.texala.employee.reststatus.RestStatus;
 public class DepartmentController {
 	@Autowired
 	private DepartmentService departmentService;
+	
+	@GetMapping("/search")
+	public ResponseEntity<RestResponse<Page<DepartmentVo>>> search(
+			@RequestParam(name = "pageNo", required = false, defaultValue = "0") Integer pageNo,
+			@RequestParam(name = "pageSize", required = false, defaultValue = "" + Integer.MAX_VALUE) Integer pageSize,
+			@RequestParam(name = "sortBy", required = false, defaultValue = "createdDate:asc") String sortBy,
+			@RequestParam(name = "filterBy", required = false, defaultValue = "") String filterBy,
+			@RequestParam(name = "searchText", required = false) String searchText) {
 
+		final RestStatus<?> restStatus = new RestStatus<>(HttpStatus.OK, "Record fetch Succesfully");
+		final Page<DepartmentVo> search = departmentService.search(pageNo, pageSize, sortBy, filterBy, searchText);
+		final RestResponse<Page<DepartmentVo>> response = new RestResponse<>(search, restStatus);
+		return new ResponseEntity<>(response, HttpStatus.OK);
+	}
+	
+	
 	@GetMapping("/api/department")
 	public ResponseEntity<List<DepartmentVo>> findAll() {
 		List<DepartmentVo> departmentVo = departmentService.findAll();
@@ -53,7 +70,6 @@ public class DepartmentController {
 	@PutMapping("/{id}")
 	public ResponseEntity<RestResponse<DepartmentVo>> update(@PathVariable(name = "id", required = true) Long id,
 			@RequestBody(required = true) DepartmentVo departmentVo) {
-
 		RestStatus<?> restStatus = new RestStatus<>(HttpStatus.OK, "Record update Succesfully");
 		departmentVo.setDeptId(id);
 		final RestResponse<DepartmentVo> response = new RestResponse<>(departmentService.update(departmentVo, id),

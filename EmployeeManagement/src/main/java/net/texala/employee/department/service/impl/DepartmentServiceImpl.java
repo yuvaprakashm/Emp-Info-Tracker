@@ -11,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import net.texala.employee.Specification.CommonSpecification;
 import net.texala.employee.Util.Utility;
@@ -59,12 +60,12 @@ public class DepartmentServiceImpl implements DepartmentService {
 		return mapper.toDto(updatedDepartment);
 	}
 
-
+	@Transactional
 	@Override
 	public int active(Long id) {
 		return repo.updateStatus(GenericStatus.ACTIVE, id);
 	}
-
+	@Transactional
 	@Override
 	public int deactive(Long id) {
 		return repo.updateStatus(GenericStatus.DEACTIVE, id);
