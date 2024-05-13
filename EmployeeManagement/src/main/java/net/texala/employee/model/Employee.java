@@ -42,6 +42,7 @@ public class Employee {
 	@Column(name = "Email")
 	private String email;
 
+	@Enumerated(EnumType.STRING)
 	@Column(name = "Gender")
 	private Gender gender;
 
@@ -51,10 +52,12 @@ public class Employee {
 	@Enumerated(EnumType.STRING)
 	@Column(name = "status")
 	private GenericStatus status;
-	
+
 	@DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
 	@CreatedDate
 	@Column(name = "created_date", nullable = false, updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
 	private Date createdDate = new Date();
+	@Column(name = "format")
+	private String format;
 
 }

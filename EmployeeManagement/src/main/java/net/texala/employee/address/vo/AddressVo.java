@@ -13,7 +13,6 @@ public class AddressVo {
 	private String city;
 	private String state;
 	private String zipcode;
-	private Boolean active;
 	private Date createdDate = new Date();
 	private GenericStatus status;
 }

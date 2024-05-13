@@ -17,12 +17,14 @@ public interface DepartmentService {
 
 	public DepartmentVo add(DepartmentVo departmentVo);
 
-	public DepartmentVo update(DepartmentVo departmentVo, Long id);
+	public DepartmentVo update(DepartmentVo departmentVo, Long id, boolean partialUpadte);
 
 	public int active(Long id);
 
 	public int deactive(Long id);
 
 	public void delete(Long id);
+	
+	
 
 }

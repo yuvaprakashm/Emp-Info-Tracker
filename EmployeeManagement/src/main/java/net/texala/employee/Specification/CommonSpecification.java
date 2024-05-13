@@ -45,9 +45,6 @@ public class CommonSpecification {
 			if (StringUtils.isNotBlank(searchTerm)) {
 				String containsLikePattern = Utility.getContainsLikePattern(searchTerm);
 				predicates.add(cb.or(cb.like(cb.lower(root.<String>get("deptName")), containsLikePattern)));
-//						cb.like(cb.lower(root.<String>get("city")), containsLikePattern),
-//						cb.like(cb.lower(root.<String>get("state")), containsLikePattern),
-//						cb.like(cb.lower(root.<String>get("zipcode")), containsLikePattern)));
 			}
 
 			if (StringUtils.isNotBlank(filterBy)) {

@@ -22,7 +22,7 @@ import net.texala.employee.address.service.AddressService;
 import net.texala.employee.address.vo.AddressVo;
 import net.texala.employee.restresponse.RestResponse;
 import net.texala.employee.reststatus.RestStatus;
- 
+
 @RestController
 @RequestMapping("/address")
 @RequiredArgsConstructor
@@ -69,7 +69,17 @@ public class AddressController {
 
 		RestStatus<?> restStatus = new RestStatus<>(HttpStatus.OK, "Record update Succesfully");
 		addressVo.setId(id);
-		final RestResponse<AddressVo> response = new RestResponse<>(addressService.update(addressVo, id), restStatus);
+		final RestResponse<AddressVo> response = new RestResponse<>(addressService.update(addressVo, id, false),
+				restStatus);
+		return new ResponseEntity<>(response, HttpStatus.OK);
+	}
+
+	@PatchMapping("/{id}")
+	public ResponseEntity<RestResponse<AddressVo>> updatePatch(@PathVariable(name = "id", required = true) Long id,
+			@RequestBody(required = true) AddressVo addressVo) {
+		RestStatus<?> restStatus = new RestStatus<>(HttpStatus.OK, "Record updated successfully");
+		final RestResponse<AddressVo> response = new RestResponse<>(addressService.update(addressVo, id, true),
+				restStatus);
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 

@@ -17,7 +17,7 @@ public interface AddressService {
 
 	public AddressVo add(AddressVo addressVo);
 
-	public AddressVo update(AddressVo addressVo,Long id);
+	public AddressVo update(AddressVo addressVo,Long id,boolean partialUpdate);
 
 	public int active(Long id);
 

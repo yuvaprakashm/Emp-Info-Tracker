@@ -52,10 +52,21 @@ public class DepartmentServiceImpl implements DepartmentService {
 	}
 
 	@Override
-	public DepartmentVo update(DepartmentVo departmentVo, Long id) {
-		Department  existingDepartment = repo.findById(id)
+	public DepartmentVo update(DepartmentVo departmentVo, Long id, boolean partialUpdate) {
+		Department existingDepartment = repo.findById(id)
 				.orElseThrow(() -> new RuntimeException("Department not found with id: " + id));
-		existingDepartment.setDeptName(departmentVo.getDeptName());
+		if (partialUpdate) {
+			if (departmentVo.getDeptName() != null) {
+				existingDepartment.setDeptName(departmentVo.getDeptName());
+			}
+
+		}
+
+		else {
+			existingDepartment.setDeptName(departmentVo.getDeptName());
+			existingDepartment.setStatus(departmentVo.getStatus());
+
+		}
 		Department updatedDepartment = repo.save(existingDepartment);
 		return mapper.toDto(updatedDepartment);
 	}
@@ -65,6 +76,7 @@ public class DepartmentServiceImpl implements DepartmentService {
 	public int active(Long id) {
 		return repo.updateStatus(GenericStatus.ACTIVE, id);
 	}
+
 	@Transactional
 	@Override
 	public int deactive(Long id) {

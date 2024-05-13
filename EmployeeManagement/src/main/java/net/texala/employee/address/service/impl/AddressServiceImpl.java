@@ -55,23 +55,41 @@ public class AddressServiceImpl implements AddressService {
 	}
 
 	@Override
-	public AddressVo update(AddressVo addressVo, Long id) {
-		Address  existingAddress = repo.findById(id)
+	public AddressVo update(AddressVo addressVo, Long id, boolean partialUpdate) {
+		Address existingAddress = repo.findById(id)
 				.orElseThrow(() -> new RuntimeException("Address not found with id: " + id));
-		existingAddress.setStreet(addressVo.getStreet());
-		existingAddress.setCity(addressVo.getCity());
-		existingAddress.setState(addressVo.getState());
-		existingAddress.setZipcode(addressVo.getZipcode());
-		existingAddress.setStatus(addressVo.getStatus());
-		existingAddress.setCreatedDate(addressVo.getCreatedDate());
+		if (partialUpdate) {
+			if (addressVo.getStreet() != null) {
+				existingAddress.setStreet(addressVo.getStreet());
+			}
+			if (addressVo.getCity() != null) {
+				existingAddress.setCity(addressVo.getCity());
+			}
+			if (addressVo.getZipcode() != null) {
+				existingAddress.setZipcode(addressVo.getZipcode());
+			}
+
+		} else
+
+		{
+			existingAddress.setStreet(addressVo.getStreet());
+			existingAddress.setCity(addressVo.getCity());
+			existingAddress.setState(addressVo.getState());
+			existingAddress.setZipcode(addressVo.getZipcode());
+			existingAddress.setStatus(addressVo.getStatus());
+
+		}
 		Address updatedAddress = repo.save(existingAddress);
 		return mapper.toDto(updatedAddress);
+
 	}
+
 	@Transactional
 	@Override
 	public int active(Long id) {
 		return repo.updateStatus(GenericStatus.ACTIVE, id);
 	}
+
 	@Transactional
 	@Override
 	public int deactive(Long id) {

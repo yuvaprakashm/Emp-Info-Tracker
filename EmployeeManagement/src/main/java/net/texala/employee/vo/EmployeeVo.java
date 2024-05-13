@@ -18,6 +18,9 @@ public class EmployeeVo {
 	private Integer age;
 	private String email;
 	private Gender gender;
+	private Integer salary;
 	private Date createdDate = new Date();
 	private GenericStatus status;
+	private String format;
+
 }

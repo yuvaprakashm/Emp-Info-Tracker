@@ -72,7 +72,16 @@ public class DepartmentController {
 			@RequestBody(required = true) DepartmentVo departmentVo) {
 		RestStatus<?> restStatus = new RestStatus<>(HttpStatus.OK, "Record update Succesfully");
 		departmentVo.setDeptId(id);
-		final RestResponse<DepartmentVo> response = new RestResponse<>(departmentService.update(departmentVo, id),
+		final RestResponse<DepartmentVo> response = new RestResponse<>(departmentService.update(departmentVo, id, false),
+				restStatus);
+		return new ResponseEntity<>(response, HttpStatus.OK);
+	}
+	@PatchMapping("/{id}")
+	public ResponseEntity<RestResponse<DepartmentVo>> updatePatch(@PathVariable(name = "id", required = true) Long id,
+			@RequestBody(required = true) DepartmentVo departmentVo) {
+		RestStatus<?> restStatus = new RestStatus<>(HttpStatus.OK, "Record update Succesfully");
+		departmentVo.setDeptId(id);
+		final RestResponse<DepartmentVo> response = new RestResponse<>(departmentService.update(departmentVo, id, true),
 				restStatus);
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
