@@ -1,7 +1,11 @@
 package net.texala.employee.address.service.impl;
 
+import java.io.IOException;
+import java.io.StringWriter;
 import java.util.List;
 
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVPrinter;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -12,7 +16,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
+import static net.texala.employee.constants.Constants.*;
 import net.texala.employee.Specification.CommonSpecification;
 import net.texala.employee.Util.Utility;
 import net.texala.employee.address.mapper.AddressMapper;
@@ -21,7 +25,7 @@ import net.texala.employee.address.repository.AddressRepository;
 import net.texala.employee.address.service.AddressService;
 import net.texala.employee.address.vo.AddressVo;
 import net.texala.employee.enums.GenericStatus;
-
+import net.texala.employee.exception.Exception.AddressNotFoundException;
 @Service
 public class AddressServiceImpl implements AddressService {
 	@Autowired
@@ -44,8 +48,10 @@ public class AddressServiceImpl implements AddressService {
 
 	@Override
 	public Address findById(Long id) {
-		return repo.findById(id).orElseThrow(() -> new RuntimeException("Id not Found"));
+	    return repo.findById(id)
+	               .orElseThrow(() -> new AddressNotFoundException(ADDRESS_NOT_FOUND + id));
 	}
+
 
 	@Override
 	public AddressVo add(AddressVo addressVo) {
@@ -57,7 +63,7 @@ public class AddressServiceImpl implements AddressService {
 	@Override
 	public AddressVo update(AddressVo addressVo, Long id, boolean partialUpdate) {
 		Address existingAddress = repo.findById(id)
-				.orElseThrow(() -> new RuntimeException("Address not found with id: " + id));
+				.orElseThrow(() -> new RuntimeException(ADDRESS_NOT_FOUND + id));
 		if (partialUpdate) {
 			if (addressVo.getStreet() != null) {
 				existingAddress.setStreet(addressVo.getStreet());
@@ -100,5 +106,30 @@ public class AddressServiceImpl implements AddressService {
 	public void delete(Long id) {
 		findById(id);
 		repo.deleteById(id);
+	}
+	@Override
+	public String generateCsvContent() {
+	    StringWriter writer = new StringWriter();
+	    try (CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT
+	            .withHeader(HEADER))) {
+
+	        List<AddressVo> addressList = findAll();
+	        if (addressList != null && !addressList.isEmpty()) {
+	            for (AddressVo adddress : addressList) {
+	                csvPrinter.printRecord(
+	                		adddress.getId(),
+	                		adddress.getStreet(),
+	                		adddress.getCity(),
+	                		adddress.getState(),
+	                		adddress.getZipcode(),
+	                		adddress.getStatus(),
+	                		adddress.getCreatedDate()
+	                );
+	            }
+	        }
+	    } catch (IOException e) {
+	        e.printStackTrace();
+	    }
+	    return writer.toString();
 	}
 }

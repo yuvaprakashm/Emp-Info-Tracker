@@ -1,7 +1,10 @@
 package net.texala.employee.department.service.impl;
 
+import java.io.IOException;
+import java.io.StringWriter;
 import java.util.List;
-
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVPrinter;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -12,7 +15,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import net.texala.employee.Specification.CommonSpecification;
 import net.texala.employee.Util.Utility;
 import net.texala.employee.department.mapper.DepartmentMapper;
@@ -21,7 +23,7 @@ import net.texala.employee.department.repository.DepartmentRepository;
 import net.texala.employee.department.service.DepartmentService;
 import net.texala.employee.department.vo.DepartmentVo;
 import net.texala.employee.enums.GenericStatus;
-
+import net.texala.employee.exception.Exception.DepartmentNotFoundException;
 @Service
 public class DepartmentServiceImpl implements DepartmentService {
 
@@ -39,10 +41,11 @@ public class DepartmentServiceImpl implements DepartmentService {
 		return new PageImpl<>(mapper.toDtos(page.getContent()), pageable, page.getTotalElements());
 	}
 
-	@Override
-	public Department findById(Long id) {
-		return repo.findById(id).orElseThrow(() -> new RuntimeException("Id not Found"));
-	}
+	 @Override
+	    public Department findById(Long id) {
+	        return repo.findById(id)
+	                   .orElseThrow(() -> new DepartmentNotFoundException("Department not found with id: " + id));
+	    }
 
 	@Override
 	public DepartmentVo add(DepartmentVo departmentVo) {
@@ -54,7 +57,7 @@ public class DepartmentServiceImpl implements DepartmentService {
 	@Override
 	public DepartmentVo update(DepartmentVo departmentVo, Long id, boolean partialUpdate) {
 		Department existingDepartment = repo.findById(id)
-				.orElseThrow(() -> new RuntimeException("Department not found with id: " + id));
+				.orElseThrow(() -> new DepartmentNotFoundException("Department not found with id: " + id));
 		if (partialUpdate) {
 			if (departmentVo.getDeptName() != null) {
 				existingDepartment.setDeptName(departmentVo.getDeptName());
@@ -94,4 +97,24 @@ public class DepartmentServiceImpl implements DepartmentService {
 	public List<DepartmentVo> findAll() {
 		return mapper.toDtos(repo.findAll());
 	}
+
+	@Override
+	public String generateCsvContent() {
+		StringWriter writer = new StringWriter();
+		try (CSVPrinter csvPrinter = new CSVPrinter(writer,
+				CSVFormat.DEFAULT.withHeader("ID", "DEPTNAME", "CREATEDDATE"))) {
+
+			List<DepartmentVo> departmentList = findAll();
+			if (departmentList != null && !departmentList.isEmpty()) {
+				for (DepartmentVo department : departmentList) {
+					csvPrinter.printRecord(department.getDeptId(), department.getDeptName(),
+							department.getCreatedDate());
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return writer.toString();
+	}
+
 }

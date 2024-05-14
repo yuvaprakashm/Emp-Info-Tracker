@@ -5,7 +5,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
-
+import static net.texala.employee.constants.Constants.*;
 import net.texala.employee.address.model.Address;
 import net.texala.employee.enums.GenericStatus;
 
@@ -13,7 +13,7 @@ import net.texala.employee.enums.GenericStatus;
 public interface AddressRepository extends JpaRepository<Address, Long>, JpaSpecificationExecutor<Address> {
 
 	@Modifying
-	@Query("update Address a set a.status=:status where a.id=:id")
+	@Query(UPDATE_ADDRESS_STATUS)
 	public int updateStatus(GenericStatus status, Long id);
 
 }

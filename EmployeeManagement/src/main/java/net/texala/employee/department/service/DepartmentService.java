@@ -6,10 +6,10 @@ import org.springframework.data.domain.Page;
 
 import net.texala.employee.department.model.Department;
 import net.texala.employee.department.vo.DepartmentVo;
- 
 
 public interface DepartmentService {
-	public Page<DepartmentVo> search(Integer pageNo, Integer pageSize, String sortBy, String filterBy, String searchText);
+	public Page<DepartmentVo> search(Integer pageNo, Integer pageSize, String sortBy, String filterBy,
+			String searchText);
 
 	public List<DepartmentVo> findAll();
 
@@ -24,7 +24,7 @@ public interface DepartmentService {
 	public int deactive(Long id);
 
 	public void delete(Long id);
-	
-	
+
+	public String generateCsvContent();
 
 }

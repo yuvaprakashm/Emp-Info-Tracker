@@ -25,4 +25,6 @@ public interface AddressService {
 
 	public void delete(Long id);
 
+	public String generateCsvContent();
+
 }

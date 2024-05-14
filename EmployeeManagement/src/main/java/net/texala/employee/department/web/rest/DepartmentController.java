@@ -1,10 +1,13 @@
 package net.texala.employee.department.web.rest;
 
 import java.util.List;
-
+import javax.annotation.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
+import net.texala.employee.department.model.Department;
 import net.texala.employee.department.service.DepartmentService;
 import net.texala.employee.department.vo.DepartmentVo;
 import net.texala.employee.restresponse.RestResponse;
@@ -28,7 +32,7 @@ import net.texala.employee.reststatus.RestStatus;
 public class DepartmentController {
 	@Autowired
 	private DepartmentService departmentService;
-	
+
 	@GetMapping("/search")
 	public ResponseEntity<RestResponse<Page<DepartmentVo>>> search(
 			@RequestParam(name = "pageNo", required = false, defaultValue = "0") Integer pageNo,
@@ -42,15 +46,20 @@ public class DepartmentController {
 		final RestResponse<Page<DepartmentVo>> response = new RestResponse<>(search, restStatus);
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
-	
-	
-	@GetMapping("/api/department")
+
+	@GetMapping("/records")
 	public ResponseEntity<List<DepartmentVo>> findAll() {
 		List<DepartmentVo> departmentVo = departmentService.findAll();
 		return ResponseEntity.ok(departmentVo);
 	}
 
-	@PostMapping("/add")
+	@GetMapping("/records/{id}")
+	public ResponseEntity<Department> findById(@PathVariable(name = "id", required = true) Long id) {
+		Department department = departmentService.findById(id);
+		return ResponseEntity.ok(department);
+	}
+
+	@PostMapping("/records")
 	public ResponseEntity<RestResponse<DepartmentVo>> add(@RequestBody(required = true) DepartmentVo departmentVo) {
 
 		RestStatus<?> restStatus = new RestStatus<>(HttpStatus.OK, "Record add Succesfully");
@@ -58,7 +67,7 @@ public class DepartmentController {
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
-	@DeleteMapping("/{id}")
+	@DeleteMapping("/records/{id}")
 	public ResponseEntity<RestResponse<Void>> delete(@PathVariable(name = "id", required = true) Long id) {
 
 		RestStatus<?> restStatus = new RestStatus<>(HttpStatus.OK, "Record Deleted Succesfully");
@@ -67,16 +76,17 @@ public class DepartmentController {
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
-	@PutMapping("/{id}")
+	@PutMapping("/records/{id}")
 	public ResponseEntity<RestResponse<DepartmentVo>> update(@PathVariable(name = "id", required = true) Long id,
 			@RequestBody(required = true) DepartmentVo departmentVo) {
 		RestStatus<?> restStatus = new RestStatus<>(HttpStatus.OK, "Record update Succesfully");
 		departmentVo.setDeptId(id);
-		final RestResponse<DepartmentVo> response = new RestResponse<>(departmentService.update(departmentVo, id, false),
-				restStatus);
+		final RestResponse<DepartmentVo> response = new RestResponse<>(
+				departmentService.update(departmentVo, id, false), restStatus);
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
-	@PatchMapping("/{id}")
+
+	@PatchMapping("/records/{id}")
 	public ResponseEntity<RestResponse<DepartmentVo>> updatePatch(@PathVariable(name = "id", required = true) Long id,
 			@RequestBody(required = true) DepartmentVo departmentVo) {
 		RestStatus<?> restStatus = new RestStatus<>(HttpStatus.OK, "Record update Succesfully");
@@ -86,7 +96,7 @@ public class DepartmentController {
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
-	@PatchMapping("/activate/{id}")
+	@PatchMapping("/records/{id}/activate")
 	public ResponseEntity<RestResponse<Void>> activate(@PathVariable(name = "id", required = true) Long id) {
 
 		RestStatus<?> restStatus = new RestStatus<>(HttpStatus.OK, "Record activate Succesfully");
@@ -95,7 +105,7 @@ public class DepartmentController {
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
-	@PatchMapping("/deactivate/{id}")
+	@PatchMapping("/records/{id}/deactivate")
 	public ResponseEntity<RestResponse<Void>> deactivate(@PathVariable(name = "id", required = true) Long id) {
 
 		RestStatus<?> restStatus = new RestStatus<>(HttpStatus.OK, "Record deactivate Succesfully");
@@ -103,4 +113,25 @@ public class DepartmentController {
 		final RestResponse<Void> response = new RestResponse<>(null, restStatus);
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
+
+//	@GetMapping("/download")
+//	public ResponseEntity<RestResponse<Resource>>downloadCsv() {
+//		RestStatus<?> restStatus = new RestStatus<>(HttpStatus.OK, "Record downloaded Succesfully");
+//		String csvContent = departmentService.generateCsvContent();
+//		ByteArrayResource resource = new ByteArrayResource(csvContent.getBytes());
+//		HttpHeaders headers = new HttpHeaders();
+//		final RestResponse<Void> response = new RestResponse<>(null, restStatus);
+//		headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"department-data.csv\"");
+//		return new ResponseEntity<>(response, HttpStatus.OK).headers(headers).contentType(MediaType.parseMediaType("text/csv")).body(resource);
+//	}
+	
+	@GetMapping("/download")
+	public ResponseEntity<ByteArrayResource> downloadCsv() {
+		String csvContent = departmentService.generateCsvContent();
+		ByteArrayResource resource = new ByteArrayResource(csvContent.getBytes());
+		HttpHeaders headers = new HttpHeaders();
+		headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"department-data.csv\"");
+		return ResponseEntity.ok().headers(headers).contentType(MediaType.parseMediaType("text/csv")).body(resource);
+	}
+	
 }
