@@ -1,5 +1,7 @@
 package net.texala.employee.department.service.impl;
 
+
+import static net.texala.employee.constants.Constants.*;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.List;
@@ -24,6 +26,8 @@ import net.texala.employee.department.service.DepartmentService;
 import net.texala.employee.department.vo.DepartmentVo;
 import net.texala.employee.enums.GenericStatus;
 import net.texala.employee.exception.Exception.DepartmentNotFoundException;
+
+
 @Service
 public class DepartmentServiceImpl implements DepartmentService {
 
@@ -44,7 +48,7 @@ public class DepartmentServiceImpl implements DepartmentService {
 	 @Override
 	    public Department findById(Long id) {
 	        return repo.findById(id)
-	                   .orElseThrow(() -> new DepartmentNotFoundException("Department not found with id: " + id));
+	                   .orElseThrow(() -> new DepartmentNotFoundException(DEPARTMENT_NOT_FOUND + id));
 	    }
 
 	@Override
@@ -57,7 +61,7 @@ public class DepartmentServiceImpl implements DepartmentService {
 	@Override
 	public DepartmentVo update(DepartmentVo departmentVo, Long id, boolean partialUpdate) {
 		Department existingDepartment = repo.findById(id)
-				.orElseThrow(() -> new DepartmentNotFoundException("Department not found with id: " + id));
+				.orElseThrow(() -> new DepartmentNotFoundException(DEPARTMENT_NOT_FOUND + id));
 		if (partialUpdate) {
 			if (departmentVo.getDeptName() != null) {
 				existingDepartment.setDeptName(departmentVo.getDeptName());
@@ -102,7 +106,7 @@ public class DepartmentServiceImpl implements DepartmentService {
 	public String generateCsvContent() {
 		StringWriter writer = new StringWriter();
 		try (CSVPrinter csvPrinter = new CSVPrinter(writer,
-				CSVFormat.DEFAULT.withHeader("ID", "DEPTNAME", "CREATEDDATE"))) {
+				CSVFormat.DEFAULT.withHeader(DEPARTMENT_HEADER))) {
 
 			List<DepartmentVo> departmentList = findAll();
 			if (departmentList != null && !departmentList.isEmpty()) {

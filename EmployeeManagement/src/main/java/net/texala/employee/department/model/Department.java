@@ -1,7 +1,7 @@
 package net.texala.employee.department.model;
 
+import static net.texala.employee.constants.Constants.*;
 import java.util.Date;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -9,10 +9,8 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.format.annotation.DateTimeFormat;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -25,18 +23,18 @@ import net.texala.employee.enums.GenericStatus;
 public class Department {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "deptId")
+	@Column(name = DEPT_ID)
 	private Long deptId;
 
-	@Column(name = "deptName")
+	@Column(name = DEPT_NAME)
 	private String deptName;
 	
 	@Enumerated(EnumType.STRING)
-	@Column(name = "status")
+	@Column(name = STATUS)
 	private GenericStatus status;
 	
 	@DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
 	@CreatedDate
-	@Column(name = "created_date", nullable = false, updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+	@Column(name = CREATED_DATE, nullable = false, updatable = false, columnDefinition = TIMESTAMP)
 	private Date createdDate = new Date();
 }

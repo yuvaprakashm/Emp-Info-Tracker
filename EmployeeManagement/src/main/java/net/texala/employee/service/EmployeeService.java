@@ -1,9 +1,7 @@
 package net.texala.employee.service;
 
-import java.io.IOException;
 import java.util.List;
 import org.springframework.data.domain.Page;
-import com.opencsv.exceptions.CsvException;
 import net.texala.employee.model.Employee;
 import net.texala.employee.vo.EmployeeVo;
 
@@ -23,10 +21,6 @@ public interface EmployeeService {
 	public void delete(Long id);
 
 	public EmployeeVo update(EmployeeVo employeeVo, Long id, boolean partialUpdate);
-
-	public void save(String filename) throws IOException, CsvException;
-
-	 
 
 	public String generateCsvContent();
 

@@ -1,9 +1,9 @@
 package net.texala.employee.address.service.impl;
 
+import static net.texala.employee.constants.Constants.*;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.List;
-
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.springframework.beans.BeanUtils;
@@ -16,7 +16,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import static net.texala.employee.constants.Constants.*;
 import net.texala.employee.Specification.CommonSpecification;
 import net.texala.employee.Util.Utility;
 import net.texala.employee.address.mapper.AddressMapper;
@@ -111,7 +110,7 @@ public class AddressServiceImpl implements AddressService {
 	public String generateCsvContent() {
 	    StringWriter writer = new StringWriter();
 	    try (CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT
-	            .withHeader(HEADER))) {
+	            .withHeader(ADDRESS_HEADER))) {
 
 	        List<AddressVo> addressList = findAll();
 	        if (addressList != null && !addressList.isEmpty()) {

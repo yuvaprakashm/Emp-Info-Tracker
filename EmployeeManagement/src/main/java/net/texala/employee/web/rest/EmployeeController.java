@@ -1,5 +1,6 @@
 package net.texala.employee.web.rest;
 
+import static net.texala.employee.constants.Constants.*;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
@@ -23,6 +24,7 @@ import net.texala.employee.restresponse.RestResponse;
 import net.texala.employee.reststatus.RestStatus;
 import net.texala.employee.service.EmployeeService;
 import net.texala.employee.vo.EmployeeVo;
+
 @RequestMapping("emp")
 @RestController
 public class EmployeeController {
@@ -31,13 +33,13 @@ public class EmployeeController {
 
 	@GetMapping("/search")
 	public ResponseEntity<RestResponse<Page<EmployeeVo>>> search(
-			@RequestParam(name = "pageNo", required = false, defaultValue = "0") Integer pageNo,
-			@RequestParam(name = "pageSize", required = false, defaultValue = "" + Integer.MAX_VALUE) Integer pageSize,
-			@RequestParam(name = "sortBy", required = false, defaultValue = "createdDate:asc") String sortBy,
-			@RequestParam(name = "filterBy", required = false, defaultValue = "") String filterBy,
-			@RequestParam(name = "searchText", required = false) String searchText) {
+			@RequestParam(name = PAGE_NO, required = false, defaultValue = "0") Integer pageNo,
+			@RequestParam(name = PAGE_SIZE, required = false, defaultValue = "" + Integer.MAX_VALUE) Integer pageSize,
+			@RequestParam(name = SORT_BY, required = false, defaultValue = "createdDate:asc") String sortBy,
+			@RequestParam(name = FILTER_BY, required = false, defaultValue = "") String filterBy,
+			@RequestParam(name = SEARCH_TEXT, required = false) String searchText) {
 
-		final RestStatus<?> restStatus = new RestStatus<>(HttpStatus.OK, "Record fetch Succesfully");
+		final RestStatus<?> restStatus = new RestStatus<>(HttpStatus.OK, RECORD_FETCH_SUCCESS_MESSAGE);
 		final Page<EmployeeVo> search = employeeService.search(pageNo, pageSize, sortBy, filterBy, searchText);
 		final RestResponse<Page<EmployeeVo>> response = new RestResponse<>(search, restStatus);
 		return new ResponseEntity<>(response, HttpStatus.OK);
@@ -57,7 +59,7 @@ public class EmployeeController {
 
 	@PostMapping("/records")
 	public ResponseEntity<RestResponse<EmployeeVo>> add(@RequestBody(required = true) EmployeeVo employeeVo) {
-		RestStatus<?> restStatus = new RestStatus<>(HttpStatus.OK, "Record add Succesfully");
+		RestStatus<?> restStatus = new RestStatus<>(HttpStatus.OK, RECORD_ADD_SUCCESS_MESSAGE);
 		final RestResponse<EmployeeVo> response = new RestResponse<>(employeeService.add(employeeVo), restStatus);
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
@@ -65,7 +67,7 @@ public class EmployeeController {
 	@DeleteMapping("/records/{id}")
 	public ResponseEntity<RestResponse<Void>> delete(@PathVariable(name = "id", required = true) Long id) {
 
-		RestStatus<?> restStatus = new RestStatus<>(HttpStatus.OK, "Record Deleted Succesfully");
+		RestStatus<?> restStatus = new RestStatus<>(HttpStatus.OK, RECORD_DELETED_SUCCESS_MESSAGE);
 		employeeService.delete(id);
 		final RestResponse<Void> response = new RestResponse<>(null, restStatus);
 		return new ResponseEntity<>(response, HttpStatus.OK);
@@ -74,7 +76,7 @@ public class EmployeeController {
 	@PutMapping("/records/{id}")
 	public ResponseEntity<RestResponse<EmployeeVo>> update(@PathVariable(name = "id", required = true) Long id,
 			@RequestBody(required = true) EmployeeVo employeeVo) {
-		RestStatus<?> restStatus = new RestStatus<>(HttpStatus.OK, "Record updated successfully");
+		RestStatus<?> restStatus = new RestStatus<>(HttpStatus.OK, RECORD_UPDATE_SUCCESS_MESSAGE);
 		employeeVo.setId(id);
 		final RestResponse<EmployeeVo> response = new RestResponse<>(employeeService.update(employeeVo, id, false),
 				restStatus);
@@ -84,7 +86,7 @@ public class EmployeeController {
 	@PatchMapping("/records/{id}")
 	public ResponseEntity<RestResponse<EmployeeVo>> updatePatch(@PathVariable(name = "id", required = true) Long id,
 			@RequestBody(required = true) EmployeeVo employeeVo) {
-		RestStatus<?> restStatus = new RestStatus<>(HttpStatus.OK, "Record updated successfully");
+		RestStatus<?> restStatus = new RestStatus<>(HttpStatus.OK, RECORD_UPDATE_SUCCESS_MESSAGE);
 		final RestResponse<EmployeeVo> response = new RestResponse<>(employeeService.update(employeeVo, id, true),
 				restStatus);
 		return new ResponseEntity<>(response, HttpStatus.OK);
@@ -93,7 +95,7 @@ public class EmployeeController {
 	@PatchMapping("/records/{id}/activate")
 	public ResponseEntity<RestResponse<Void>> activate(@PathVariable(name = "id", required = true) Long id) {
 
-		RestStatus<?> restStatus = new RestStatus<>(HttpStatus.OK, "Record activate Succesfully");
+		RestStatus<?> restStatus = new RestStatus<>(HttpStatus.OK, RECORD_ACTIVE_SUCCESS_MESSAGE);
 		employeeService.active(id);
 		final RestResponse<Void> response = new RestResponse<>(null, restStatus);
 		return new ResponseEntity<>(response, HttpStatus.OK);
@@ -102,7 +104,7 @@ public class EmployeeController {
 	@PatchMapping("/records/{id}/deactivate")
 	public ResponseEntity<RestResponse<Void>> deactivate(@PathVariable(name = "id", required = true) Long id) {
 
-		RestStatus<?> restStatus = new RestStatus<>(HttpStatus.OK, "Record deactivate Succesfully");
+		RestStatus<?> restStatus = new RestStatus<>(HttpStatus.OK, RECORD_DEACTIVE_SUCCESS_MESSAGE);
 		employeeService.deactive(id);
 		final RestResponse<Void> response = new RestResponse<>(null, restStatus);
 		return new ResponseEntity<>(response, HttpStatus.OK);
@@ -110,13 +112,10 @@ public class EmployeeController {
 
 	@GetMapping("/download")
 	public ResponseEntity<ByteArrayResource> downloadCsv() {
-	    String csvContent = employeeService.generateCsvContent();
-	    ByteArrayResource resource = new ByteArrayResource(csvContent.getBytes());
-	    HttpHeaders headers = new HttpHeaders();
-	    headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"employee-data.csv\"");
-	    return ResponseEntity.ok()
-	            .headers(headers)
-	            .contentType(MediaType.parseMediaType("text/csv"))
-	            .body(resource);
+		String csvContent = employeeService.generateCsvContent();
+		ByteArrayResource resource = new ByteArrayResource(csvContent.getBytes());
+		HttpHeaders headers = new HttpHeaders();
+		headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"employee-data.csv\"");
+		return ResponseEntity.ok().headers(headers).contentType(MediaType.parseMediaType("text/csv")).body(resource);
 	}
 }

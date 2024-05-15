@@ -1,9 +1,7 @@
 package net.texala.employee.reststatus;
 
 import java.util.Map;
-
 import org.springframework.http.HttpStatus;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

@@ -1,7 +1,7 @@
 package net.texala.employee.vo;
 
+import static net.texala.employee.constants.Constants.*;
 import java.util.Date;
-
 import javax.validation.constraints.Email;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
@@ -19,29 +19,29 @@ import net.texala.employee.enums.GenericStatus;
 @AllArgsConstructor
 public class EmployeeVo {
 	private Long id;
-	@NotBlank(message = "FirstName is Required")
-	@Pattern(regexp = "^[a-zA-Z]+$", message = "firstName must contain only alphabetic characters")
+	@NotBlank(message = FIRSTNAME_REQUIRED)
+	@Pattern(regexp = "^[a-zA-Z]+$", message = FIRSTNAME_ERROR_MESSAGE)
 	private String firstName;
-	@NotBlank(message = "LastName is Required")
-	@Pattern(regexp = "^[a-zA-Z]+$", message = "lastname must contain only alphabetic characters")
+	@NotBlank(message = LASTNAME_REQUIRED)
+	@Pattern(regexp = "^[a-zA-Z]+$", message = LASTNAME_ERROR_MESSAGE)
 	private String lastName;
-	@NotNull(message = "Age is Required")
-	@Min(value = 18, message = "Age must be at least 18")
-	@Max(value = 100, message = "Age must be at most 100")
+	@NotNull(message = AGE_REQUIRED)
+	@Min(value = 18, message = MIN_AGE_ERROR_MESSAGE)
+	@Max(value = 100, message = MAX_AGE_ERROR_MESSAGE)
 	private Integer age;
 
-	@NotBlank(message = "Email is Required")
-	@Email(message = "Email must be valid")
+	@NotBlank(message = EMAIL_REQUIRED)
+	@Email(message = EMAIL_VALID_ERROR_MESSAGE)
 	private String email;
 
-	@NotBlank(message = "Gender is Required")
+	@NotBlank(message = GENDER_REQUIRED)
 	private Gender gender;
-	@NotNull(message = "Salary is Required")
-	@Min(value = 0, message = "Salary must be non-negative")
+	@NotNull(message = SALARY_REQUIRED)
+	@Min(value = 0, message = NON_NEGATIVE_SALARY_ERROR_MESSAGE)
 	private Integer salary;
 
 	private Date createdDate = new Date();
-	@NotNull(message = "Status is Required")
+	@NotNull(message = STATUS_REQUIRED)
 	private GenericStatus status;
 
 }

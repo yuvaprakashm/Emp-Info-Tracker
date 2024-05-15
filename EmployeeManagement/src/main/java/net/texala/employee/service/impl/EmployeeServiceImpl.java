@@ -1,11 +1,9 @@
 package net.texala.employee.service.impl;
 
-import java.io.FileReader;
+import static net.texala.employee.constants.Constants.*;
 import java.io.IOException;
 import java.io.StringWriter;
-import java.util.ArrayList;
 import java.util.List;
-
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.springframework.beans.BeanUtils;
@@ -18,15 +16,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import net.texala.employee.exception.Exception.EmployeeNotFoundException;
-
-import com.opencsv.CSVReader;
-import com.opencsv.exceptions.CsvException;
-
 import net.texala.employee.Specification.CommonSpecification;
 import net.texala.employee.Util.Utility;
-import net.texala.employee.enums.Gender;
 import net.texala.employee.enums.GenericStatus;
+import net.texala.employee.exception.Exception.EmployeeNotFoundException;
 import net.texala.employee.mapper.EmployeeMapper;
 import net.texala.employee.model.Employee;
 import net.texala.employee.repository.EmployeeRepository;
@@ -54,7 +47,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
 	@Override
 	public Employee findById(Long id) {
-		return repo.findById(id).orElseThrow(() -> new EmployeeNotFoundException("Employee not found with id: " + id));
+		return repo.findById(id).orElseThrow(() -> new EmployeeNotFoundException(EMPLOYEE_NOT_FOUND + id));
 	}
 
 	@Override
@@ -90,7 +83,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 	@Override
 	public EmployeeVo update(EmployeeVo employeeVo, Long id, boolean partialUpdate) {
 		Employee existingEmployee = repo.findById(id)
-				.orElseThrow(() -> new RuntimeException("Employee not found with id: " + id));
+				.orElseThrow(() -> new RuntimeException(EMPLOYEE_NOT_FOUND + id));
 
 		if (partialUpdate) {
 			if (employeeVo.getFirstName() != null) {
@@ -123,35 +116,9 @@ public class EmployeeServiceImpl implements EmployeeService {
 	}
 
 	@Override
-	public void save(String filename) throws IOException, CsvException {
-		try (CSVReader reader = new CSVReader(new FileReader(FILE_PATH + filename))) {
-			List<String[]> rows = reader.readAll();
-			List<Employee> employeeList = new ArrayList<>();
-			for (String[] row : rows) {
-				Employee employee = new Employee();
-				employee.setId(Long.parseLong(row[0]));
-				employee.setFirstName(row[1]);
-				employee.setLastName(row[2]);
-				employee.setAge(Integer.parseInt(row[3]));
-				employee.setEmail(row[4]);
-				employee.setGender(Gender.valueOf(row[5]));
-				employee.setSalary(Integer.parseInt(row[6]));
-				employee.setStatus(GenericStatus.valueOf(row[7]));
-				employeeList.add(employee);
-			}
-			repo.saveAll(employeeList);
-		} catch (IOException | CsvException e) {
-
-			e.printStackTrace();
-			throw e;
-		}
-	}
-
-	@Override
 	public String generateCsvContent() {
 		StringWriter writer = new StringWriter();
-		try (CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT.withHeader("ID", "FIRSTNAME", "LASTNAME",
-				"AGE", "EMAIL", "GENDER", "SALARY", "STATUS", "CREATEDDATE"))) {
+		try (CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT.withHeader(EMPLOYEE_HEADER))) {
 
 			List<EmployeeVo> employeeList = findAll();
 			if (employeeList != null && !employeeList.isEmpty()) {

@@ -1,7 +1,7 @@
 package net.texala.employee.model;
 
+import static net.texala.employee.constants.Constants.*;
 import java.util.Date;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -25,35 +25,35 @@ public class Employee {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 
-	@Column(name = "id")
+	@Column(name = ID)
 	private Long id;
 
-	@Column(name = "FirstName")
+	@Column(name = FIRST_NAME)
 	private String firstName;
 
-	@Column(name = "LastName")
+	@Column(name = LAST_NAME)
 	private String lastName;
 
-	@Column(name = "Age")
+	@Column(name = AGE)
 	private Integer age;
 
-	@Column(name = "Email")
+	@Column(name = EMAIL)
 	private String email;
 
 	@Enumerated(EnumType.STRING)
-	@Column(name = "Gender")
+	@Column(name = GENDER)
 	private Gender gender;
 
-	@Column(name = "Salary")
+	@Column(name = SALARY)
 	private Integer salary;
 
 	@Enumerated(EnumType.STRING)
-	@Column(name = "status")
+	@Column(name = STATUS)
 	private GenericStatus status;
 
 	@DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
 	@CreatedDate
-	@Column(name = "created_date", nullable = false, updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+	@Column(name = CREATED_DATE, nullable = false, updatable = false, columnDefinition = TIMESTAMP)
 	private Date createdDate = new Date();
 
 }

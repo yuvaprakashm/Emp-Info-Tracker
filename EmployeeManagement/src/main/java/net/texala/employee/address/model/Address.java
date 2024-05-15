@@ -1,5 +1,6 @@
 package net.texala.employee.address.model;
 
+import static net.texala.employee.constants.Constants.*;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -14,7 +15,6 @@ import org.springframework.format.annotation.DateTimeFormat;
 import lombok.Getter;
 import lombok.Setter;
 import net.texala.employee.enums.GenericStatus;
-import static net.texala.employee.constants.Constants.*;
 
 @Entity
 @Getter
@@ -45,6 +45,6 @@ public class Address {
 
 	@DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
 	@CreatedDate
-	@Column(name = "created_date", nullable = false, updatable = false, columnDefinition = TIMESTAMP)
+	@Column(name = CREATED_DATE, nullable = false, updatable = false, columnDefinition = TIMESTAMP)
 	private Date createdDate = new Date();
 }

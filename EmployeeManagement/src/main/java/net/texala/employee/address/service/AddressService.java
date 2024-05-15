@@ -1,9 +1,7 @@
 package net.texala.employee.address.service;
 
 import java.util.List;
-
 import org.springframework.data.domain.Page;
-
 import net.texala.employee.address.model.Address;
 import net.texala.employee.address.vo.AddressVo;
 
