@@ -9,12 +9,17 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.format.annotation.DateTimeFormat;
 import lombok.Getter;
 import lombok.Setter;
+import net.texala.employee.enums.AddressType;
 import net.texala.employee.enums.GenericStatus;
+import net.texala.employee.model.Employee;
+import net.texala.employee.vo.EmployeeVo;
 
 @Entity
 @Getter
@@ -47,4 +52,23 @@ public class Address {
 	@CreatedDate
 	@Column(name = CREATED_DATE, nullable = false, updatable = false, columnDefinition = TIMESTAMP)
 	private Date createdDate = new Date();
+
+	@Column(name = DOORNUMBER)
+	private String doorNumber;
+
+	@Column(name = COUNTRY)
+	private String country;
+
+	@Enumerated(EnumType.STRING)
+	@Column(name = ADDRESS_TYPE)
+	private AddressType addressType;
+
+	@Column(name = LAND_MARK)
+	private String landMark;
+	
+	@ManyToOne
+	@JoinColumn(name = "employee_id") 
+	private Employee employee;
+	
+
 }

@@ -7,7 +7,9 @@ import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Past;
 import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -43,5 +45,20 @@ public class EmployeeVo {
 	private Date createdDate = new Date();
 	@NotNull(message = STATUS_REQUIRED)
 	private GenericStatus status;
+
+	@NotBlank(message = CONTACT_NUMBER_REQUIRED)
+	@Pattern(regexp = "^\\d{10}$", message = CONTACT_NUMBER_FORMAT_ERROR_MESSAGE)
+	private String contactNumber;
+
+	@NotNull(message = DOB_REQUIRED)
+	@Past(message = DOB_PAST_ERROR_MESSAGE)
+	private Date dateOfBirth;
+
+	@NotNull(message = HIREDATE_REQUIRED)
+	private Date hireDate;
+
+	@NotBlank(message = JOB_TITLE_REQUIRED)
+	@Size(max = 50, message = JOB_TITLE_LENGTH_ERROR_MESSAGE)
+	private String jobTitle;
 
 }

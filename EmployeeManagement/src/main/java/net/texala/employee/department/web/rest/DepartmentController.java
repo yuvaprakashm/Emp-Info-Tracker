@@ -9,6 +9,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -20,6 +21,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
+import net.texala.employee.address.model.Address;
+import net.texala.employee.address.vo.AddressVo;
 import net.texala.employee.department.model.Department;
 import net.texala.employee.department.service.DepartmentService;
 import net.texala.employee.department.vo.DepartmentVo;
@@ -48,15 +51,22 @@ public class DepartmentController {
 	}
 
 	@GetMapping("/records")
-	public ResponseEntity<List<DepartmentVo>> findAll() {
-		List<DepartmentVo> departmentVo = departmentService.findAll();
-		return ResponseEntity.ok(departmentVo);
+	public ResponseEntity<RestResponse<List<DepartmentVo>>> findAll() {
+
+		RestStatus<List<DepartmentVo>> restStatus = new RestStatus<>(HttpStatus.OK, RECORD_FETCH_SUCCESS_MESSAGE);
+		List<DepartmentVo> list = departmentService.findAll();
+		if (CollectionUtils.isEmpty(list))
+			restStatus = new RestStatus<>(HttpStatus.OK, NO_RECORD_FOUND_MESSAGE);
+		final RestResponse<List<DepartmentVo>> response = new RestResponse<>(list, restStatus);
+		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
 	@GetMapping("/records/{id}")
-	public ResponseEntity<Department> findById(@PathVariable(name = "id", required = true) Long id) {
+	public ResponseEntity<RestResponse<Department>> findById(@PathVariable(name = "id", required = true) Long id) {
+		RestStatus<Department> restStatus = new RestStatus<>(HttpStatus.OK, RECORD_FETCH_SUCCESS_MESSAGE);
 		Department department = departmentService.findById(id);
-		return ResponseEntity.ok(department);
+		final RestResponse<Department> response = new RestResponse<>(department, restStatus);
+		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
 	@PostMapping("/records")

@@ -1,6 +1,5 @@
 package net.texala.employee.department.service.impl;
 
-
 import static net.texala.employee.constants.Constants.*;
 import java.io.IOException;
 import java.io.StringWriter;
@@ -27,7 +26,6 @@ import net.texala.employee.department.vo.DepartmentVo;
 import net.texala.employee.enums.GenericStatus;
 import net.texala.employee.exception.Exception.DepartmentNotFoundException;
 
-
 @Service
 public class DepartmentServiceImpl implements DepartmentService {
 
@@ -45,11 +43,10 @@ public class DepartmentServiceImpl implements DepartmentService {
 		return new PageImpl<>(mapper.toDtos(page.getContent()), pageable, page.getTotalElements());
 	}
 
-	 @Override
-	    public Department findById(Long id) {
-	        return repo.findById(id)
-	                   .orElseThrow(() -> new DepartmentNotFoundException(DEPARTMENT_NOT_FOUND + id));
-	    }
+	@Override
+	public Department findById(Long id) {
+		return repo.findById(id).orElseThrow(() -> new DepartmentNotFoundException(DEPARTMENT_NOT_FOUND + id));
+	}
 
 	@Override
 	public DepartmentVo add(DepartmentVo departmentVo) {
@@ -65,6 +62,15 @@ public class DepartmentServiceImpl implements DepartmentService {
 		if (partialUpdate) {
 			if (departmentVo.getDeptName() != null) {
 				existingDepartment.setDeptName(departmentVo.getDeptName());
+
+			}
+			if (departmentVo.getDeptContactNumber() != null) {
+				existingDepartment.setDeptContactNumber(departmentVo.getDeptContactNumber());
+
+			}
+			if (departmentVo.getEmailAddress() != null) {
+				existingDepartment.setEmailAddress(departmentVo.getEmailAddress());
+
 			}
 
 		}
@@ -72,6 +78,11 @@ public class DepartmentServiceImpl implements DepartmentService {
 		else {
 			existingDepartment.setDeptName(departmentVo.getDeptName());
 			existingDepartment.setStatus(departmentVo.getStatus());
+			existingDepartment.setCreatedDate(departmentVo.getCreatedDate());
+			existingDepartment.setStatus(departmentVo.getStatus());
+			existingDepartment.setDeptContactNumber(departmentVo.getDeptContactNumber());
+			existingDepartment.setEmailAddress(departmentVo.getEmailAddress());
+			existingDepartment.setBudget(departmentVo.getBudget());
 
 		}
 		Department updatedDepartment = repo.save(existingDepartment);
@@ -105,14 +116,14 @@ public class DepartmentServiceImpl implements DepartmentService {
 	@Override
 	public String generateCsvContent() {
 		StringWriter writer = new StringWriter();
-		try (CSVPrinter csvPrinter = new CSVPrinter(writer,
-				CSVFormat.DEFAULT.withHeader(DEPARTMENT_HEADER))) {
+		try (CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT.withHeader(DEPARTMENT_HEADER))) {
 
 			List<DepartmentVo> departmentList = findAll();
 			if (departmentList != null && !departmentList.isEmpty()) {
 				for (DepartmentVo department : departmentList) {
 					csvPrinter.printRecord(department.getDeptId(), department.getDeptName(),
-							department.getCreatedDate());
+							department.getCreatedDate(), department.getStatus(), department.getDeptContactNumber(),
+							department.getEmailAddress(), department.getBudget());
 				}
 			}
 		} catch (IOException e) {

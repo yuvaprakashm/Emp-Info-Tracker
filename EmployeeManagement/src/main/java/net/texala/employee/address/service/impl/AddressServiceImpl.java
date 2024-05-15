@@ -82,6 +82,11 @@ public class AddressServiceImpl implements AddressService {
 			existingAddress.setState(addressVo.getState());
 			existingAddress.setZipcode(addressVo.getZipcode());
 			existingAddress.setStatus(addressVo.getStatus());
+			existingAddress.setCreatedDate(addressVo.getCreatedDate());
+			existingAddress.setDoorNumber(addressVo.getDoorNumber());
+			existingAddress.setCountry(addressVo.getCountry());
+			existingAddress.setAddressType(addressVo.getAddressType());
+			existingAddress.setLandMark(addressVo.getLandMark());
 
 		}
 		Address updatedAddress = repo.save(existingAddress);
@@ -122,7 +127,11 @@ public class AddressServiceImpl implements AddressService {
 	                		adddress.getState(),
 	                		adddress.getZipcode(),
 	                		adddress.getStatus(),
-	                		adddress.getCreatedDate()
+	                		adddress.getCreatedDate(),
+	                		adddress.getDoorNumber(),
+	                		adddress.getCountry(),
+	                		adddress.getAddressType(),
+	                		adddress.getLandMark()
 	                );
 	            }
 	        }

@@ -34,8 +34,6 @@ public class EmployeeServiceImpl implements EmployeeService {
 	@Autowired
 	private EmployeeMapper mapper;
 
-	private static final String FILE_PATH = "D:\\Emp_Export";
-
 	@Override
 	public Page<EmployeeVo> search(Integer pageNo, Integer pageSize, String sortBy, String filterBy,
 			String searchText) {
@@ -82,8 +80,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
 	@Override
 	public EmployeeVo update(EmployeeVo employeeVo, Long id, boolean partialUpdate) {
-		Employee existingEmployee = repo.findById(id)
-				.orElseThrow(() -> new RuntimeException(EMPLOYEE_NOT_FOUND + id));
+		Employee existingEmployee = repo.findById(id).orElseThrow(() -> new RuntimeException(EMPLOYEE_NOT_FOUND + id));
 
 		if (partialUpdate) {
 			if (employeeVo.getFirstName() != null) {
@@ -108,6 +105,10 @@ public class EmployeeServiceImpl implements EmployeeService {
 			existingEmployee.setGender(employeeVo.getGender());
 			existingEmployee.setSalary(employeeVo.getSalary());
 			existingEmployee.setStatus(employeeVo.getStatus());
+			existingEmployee.setContactNumber(employeeVo.getContactNumber());
+			existingEmployee.setDateOfBirth(employeeVo.getDateOfBirth());
+			existingEmployee.setHireDate(employeeVo.getHireDate());
+			existingEmployee.setJobTitle(employeeVo.getJobTitle());
 
 		}
 
@@ -125,7 +126,8 @@ public class EmployeeServiceImpl implements EmployeeService {
 				for (EmployeeVo employee : employeeList) {
 					csvPrinter.printRecord(employee.getId(), employee.getFirstName(), employee.getLastName(),
 							employee.getAge(), employee.getEmail(), employee.getGender(), employee.getSalary(),
-							employee.getStatus(), employee.getCreatedDate());
+							employee.getStatus(), employee.getCreatedDate(), employee.getContactNumber(),
+							employee.getDateOfBirth(), employee.getHireDate(), employee.getJobTitle());
 				}
 			}
 		} catch (IOException e) {
