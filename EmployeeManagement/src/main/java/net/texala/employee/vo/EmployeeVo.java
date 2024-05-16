@@ -13,6 +13,8 @@ import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import net.texala.employee.address.vo.AddressVo;
+import net.texala.employee.department.model.Department;
 import net.texala.employee.enums.Gender;
 import net.texala.employee.enums.GenericStatus;
 
@@ -60,5 +62,20 @@ public class EmployeeVo {
 	@NotBlank(message = JOB_TITLE_REQUIRED)
 	@Size(max = 50, message = JOB_TITLE_LENGTH_ERROR_MESSAGE)
 	private String jobTitle;
+	
+	private AddressVo[] addresses;
+
+    public AddressVo[] getAddresses() {
+        return this.addresses;
+    }
+
+    public void setAddresses(AddressVo[] addresses) {
+        this.addresses = addresses;
+    }
+	
+	
+//	private Long deptId;
+//	
+//	private Long addressId;
 
 }

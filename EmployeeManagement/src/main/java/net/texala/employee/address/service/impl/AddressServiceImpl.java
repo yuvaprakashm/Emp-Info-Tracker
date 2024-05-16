@@ -25,6 +25,8 @@ import net.texala.employee.address.service.AddressService;
 import net.texala.employee.address.vo.AddressVo;
 import net.texala.employee.enums.GenericStatus;
 import net.texala.employee.exception.Exception.AddressNotFoundException;
+import net.texala.employee.model.Employee;
+import net.texala.employee.service.EmployeeService;
 @Service
 public class AddressServiceImpl implements AddressService {
 	
@@ -33,6 +35,8 @@ public class AddressServiceImpl implements AddressService {
 	private AddressRepository repo;
 	@Autowired
 	private AddressMapper mapper;
+	@Autowired
+	private EmployeeService employeeService;
 
 	@Override
 	public Page<AddressVo> search(Integer pageNo, Integer pageSize, String sortBy, String filterBy, String searchText) {
@@ -65,6 +69,8 @@ public class AddressServiceImpl implements AddressService {
 	public AddressVo update(AddressVo addressVo, Long id, boolean partialUpdate) {
 		Address existingAddress = repo.findById(id)
 				.orElseThrow(() -> new RuntimeException(ADDRESS_NOT_FOUND + id));
+		Employee employee = employeeService.findById(addressVo.getId());
+		existingAddress.setEmployee(employee);
 		if (partialUpdate) {
 			if (addressVo.getStreet() != null) {
 				existingAddress.setStreet(addressVo.getStreet());

@@ -4,6 +4,9 @@ import static net.texala.employee.constants.Constants.*;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.List;
+
+import javax.persistence.EntityManager;
+
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.springframework.beans.BeanUtils;
@@ -33,7 +36,8 @@ public class DepartmentServiceImpl implements DepartmentService {
 	private DepartmentRepository repo;
 	@Autowired
 	private DepartmentMapper mapper;
-
+	@Autowired
+	private EntityManager entityManager;
 	@Override
 	public Page<DepartmentVo> search(Integer pageNo, Integer pageSize, String sortBy, String filterBy,
 			String searchText) {
@@ -55,38 +59,32 @@ public class DepartmentServiceImpl implements DepartmentService {
 		return mapper.toDto(repo.save(department));
 	}
 
+	@Transactional
 	@Override
 	public DepartmentVo update(DepartmentVo departmentVo, Long id, boolean partialUpdate) {
-		Department existingDepartment = repo.findById(id)
-				.orElseThrow(() -> new DepartmentNotFoundException(DEPARTMENT_NOT_FOUND + id));
-		if (partialUpdate) {
-			if (departmentVo.getDeptName() != null) {
-				existingDepartment.setDeptName(departmentVo.getDeptName());
-
-			}
-			if (departmentVo.getDeptContactNumber() != null) {
-				existingDepartment.setDeptContactNumber(departmentVo.getDeptContactNumber());
-
-			}
-			if (departmentVo.getEmailAddress() != null) {
-				existingDepartment.setEmailAddress(departmentVo.getEmailAddress());
-
-			}
-
-		}
-
-		else {
-			existingDepartment.setDeptName(departmentVo.getDeptName());
-			existingDepartment.setStatus(departmentVo.getStatus());
-			existingDepartment.setCreatedDate(departmentVo.getCreatedDate());
-			existingDepartment.setStatus(departmentVo.getStatus());
-			existingDepartment.setDeptContactNumber(departmentVo.getDeptContactNumber());
-			existingDepartment.setEmailAddress(departmentVo.getEmailAddress());
-			existingDepartment.setBudget(departmentVo.getBudget());
-
-		}
-		Department updatedDepartment = repo.save(existingDepartment);
-		return mapper.toDto(updatedDepartment);
+	    Department existingDepartment = repo.findById(id)
+	            .orElseThrow(() -> new DepartmentNotFoundException(DEPARTMENT_NOT_FOUND + id));
+	    if (partialUpdate) {
+	        if (departmentVo.getDeptName() != null) {
+	            existingDepartment.setDeptName(departmentVo.getDeptName());
+	        }
+	        if (departmentVo.getDeptContactNumber() != null) {
+	            existingDepartment.setDeptContactNumber(departmentVo.getDeptContactNumber());
+	        }
+	        if (departmentVo.getEmailAddress() != null) {
+	            existingDepartment.setEmailAddress(departmentVo.getEmailAddress());
+	        }
+	    } else {
+	        existingDepartment.setDeptName(departmentVo.getDeptName());
+	        existingDepartment.setStatus(departmentVo.getStatus());
+	        existingDepartment.setCreatedDate(departmentVo.getCreatedDate());
+	        existingDepartment.setDeptContactNumber(departmentVo.getDeptContactNumber());
+	        existingDepartment.setEmailAddress(departmentVo.getEmailAddress());
+	        existingDepartment.setBudget(departmentVo.getBudget());
+	    }
+	    Department updatedDepartment = repo.save(existingDepartment);
+	    entityManager.flush();  
+	    return mapper.toDto(updatedDepartment);
 	}
 
 	@Transactional

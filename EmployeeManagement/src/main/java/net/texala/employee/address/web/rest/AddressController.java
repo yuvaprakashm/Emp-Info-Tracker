@@ -19,19 +19,23 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import net.texala.employee.address.model.Address;
 import net.texala.employee.address.service.AddressService;
 import net.texala.employee.address.vo.AddressVo;
 import net.texala.employee.restresponse.RestResponse;
 import net.texala.employee.reststatus.RestStatus;
+import net.texala.employee.vo.EmployeeVo;
+
 import static net.texala.employee.constants.Constants.*;
 
 @RestController
 @RequestMapping("/add")
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class AddressController {
-    @Autowired
+    
     private AddressService addressService;
 
     @GetMapping("/search")
@@ -78,14 +82,14 @@ public class AddressController {
     @PutMapping("/records/{id}")
     public ResponseEntity<RestResponse<AddressVo>> update(@PathVariable(name = "id", required = true) Long id,
             @RequestBody(required = true) AddressVo addressVo) {
-
+    	addressVo.setId(id);
+    	AddressVo updatedAddress = addressService.update(addressVo, id, false);
         RestStatus<?> restStatus = new RestStatus<>(HttpStatus.OK, RECORD_UPDATE_SUCCESS_MESSAGE);
-        addressVo.setId(id);
-        final RestResponse<AddressVo> response = new RestResponse<>(addressService.update(addressVo, id, false),
+        final RestResponse<AddressVo> response = new RestResponse<>(updatedAddress,
                 restStatus);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
-
+  
     @PatchMapping("/records/{id}")
     public ResponseEntity<RestResponse<AddressVo>> updatePatch(@PathVariable(name = "id", required = true) Long id,
             @RequestBody(required = true) AddressVo addressVo) {

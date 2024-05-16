@@ -8,12 +8,14 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -77,11 +79,10 @@ public class Employee {
 	@Column(name = JOB_TITLE)
 	private String jobTitle;
 	
-	@OneToMany(mappedBy = "employee", cascade = CascadeType.ALL)
-	private List<Address> address;
-
-	@ManyToOne
-	@JoinColumn(name = "dept_id")
-	private Department department;
-
+//	@OneToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "department_id")
+//    private Department department;
+//
+    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL)
+    private List<Address> addresses;
 }

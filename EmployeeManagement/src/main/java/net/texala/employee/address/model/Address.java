@@ -2,6 +2,8 @@ package net.texala.employee.address.model;
 
 import static net.texala.employee.constants.Constants.*;
 import java.util.Date;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -65,9 +67,7 @@ public class Address {
 	@Column(name = LAND_MARK)
 	private String landMark;
 	
-	@ManyToOne
-	@JoinColumn(name = "employee_id") 
-	private Employee employee;
-	
-
+	@ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "employee_id")
+    private Employee employee;
 }
