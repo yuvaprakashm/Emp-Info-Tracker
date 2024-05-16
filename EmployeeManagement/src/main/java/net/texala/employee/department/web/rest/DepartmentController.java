@@ -141,5 +141,4 @@ public class DepartmentController {
 		headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"department-data.csv\"");
 		return ResponseEntity.ok().headers(headers).contentType(MediaType.parseMediaType("text/csv")).body(resource);
 	}
-
 }
