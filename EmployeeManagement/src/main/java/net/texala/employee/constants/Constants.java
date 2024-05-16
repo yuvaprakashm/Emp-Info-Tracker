@@ -2,6 +2,8 @@ package net.texala.employee.constants;
 
 public class Constants {
 	public static final String ADDRESS_MASTER = "address_master";
+	public static final String DEPARTMENT_MASTER = "department_master";
+	public static final String EMPLOYEE_MASTER = "employee_master";
 	public static final String ID = "id";
 	public static final String STREET = "street";
 	public static final String CITY = "city";

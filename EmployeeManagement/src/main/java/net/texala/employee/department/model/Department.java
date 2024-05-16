@@ -1,11 +1,9 @@
 package net.texala.employee.department.model;
 
 import static net.texala.employee.constants.Constants.*;
-
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -15,20 +13,18 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
-
+import javax.persistence.Table;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.format.annotation.DateTimeFormat;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 import net.texala.employee.enums.GenericStatus;
 import net.texala.employee.model.Employee;
- 
 
 @Entity
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
+@Getter
+@Setter
+@Table(name = DEPARTMENT_MASTER)
 public class Department {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -55,7 +51,7 @@ public class Department {
 
 	@Column(name = BUDGET)
 	private BigDecimal budget;
-	
+
 	@OneToMany(mappedBy = "department", cascade = CascadeType.ALL)
 	private List<Employee> employees;
 

@@ -68,7 +68,8 @@ public class AddressController {
 
     @PostMapping("/records")
     public ResponseEntity<RestResponse<AddressVo>> add(@RequestBody(required = true) AddressVo addressVo) {
-
+    	Long employeeId = addressVo.getId();
+    	addressVo.setId(employeeId);
         RestStatus<?> restStatus = new RestStatus<>(HttpStatus.OK, RECORD_ADD_SUCCESS_MESSAGE);
         final RestResponse<AddressVo> response = new RestResponse<>(addressService.add(addressVo), restStatus);
         return new ResponseEntity<>(response, HttpStatus.OK);

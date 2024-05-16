@@ -3,7 +3,6 @@ package net.texala.employee.model;
 import static net.texala.employee.constants.Constants.*;
 import java.util.Date;
 import java.util.List;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -15,23 +14,20 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-
+import javax.persistence.Table;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.format.annotation.DateTimeFormat;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 import net.texala.employee.address.model.Address;
-import net.texala.employee.address.vo.AddressVo;
 import net.texala.employee.department.model.Department;
- 
 import net.texala.employee.enums.Gender;
 import net.texala.employee.enums.GenericStatus;
 
 @Entity
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
+@Getter
+@Setter
+@Table(name =  EMPLOYEE_MASTER)
 public class Employee {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
