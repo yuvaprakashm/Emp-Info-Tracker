@@ -1,7 +1,6 @@
 package net.texala.employee.address.web.rest;
 
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
@@ -19,16 +18,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
 import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import net.texala.employee.address.model.Address;
 import net.texala.employee.address.service.AddressService;
 import net.texala.employee.address.vo.AddressVo;
 import net.texala.employee.restresponse.RestResponse;
 import net.texala.employee.reststatus.RestStatus;
-import net.texala.employee.vo.EmployeeVo;
-
 import static net.texala.employee.constants.Constants.*;
 
 @RestController

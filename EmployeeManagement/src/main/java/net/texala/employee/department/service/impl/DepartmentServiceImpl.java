@@ -4,9 +4,7 @@ import static net.texala.employee.constants.Constants.*;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.List;
-
 import javax.persistence.EntityManager;
-
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.springframework.beans.BeanUtils;
@@ -21,6 +19,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import net.texala.employee.Specification.CommonSpecification;
 import net.texala.employee.Util.Utility;
+import net.texala.employee.address.model.Address;
+import net.texala.employee.address.vo.AddressVo;
 import net.texala.employee.department.mapper.DepartmentMapper;
 import net.texala.employee.department.model.Department;
 import net.texala.employee.department.repository.DepartmentRepository;
@@ -28,6 +28,9 @@ import net.texala.employee.department.service.DepartmentService;
 import net.texala.employee.department.vo.DepartmentVo;
 import net.texala.employee.enums.GenericStatus;
 import net.texala.employee.exception.Exception.DepartmentNotFoundException;
+import net.texala.employee.model.Employee;
+import net.texala.employee.repository.EmployeeRepository;
+import net.texala.employee.vo.EmployeeVo;
 
 @Service
 public class DepartmentServiceImpl implements DepartmentService {
@@ -38,6 +41,9 @@ public class DepartmentServiceImpl implements DepartmentService {
 	private DepartmentMapper mapper;
 	@Autowired
 	private EntityManager entityManager;
+	@Autowired
+	private EmployeeRepository employeeRepo;
+
 	@Override
 	public Page<DepartmentVo> search(Integer pageNo, Integer pageSize, String sortBy, String filterBy,
 			String searchText) {
@@ -52,39 +58,72 @@ public class DepartmentServiceImpl implements DepartmentService {
 		return repo.findById(id).orElseThrow(() -> new DepartmentNotFoundException(DEPARTMENT_NOT_FOUND + id));
 	}
 
+//	@Override
+//	public DepartmentVo add(DepartmentVo departmentVo) {
+//		Department department = new Department();
+//		BeanUtils.copyProperties(departmentVo, department);
+//		return mapper.toDto(repo.save(department));
+//	}
 	@Override
+	@Transactional
 	public DepartmentVo add(DepartmentVo departmentVo) {
+
 		Department department = new Department();
-		BeanUtils.copyProperties(departmentVo, department);
-		return mapper.toDto(repo.save(department));
+		department.setDeptName(departmentVo.getDeptName());
+		department.setStatus(departmentVo.getStatus());
+		department.setCreatedDate(departmentVo.getCreatedDate());
+		department.setDeptContactNumber(departmentVo.getDeptContactNumber());
+		department.setEmailAddress(departmentVo.getEmailAddress());
+		department.setBudget(departmentVo.getBudget());
+		department = repo.save(department);
+
+		List<EmployeeVo> employeeVos = departmentVo.getEmployees();
+		for (EmployeeVo employeeVo : employeeVos) {
+			Employee employee = new Employee();
+			employee.setFirstName(employeeVo.getFirstName());
+			employee.setLastName(employeeVo.getLastName());
+			employee.setAge(employeeVo.getAge());
+			employee.setEmail(employeeVo.getEmail());
+			employee.setSalary(employeeVo.getSalary());
+			employee.setGender(employeeVo.getGender());
+			employee.setSalary(employeeVo.getSalary());
+			employee.setStatus(employeeVo.getStatus());
+			employee.setContactNumber(employeeVo.getContactNumber());
+			employee.setDateOfBirth(employeeVo.getDateOfBirth());
+			employee.setHireDate(employeeVo.getHireDate());
+			employee.setJobTitle(employeeVo.getJobTitle());
+			employee.setDepartment(department);
+			employee = employeeRepo.save(employee);
+		}
+		return mapper.toDto(department);
 	}
 
 	@Transactional
 	@Override
 	public DepartmentVo update(DepartmentVo departmentVo, Long id, boolean partialUpdate) {
-	    Department existingDepartment = repo.findById(id)
-	            .orElseThrow(() -> new DepartmentNotFoundException(DEPARTMENT_NOT_FOUND + id));
-	    if (partialUpdate) {
-	        if (departmentVo.getDeptName() != null) {
-	            existingDepartment.setDeptName(departmentVo.getDeptName());
-	        }
-	        if (departmentVo.getDeptContactNumber() != null) {
-	            existingDepartment.setDeptContactNumber(departmentVo.getDeptContactNumber());
-	        }
-	        if (departmentVo.getEmailAddress() != null) {
-	            existingDepartment.setEmailAddress(departmentVo.getEmailAddress());
-	        }
-	    } else {
-	        existingDepartment.setDeptName(departmentVo.getDeptName());
-	        existingDepartment.setStatus(departmentVo.getStatus());
-	        existingDepartment.setCreatedDate(departmentVo.getCreatedDate());
-	        existingDepartment.setDeptContactNumber(departmentVo.getDeptContactNumber());
-	        existingDepartment.setEmailAddress(departmentVo.getEmailAddress());
-	        existingDepartment.setBudget(departmentVo.getBudget());
-	    }
-	    Department updatedDepartment = repo.save(existingDepartment);
-	    entityManager.flush();  
-	    return mapper.toDto(updatedDepartment);
+		Department existingDepartment = repo.findById(id)
+				.orElseThrow(() -> new DepartmentNotFoundException(DEPARTMENT_NOT_FOUND + id));
+		if (partialUpdate) {
+			if (departmentVo.getDeptName() != null) {
+				existingDepartment.setDeptName(departmentVo.getDeptName());
+			}
+			if (departmentVo.getDeptContactNumber() != null) {
+				existingDepartment.setDeptContactNumber(departmentVo.getDeptContactNumber());
+			}
+			if (departmentVo.getEmailAddress() != null) {
+				existingDepartment.setEmailAddress(departmentVo.getEmailAddress());
+			}
+		} else {
+			existingDepartment.setDeptName(departmentVo.getDeptName());
+			existingDepartment.setStatus(departmentVo.getStatus());
+			existingDepartment.setCreatedDate(departmentVo.getCreatedDate());
+			existingDepartment.setDeptContactNumber(departmentVo.getDeptContactNumber());
+			existingDepartment.setEmailAddress(departmentVo.getEmailAddress());
+			existingDepartment.setBudget(departmentVo.getBudget());
+		}
+		Department updatedDepartment = repo.save(existingDepartment);
+		entityManager.flush();
+		return mapper.toDto(updatedDepartment);
 	}
 
 	@Transactional

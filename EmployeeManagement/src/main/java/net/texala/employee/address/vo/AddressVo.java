@@ -54,5 +54,5 @@ public class AddressVo {
 	@NotBlank(message = LAND_MARK_REQUIRED)
 	@Size(max = 150, message = LAND_MARK_LENGTH_ERROR_MESSAGE)
 	private String landMark;
-
+	
 }

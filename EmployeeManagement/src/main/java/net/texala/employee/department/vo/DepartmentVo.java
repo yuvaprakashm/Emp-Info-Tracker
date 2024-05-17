@@ -1,11 +1,9 @@
 package net.texala.employee.department.vo;
 
 import static net.texala.employee.constants.Constants.*;
-
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
-
 import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
@@ -41,6 +39,6 @@ public class DepartmentVo {
 	@DecimalMin(value = "0.0", inclusive = false, message = BUDGET_MIN_VALUE_ERROR_MESSAGE)
 	private BigDecimal budget;
 	
-	 private List<EmployeeVo> employeeVos;
+	private List<EmployeeVo> employees;
 
 }

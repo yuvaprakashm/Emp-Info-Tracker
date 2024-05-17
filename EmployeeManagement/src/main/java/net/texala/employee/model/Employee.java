@@ -70,7 +70,7 @@ public class Employee {
 
 	@DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
 	@Column(name = DOB)
-	private Date dateOfBirth;
+	private Date dateOfBirth;                                   
 
 	@DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
 	@Column(name = HIRE_DATE)
@@ -79,10 +79,14 @@ public class Employee {
 	@Column(name = JOB_TITLE)
 	private String jobTitle;
 	
-//	@OneToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "department_id")
-//    private Department department;
-//
-    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL)
+
+    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, fetch = FetchType.LAZY,orphanRemoval = true)
     private List<Address> addresses;
+    
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "department_id")
+    private Department department;
+
+
+ 
 }

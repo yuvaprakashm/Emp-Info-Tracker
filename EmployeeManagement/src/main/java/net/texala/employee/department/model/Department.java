@@ -10,6 +10,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -22,7 +23,7 @@ import lombok.Getter;
 import lombok.Setter;
 import net.texala.employee.enums.GenericStatus;
 import net.texala.employee.model.Employee;
- 
+
 @Entity
 @Getter
 @Setter
@@ -53,8 +54,8 @@ public class Department {
 
 	@Column(name = BUDGET)
 	private BigDecimal budget;
-	
-//	@OneToOne(mappedBy = "department")
-//	private Employee employee;
+
+	@OneToMany(mappedBy = "department",cascade = CascadeType.ALL,fetch = FetchType.LAZY,orphanRemoval = true)
+	private List<Employee> employees;
 
 }

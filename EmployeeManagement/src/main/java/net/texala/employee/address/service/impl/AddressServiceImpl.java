@@ -23,10 +23,13 @@ import net.texala.employee.address.model.Address;
 import net.texala.employee.address.repository.AddressRepository;
 import net.texala.employee.address.service.AddressService;
 import net.texala.employee.address.vo.AddressVo;
+import net.texala.employee.department.model.Department;
+import net.texala.employee.department.vo.DepartmentVo;
 import net.texala.employee.enums.GenericStatus;
 import net.texala.employee.exception.Exception.AddressNotFoundException;
 import net.texala.employee.model.Employee;
 import net.texala.employee.service.EmployeeService;
+import net.texala.employee.vo.EmployeeVo;
 @Service
 public class AddressServiceImpl implements AddressService {
 	
@@ -62,9 +65,12 @@ public class AddressServiceImpl implements AddressService {
 	public AddressVo add(AddressVo addressVo) {
 		Address address = new Address();
 		BeanUtils.copyProperties(addressVo, address);
+		Employee employee = employeeService.findById(addressVo.getId());
+	    address.setEmployee(employee);
+
 		return mapper.toDto(repo.save(address));
 	}
-
+	
 	@Override
 	public AddressVo update(AddressVo addressVo, Long id, boolean partialUpdate) {
 		Address existingAddress = repo.findById(id)
