@@ -32,7 +32,7 @@ import net.texala.employee.vo.EmployeeVo;
 @RestController
 @AllArgsConstructor
 public class EmployeeController {
-	 
+
 	private final EmployeeService employeeService;
 
 	@GetMapping("/search")
@@ -68,27 +68,13 @@ public class EmployeeController {
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
-//	@PostMapping("/records")
-//	public ResponseEntity<RestResponse<EmployeeVo>> add(@RequestBody(required = true) EmployeeVo employeeVo) {
-//		RestStatus<?> restStatus = new RestStatus<>(HttpStatus.OK, RECORD_ADD_SUCCESS_MESSAGE);
-//		final RestResponse<EmployeeVo> response = new RestResponse<>(employeeService.add(employeeVo), restStatus);
-//		return new ResponseEntity<>(response, HttpStatus.OK);
-//	}
 	@PostMapping("/records")
-    public ResponseEntity<RestResponse<EmployeeVo>> add(@RequestBody(required = true) EmployeeVo employeeVo) {
-        RestStatus<?> restStatus;
-        EmployeeVo savedEmployeeVo = null;
-        try {
-            savedEmployeeVo = employeeService.add(employeeVo);
-            restStatus = new RestStatus<>(HttpStatus.OK, "Record added successfully.");
-        } catch (Exception e) {
-            restStatus = new RestStatus<>(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
-        }
-        return new ResponseEntity<>(new RestResponse<>(savedEmployeeVo, restStatus), HttpStatus.OK);
-    }
+	public ResponseEntity<RestResponse<EmployeeVo>> add(@RequestBody(required = true) EmployeeVo employeeVo) {
+		RestStatus<?> restStatus = new RestStatus<>(HttpStatus.OK, RECORD_ADD_SUCCESS_MESSAGE);
+		final RestResponse<EmployeeVo> response = new RestResponse<>(employeeService.add(employeeVo), restStatus);
+		return new ResponseEntity<>(response, HttpStatus.OK);
+	}
 
-
-	 
 	@DeleteMapping("/records/{id}")
 	public ResponseEntity<RestResponse<Void>> delete(@PathVariable(name = "id", required = true) Long id) {
 
@@ -100,14 +86,13 @@ public class EmployeeController {
 
 	@PutMapping("/records/{id}")
 	public ResponseEntity<RestResponse<EmployeeVo>> update(@PathVariable(name = "id", required = true) Long id,
-	        @RequestBody(required = true) EmployeeVo employeeVo) {
-	    employeeVo.setId(id);
-	    EmployeeVo updatedEmployee = employeeService.update(employeeVo, id, false);
-	    RestStatus<?> restStatus = new RestStatus<>(HttpStatus.OK, RECORD_UPDATE_SUCCESS_MESSAGE);
-	    final RestResponse<EmployeeVo> response = new RestResponse<>(updatedEmployee, restStatus);
-	    return new ResponseEntity<>(response, HttpStatus.OK);
+			@RequestBody(required = true) EmployeeVo employeeVo) {
+		employeeVo.setId(id);
+		EmployeeVo updatedEmployee = employeeService.update(employeeVo, id, false);
+		RestStatus<?> restStatus = new RestStatus<>(HttpStatus.OK, RECORD_UPDATE_SUCCESS_MESSAGE);
+		final RestResponse<EmployeeVo> response = new RestResponse<>(updatedEmployee, restStatus);
+		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
-
 
 	@PatchMapping("/records/{id}")
 	public ResponseEntity<RestResponse<EmployeeVo>> updatePatch(@PathVariable(name = "id", required = true) Long id,
@@ -133,7 +118,7 @@ public class EmployeeController {
 		RestStatus<?> restStatus = new RestStatus<>(HttpStatus.OK, RECORD_DEACTIVE_SUCCESS_MESSAGE);
 		employeeService.deactive(id);
 		final RestResponse<Void> response = new RestResponse<>(null, restStatus);
-		return new ResponseEntity<>(response, HttpStatus.OK);  
+		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
 	@GetMapping("/download")

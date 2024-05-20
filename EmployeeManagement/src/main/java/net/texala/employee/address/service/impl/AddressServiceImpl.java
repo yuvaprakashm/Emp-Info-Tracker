@@ -4,9 +4,9 @@ import static net.texala.employee.constants.Constants.*;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.List;
+import javax.persistence.EntityNotFoundException;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -23,17 +23,14 @@ import net.texala.employee.address.model.Address;
 import net.texala.employee.address.repository.AddressRepository;
 import net.texala.employee.address.service.AddressService;
 import net.texala.employee.address.vo.AddressVo;
-import net.texala.employee.department.model.Department;
-import net.texala.employee.department.vo.DepartmentVo;
 import net.texala.employee.enums.GenericStatus;
 import net.texala.employee.exception.Exception.AddressNotFoundException;
 import net.texala.employee.model.Employee;
 import net.texala.employee.service.EmployeeService;
-import net.texala.employee.vo.EmployeeVo;
+
 @Service
 public class AddressServiceImpl implements AddressService {
-	
-	
+
 	@Autowired
 	private AddressRepository repo;
 	@Autowired
@@ -56,25 +53,40 @@ public class AddressServiceImpl implements AddressService {
 
 	@Override
 	public Address findById(Long id) {
-	    return repo.findById(id)
-	               .orElseThrow(() -> new AddressNotFoundException(ADDRESS_NOT_FOUND + id));
+		return repo.findById(id).orElseThrow(() -> new AddressNotFoundException(ADDRESS_NOT_FOUND + id));
 	}
 
-
 	@Override
+	@Transactional
 	public AddressVo add(AddressVo addressVo) {
 		Address address = new Address();
-		BeanUtils.copyProperties(addressVo, address);
-		Employee employee = employeeService.findById(addressVo.getId());
-	    address.setEmployee(employee);
-
-		return mapper.toDto(repo.save(address));
+		address.setStreet(addressVo.getStreet());
+		address.setCity(addressVo.getCity());
+		address.setState(addressVo.getState());
+		address.setZipcode(addressVo.getZipcode());
+		address.setStatus(addressVo.getStatus());
+		address.setCreatedDate(addressVo.getCreatedDate());
+		address.setDoorNumber(addressVo.getDoorNumber());
+		address.setCountry(addressVo.getCountry());
+		address.setAddressType(addressVo.getAddressType());
+		address.setLandMark(addressVo.getLandMark());
+		Long employeeId = addressVo.getEmpId();
+		if (employeeId != null) {
+			Employee employee = employeeService.findById(employeeId);
+			if (employee == null) {
+				throw new EntityNotFoundException("Employee not found with id: " + employeeId);
+			}
+			address.setEmployee(employee);
+		} else {
+			throw new IllegalArgumentException("Employee ID must not be null");
+		}
+		address = repo.save(address);
+		return mapper.toDto(address);
 	}
-	
+
 	@Override
 	public AddressVo update(AddressVo addressVo, Long id, boolean partialUpdate) {
-		Address existingAddress = repo.findById(id)
-				.orElseThrow(() -> new RuntimeException(ADDRESS_NOT_FOUND + id));
+		Address existingAddress = repo.findById(id).orElseThrow(() -> new RuntimeException(ADDRESS_NOT_FOUND + id));
 		Employee employee = employeeService.findById(addressVo.getId());
 		existingAddress.setEmployee(employee);
 		if (partialUpdate) {
@@ -125,33 +137,24 @@ public class AddressServiceImpl implements AddressService {
 		findById(id);
 		repo.deleteById(id);
 	}
+
 	@Override
 	public String generateCsvContent() {
-	    StringWriter writer = new StringWriter();
-	    try (CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT
-	            .withHeader(ADDRESS_HEADER))) {
+		StringWriter writer = new StringWriter();
+		try (CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT.withHeader(ADDRESS_HEADER))) {
 
-	        List<AddressVo> addressList = findAll();
-	        if (addressList != null && !addressList.isEmpty()) {
-	            for (AddressVo adddress : addressList) {
-	                csvPrinter.printRecord(
-	                		adddress.getId(),
-	                		adddress.getStreet(),
-	                		adddress.getCity(),
-	                		adddress.getState(),
-	                		adddress.getZipcode(),
-	                		adddress.getStatus(),
-	                		adddress.getCreatedDate(),
-	                		adddress.getDoorNumber(),
-	                		adddress.getCountry(),
-	                		adddress.getAddressType(),
-	                		adddress.getLandMark()
-	                );
-	            }
-	        }
-	    } catch (IOException e) {
-	        e.printStackTrace();
-	    }
-	    return writer.toString();
+			List<AddressVo> addressList = findAll();
+			if (addressList != null && !addressList.isEmpty()) {
+				for (AddressVo adddress : addressList) {
+					csvPrinter.printRecord(adddress.getId(), adddress.getStreet(), adddress.getCity(),
+							adddress.getState(), adddress.getZipcode(), adddress.getStatus(), adddress.getCreatedDate(),
+							adddress.getDoorNumber(), adddress.getCountry(), adddress.getAddressType(),
+							adddress.getLandMark());
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return writer.toString();
 	}
 }

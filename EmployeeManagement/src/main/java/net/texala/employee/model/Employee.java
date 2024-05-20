@@ -13,7 +13,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -29,7 +28,7 @@ import net.texala.employee.enums.GenericStatus;
 @Entity
 @Getter
 @Setter
-@Table(name =  EMPLOYEE_MASTER)
+@Table(name = EMPLOYEE_MASTER)
 public class Employee {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -70,7 +69,7 @@ public class Employee {
 
 	@DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
 	@Column(name = DOB)
-	private Date dateOfBirth;                                   
+	private Date dateOfBirth;
 
 	@DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
 	@Column(name = HIRE_DATE)
@@ -78,15 +77,12 @@ public class Employee {
 
 	@Column(name = JOB_TITLE)
 	private String jobTitle;
+
+	@OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+	private List<Address> addresses;
 	
+	@OneToOne(cascade = CascadeType.ALL)
+	@JoinColumn(name = "department_id")
+	private Department department;
 
-    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, fetch = FetchType.LAZY,orphanRemoval = true)
-    private List<Address> addresses;
-    
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
-    @JoinColumn(name = "department_id")
-    private Department department;
-
-
- 
 }

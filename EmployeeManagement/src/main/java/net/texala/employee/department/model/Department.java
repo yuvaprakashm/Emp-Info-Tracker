@@ -3,9 +3,6 @@ package net.texala.employee.department.model;
 import static net.texala.employee.constants.Constants.*;
 import java.math.BigDecimal;
 import java.util.Date;
-import java.util.List;
-
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -14,7 +11,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import org.springframework.data.annotation.CreatedDate;
@@ -32,7 +29,7 @@ public class Department {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = DEPT_ID)
-	private Long id;
+	private Long deptId;
 
 	@Column(name = DEPT_NAME)
 	private String deptName;
@@ -54,8 +51,9 @@ public class Department {
 
 	@Column(name = BUDGET)
 	private BigDecimal budget;
-
-	@OneToMany(mappedBy = "department",cascade = CascadeType.ALL,fetch = FetchType.LAZY,orphanRemoval = true)
-	private List<Employee> employees;
+	
+	@OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "employee_id", referencedColumnName = "id")
+    private Employee employee;
 
 }

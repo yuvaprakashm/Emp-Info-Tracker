@@ -67,6 +67,6 @@ public class EmployeeVo {
 	
 	private List<AddressVo> addresses;
 	
-	 
+	private DepartmentVo department;
 	
 }

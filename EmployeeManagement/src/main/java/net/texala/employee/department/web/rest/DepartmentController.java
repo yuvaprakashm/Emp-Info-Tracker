@@ -26,7 +26,6 @@ import net.texala.employee.department.service.DepartmentService;
 import net.texala.employee.department.vo.DepartmentVo;
 import net.texala.employee.restresponse.RestResponse;
 import net.texala.employee.reststatus.RestStatus;
-import net.texala.employee.vo.EmployeeVo;
 
 @RestController
 @RequestMapping("/dept")
@@ -67,26 +66,14 @@ public class DepartmentController {
 		final RestResponse<Department> response = new RestResponse<>(department, restStatus);
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
-
-//	@PostMapping("/records")
-//	public ResponseEntity<RestResponse<DepartmentVo>> add(@RequestBody(required = true) DepartmentVo departmentVo) {
-//
-//		RestStatus<?> restStatus = new RestStatus<>(HttpStatus.OK, RECORD_ADD_SUCCESS_MESSAGE);
-//		final RestResponse<DepartmentVo> response = new RestResponse<>(departmentService.add(departmentVo), restStatus);
-//		return new ResponseEntity<>(response, HttpStatus.OK);
-//	}
+ 
 	@PostMapping("/records")
-    public ResponseEntity<RestResponse<DepartmentVo>> add(@RequestBody(required = true) DepartmentVo departmentVo) {
-        RestStatus<?> restStatus;
-        DepartmentVo savedDepartmentVo = null;
-        try {
-        	savedDepartmentVo = departmentService.add(departmentVo);
-            restStatus = new RestStatus<>(HttpStatus.OK, "Record added successfully.");
-        } catch (Exception e) {
-            restStatus = new RestStatus<>(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
-        }
-        return new ResponseEntity<>(new RestResponse<>(savedDepartmentVo, restStatus), HttpStatus.OK);
-    }
+	public ResponseEntity<RestResponse<DepartmentVo>> add(@RequestBody(required = true) DepartmentVo departmentVo) {
+	    RestStatus<?> restStatus = new RestStatus<>(HttpStatus.OK, RECORD_ADD_SUCCESS_MESSAGE);
+	    final RestResponse<DepartmentVo> response = new RestResponse<>(departmentService.add(departmentVo), restStatus);
+	    return new ResponseEntity<>(response, HttpStatus.OK);
+	}
+
 
 	@DeleteMapping("/records/{id}")
 	public ResponseEntity<RestResponse<Void>> delete(@PathVariable(name = "id", required = true) Long id) {

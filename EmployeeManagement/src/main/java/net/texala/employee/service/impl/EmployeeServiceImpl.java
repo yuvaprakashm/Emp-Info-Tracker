@@ -4,11 +4,8 @@ import static net.texala.employee.constants.Constants.*;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.List;
-import java.util.stream.Collectors;
-
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -23,9 +20,9 @@ import net.texala.employee.Util.Utility;
 import net.texala.employee.address.model.Address;
 import net.texala.employee.address.repository.AddressRepository;
 import net.texala.employee.address.vo.AddressVo;
-import net.texala.employee.department.mapper.DepartmentMapper;
 import net.texala.employee.department.model.Department;
 import net.texala.employee.department.repository.DepartmentRepository;
+import net.texala.employee.department.vo.DepartmentVo;
 import net.texala.employee.enums.GenericStatus;
 import net.texala.employee.exception.Exception.EmployeeNotFoundException;
 import net.texala.employee.mapper.EmployeeMapper;
@@ -43,6 +40,8 @@ public class EmployeeServiceImpl implements EmployeeService {
 	private EmployeeRepository repo;
 	@Autowired
 	private EmployeeMapper mapper;
+	@Autowired
+	private DepartmentRepository departmentRepo;
 	@Override
 	public Page<EmployeeVo> search(Integer pageNo, Integer pageSize, String sortBy, String filterBy,
 			String searchText) {
@@ -139,45 +138,65 @@ public class EmployeeServiceImpl implements EmployeeService {
 		return writer.toString();
 	}
 
+ 
 	@Override
 	@Transactional
 	public EmployeeVo add(EmployeeVo employeeVo) {
+	    try {
+	        Employee employee = new Employee();
+	        employee.setFirstName(employeeVo.getFirstName());
+	        employee.setLastName(employeeVo.getLastName());
+	        employee.setAge(employeeVo.getAge());
+	        employee.setEmail(employeeVo.getEmail());
+	        employee.setSalary(employeeVo.getSalary());
+	        employee.setGender(employeeVo.getGender());
+	        employee.setStatus(employeeVo.getStatus());
+	        employee.setContactNumber(employeeVo.getContactNumber());
+	        employee.setDateOfBirth(employeeVo.getDateOfBirth());
+	        employee.setHireDate(employeeVo.getHireDate());
+	        employee.setJobTitle(employeeVo.getJobTitle());
 
-		Employee employee = new Employee();
-		employee.setFirstName(employeeVo.getFirstName());
-		employee.setLastName(employeeVo.getLastName());
-		employee.setAge(employeeVo.getAge());
-		employee.setEmail(employeeVo.getEmail());
-		employee.setSalary(employeeVo.getSalary());
-		employee.setGender(employeeVo.getGender());
-		employee.setSalary(employeeVo.getSalary());
-		employee.setStatus(employeeVo.getStatus());
-		employee.setContactNumber(employeeVo.getContactNumber());
-		employee.setDateOfBirth(employeeVo.getDateOfBirth());
-		employee.setHireDate(employeeVo.getHireDate());
-		employee.setJobTitle(employeeVo.getJobTitle());
-		employee = repo.save(employee);
+	        employee = repo.save(employee);
 
-		List<AddressVo> addressVos = employeeVo.getAddresses();
-		for (AddressVo addressVo : addressVos) {
-			Address address = new Address();
-			address.setStreet(addressVo.getStreet());
-			address.setCity(addressVo.getCity());
-			address.setStreet(addressVo.getStreet());
-			address.setZipcode(addressVo.getZipcode());
-			address.setCreatedDate(addressVo.getCreatedDate());
-			address.setState(addressVo.getState());
-			address.setStatus(addressVo.getStatus());
-			address.setDoorNumber(addressVo.getDoorNumber());
-			address.setCountry(addressVo.getCountry());
-			address.setAddressType(addressVo.getAddressType());
-			address.setLandMark(addressVo.getLandMark());
-			address.setEmployee(employee);
-			addressRepo.save(address);
-		}
-		return mapper.toDto(employee);
+	        DepartmentVo departmentVo = employeeVo.getDepartment();
+	        Department department = new Department();
+	        department.setDeptName(departmentVo.getDeptName());
+	        department.setBudget(departmentVo.getBudget());
+	        department.setDeptContactNumber(departmentVo.getDeptContactNumber());
+	        department.setEmailAddress(departmentVo.getEmailAddress());
+	        department.setCreatedDate(departmentVo.getCreatedDate());
+	        department.setStatus(departmentVo.getStatus());
+	        department.setEmployee(employee);
+	        departmentRepo.save(department);
+
+	        employee.setDepartment(department);
+
+	        employee = repo.save(employee);
+
+	        List<AddressVo> addressVos = employeeVo.getAddresses();
+	        for (AddressVo addressVo : addressVos) {
+	            Address address = new Address();
+	            address.setStreet(addressVo.getStreet());
+	            address.setCity(addressVo.getCity());
+	            address.setStreet(addressVo.getStreet());
+	            address.setZipcode(addressVo.getZipcode());
+	            address.setCreatedDate(addressVo.getCreatedDate());
+	            address.setState(addressVo.getState());
+	            address.setStatus(addressVo.getStatus());
+	            address.setDoorNumber(addressVo.getDoorNumber());
+	            address.setCountry(addressVo.getCountry());
+	            address.setAddressType(addressVo.getAddressType());
+	            address.setLandMark(addressVo.getLandMark());
+	            address.setEmployee(employee);
+	            addressRepo.save(address);
+	        }
+
+	        return mapper.toDto(employee);
+	    } catch (Exception e) {
+ 	        throw new RuntimeException("Failed to add employee: " + e.getMessage());
+	    }
 	}
-	
- 
+
+
+
 }
- 

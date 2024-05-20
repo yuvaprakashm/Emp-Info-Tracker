@@ -7,7 +7,6 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -19,8 +18,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import net.texala.employee.Specification.CommonSpecification;
 import net.texala.employee.Util.Utility;
-import net.texala.employee.address.model.Address;
-import net.texala.employee.address.vo.AddressVo;
 import net.texala.employee.department.mapper.DepartmentMapper;
 import net.texala.employee.department.model.Department;
 import net.texala.employee.department.repository.DepartmentRepository;
@@ -57,46 +54,54 @@ public class DepartmentServiceImpl implements DepartmentService {
 	public Department findById(Long id) {
 		return repo.findById(id).orElseThrow(() -> new DepartmentNotFoundException(DEPARTMENT_NOT_FOUND + id));
 	}
-
-//	@Override
-//	public DepartmentVo add(DepartmentVo departmentVo) {
-//		Department department = new Department();
-//		BeanUtils.copyProperties(departmentVo, department);
-//		return mapper.toDto(repo.save(department));
-//	}
+ 
 	@Override
 	@Transactional
 	public DepartmentVo add(DepartmentVo departmentVo) {
+	    try {
+	        Department department = new Department();
+	        department.setDeptName(departmentVo.getDeptName());
+	        department.setStatus(departmentVo.getStatus());
+	        department.setCreatedDate(departmentVo.getCreatedDate());
+	        department.setDeptContactNumber(departmentVo.getDeptContactNumber());
+	        department.setEmailAddress(departmentVo.getEmailAddress());
+	        department.setBudget(departmentVo.getBudget());
 
-		Department department = new Department();
-		department.setDeptName(departmentVo.getDeptName());
-		department.setStatus(departmentVo.getStatus());
-		department.setCreatedDate(departmentVo.getCreatedDate());
-		department.setDeptContactNumber(departmentVo.getDeptContactNumber());
-		department.setEmailAddress(departmentVo.getEmailAddress());
-		department.setBudget(departmentVo.getBudget());
-		department = repo.save(department);
+	        department = repo.save(department);
 
-		List<EmployeeVo> employeeVos = departmentVo.getEmployees();
-		for (EmployeeVo employeeVo : employeeVos) {
-			Employee employee = new Employee();
-			employee.setFirstName(employeeVo.getFirstName());
-			employee.setLastName(employeeVo.getLastName());
-			employee.setAge(employeeVo.getAge());
-			employee.setEmail(employeeVo.getEmail());
-			employee.setSalary(employeeVo.getSalary());
-			employee.setGender(employeeVo.getGender());
-			employee.setSalary(employeeVo.getSalary());
-			employee.setStatus(employeeVo.getStatus());
-			employee.setContactNumber(employeeVo.getContactNumber());
-			employee.setDateOfBirth(employeeVo.getDateOfBirth());
-			employee.setHireDate(employeeVo.getHireDate());
-			employee.setJobTitle(employeeVo.getJobTitle());
-			employee.setDepartment(department);
-			employee = employeeRepo.save(employee);
-		}
-		return mapper.toDto(department);
+	        List<EmployeeVo> employeeVos = departmentVo.getEmployees();
+	        Employee employee = null;
+	        for (EmployeeVo employeeVo : employeeVos) {
+	            employee = new Employee();
+	            employee.setFirstName(employeeVo.getFirstName());
+	            employee.setLastName(employeeVo.getLastName());
+	            employee.setAge(employeeVo.getAge());
+	            employee.setEmail(employeeVo.getEmail());
+	            employee.setSalary(employeeVo.getSalary());
+	            employee.setGender(employeeVo.getGender());
+	            employee.setStatus(employeeVo.getStatus());
+	            employee.setContactNumber(employeeVo.getContactNumber());
+	            employee.setDateOfBirth(employeeVo.getDateOfBirth());
+	            employee.setHireDate(employeeVo.getHireDate());
+	            employee.setJobTitle(employeeVo.getJobTitle());
+
+	            employee.setDepartment(department);
+
+	            employee = employeeRepo.save(employee);
+	        }
+
+	        if (employee != null) {
+	            department.setEmployee(employee);
+	        }
+
+	        return mapper.toDto(department);
+	    } catch (Exception e) {
+ 	        throw new RuntimeException("Failed to add department: " + e.getMessage());
+	    }
 	}
+
+	 
+
 
 	@Transactional
 	@Override
@@ -154,7 +159,6 @@ public class DepartmentServiceImpl implements DepartmentService {
 	public String generateCsvContent() {
 		StringWriter writer = new StringWriter();
 		try (CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT.withHeader(DEPARTMENT_HEADER))) {
-
 			List<DepartmentVo> departmentList = findAll();
 			if (departmentList != null && !departmentList.isEmpty()) {
 				for (DepartmentVo department : departmentList) {

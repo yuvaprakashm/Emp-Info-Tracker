@@ -67,6 +67,7 @@ public class Address {
 	private String landMark;
 	
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
-	@JoinColumn(name = "employee_id", nullable = false)
+	@JoinColumn(name = "employee_id")
 	private Employee employee;
+	
 }
