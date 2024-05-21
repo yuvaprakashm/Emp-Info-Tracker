@@ -10,6 +10,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import net.texala.employee.enums.GenericStatus;
 import net.texala.employee.vo.EmployeeVo;
@@ -38,9 +39,8 @@ public class DepartmentVo {
 	@NotNull(message = BUDGET_REQUIRED)
 	@DecimalMin(value = "0.0", inclusive = false, message = BUDGET_MIN_VALUE_ERROR_MESSAGE)
 	private BigDecimal budget;
-	
-	 private List<EmployeeVo> employees;
 
-	 
-	 
+	@JsonIgnore
+	private List<EmployeeVo> employees;
+
 }

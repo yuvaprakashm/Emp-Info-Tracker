@@ -11,6 +11,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Past;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -65,8 +66,9 @@ public class EmployeeVo {
 	@Size(max = 50, message = JOB_TITLE_LENGTH_ERROR_MESSAGE)
 	private String jobTitle;
 	
+	@JsonIgnore
 	private List<AddressVo> addresses;
-	
+	@JsonIgnore
 	private DepartmentVo department;
 	
 }

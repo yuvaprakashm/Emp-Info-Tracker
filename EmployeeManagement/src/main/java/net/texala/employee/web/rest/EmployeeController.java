@@ -2,13 +2,13 @@ package net.texala.employee.web.rest;
 
 import static net.texala.employee.constants.Constants.*;
 import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -20,8 +20,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import lombok.AllArgsConstructor;
-import net.texala.employee.address.model.Address;
-import net.texala.employee.department.vo.DepartmentVo;
 import net.texala.employee.model.Employee;
 import net.texala.employee.restresponse.RestResponse;
 import net.texala.employee.reststatus.RestStatus;
@@ -32,7 +30,7 @@ import net.texala.employee.vo.EmployeeVo;
 @RestController
 @AllArgsConstructor
 public class EmployeeController {
-
+	@Autowired
 	private final EmployeeService employeeService;
 
 	@GetMapping("/search")
@@ -51,18 +49,16 @@ public class EmployeeController {
 
 	@GetMapping("/records")
 	public ResponseEntity<RestResponse<List<EmployeeVo>>> findAll() {
-
-		RestStatus<List<DepartmentVo>> restStatus = new RestStatus<>(HttpStatus.OK, RECORD_FETCH_SUCCESS_MESSAGE);
-		List<EmployeeVo> list = employeeService.findAll();
-		if (CollectionUtils.isEmpty(list))
-			restStatus = new RestStatus<>(HttpStatus.OK, NO_RECORD_FOUND_MESSAGE);
-		final RestResponse<List<EmployeeVo>> response = new RestResponse<>(list, restStatus);
-		return new ResponseEntity<>(response, HttpStatus.OK);
+	    List<EmployeeVo> list = employeeService.findAll();
+	    RestStatus<List<EmployeeVo>> restStatus = new RestStatus<>(HttpStatus.OK, RECORD_FETCH_SUCCESS_MESSAGE);
+	    RestResponse<List<EmployeeVo>> response = new RestResponse<>(list, restStatus);
+	    return new ResponseEntity<>(response, HttpStatus.OK);
 	}
+
 
 	@GetMapping("/records/{id}")
 	public ResponseEntity<RestResponse<Employee>> findById(@PathVariable(name = "id", required = true) Long id) {
-		RestStatus<Address> restStatus = new RestStatus<>(HttpStatus.OK, RECORD_FETCH_SUCCESS_MESSAGE);
+		RestStatus<Employee> restStatus = new RestStatus<>(HttpStatus.OK, RECORD_FETCH_SUCCESS_MESSAGE);
 		Employee employee = employeeService.findById(id);
 		final RestResponse<Employee> response = new RestResponse<>(employee, restStatus);
 		return new ResponseEntity<>(response, HttpStatus.OK);

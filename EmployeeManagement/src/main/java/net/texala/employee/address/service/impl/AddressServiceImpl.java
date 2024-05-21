@@ -4,7 +4,6 @@ import static net.texala.employee.constants.Constants.*;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.List;
-import javax.persistence.EntityNotFoundException;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,36 +58,15 @@ public class AddressServiceImpl implements AddressService {
 	@Override
 	@Transactional
 	public AddressVo add(AddressVo addressVo) {
-		Address address = new Address();
-		address.setStreet(addressVo.getStreet());
-		address.setCity(addressVo.getCity());
-		address.setState(addressVo.getState());
-		address.setZipcode(addressVo.getZipcode());
-		address.setStatus(addressVo.getStatus());
-		address.setCreatedDate(addressVo.getCreatedDate());
-		address.setDoorNumber(addressVo.getDoorNumber());
-		address.setCountry(addressVo.getCountry());
-		address.setAddressType(addressVo.getAddressType());
-		address.setLandMark(addressVo.getLandMark());
-		Long employeeId = addressVo.getEmpId();
-		if (employeeId != null) {
-			Employee employee = employeeService.findById(employeeId);
-			if (employee == null) {
-				throw new EntityNotFoundException("Employee not found with id: " + employeeId);
-			}
-			address.setEmployee(employee);
-		} else {
-			throw new IllegalArgumentException("Employee ID must not be null");
-		}
-		address = repo.save(address);
-		return mapper.toDto(address);
+		Employee employee = employeeService.findById(addressVo.getEmpId());
+		Address address = mapper.toEntity(addressVo);
+		address.setEmployee(employee);
+		return mapper.toDto(repo.save(address));
 	}
 
 	@Override
 	public AddressVo update(AddressVo addressVo, Long id, boolean partialUpdate) {
 		Address existingAddress = repo.findById(id).orElseThrow(() -> new RuntimeException(ADDRESS_NOT_FOUND + id));
-		Employee employee = employeeService.findById(addressVo.getId());
-		existingAddress.setEmployee(employee);
 		if (partialUpdate) {
 			if (addressVo.getStreet() != null) {
 				existingAddress.setStreet(addressVo.getStreet());
@@ -119,7 +97,7 @@ public class AddressServiceImpl implements AddressService {
 		return mapper.toDto(updatedAddress);
 
 	}
-
+	
 	@Transactional
 	@Override
 	public int active(Long id) {
@@ -141,8 +119,8 @@ public class AddressServiceImpl implements AddressService {
 	@Override
 	public String generateCsvContent() {
 		StringWriter writer = new StringWriter();
-		try (CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT.withHeader(ADDRESS_HEADER))) {
-
+		try (@SuppressWarnings("deprecation")
+		CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT.withHeader(ADDRESS_HEADER))) {
 			List<AddressVo> addressList = findAll();
 			if (addressList != null && !addressList.isEmpty()) {
 				for (AddressVo adddress : addressList) {

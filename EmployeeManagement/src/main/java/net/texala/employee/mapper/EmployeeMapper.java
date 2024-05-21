@@ -17,4 +17,5 @@ public interface EmployeeMapper {
     EmployeeVo toDto(Employee employee);
 
     List<EmployeeVo> toDtos(List<Employee> employees);
+    
 }

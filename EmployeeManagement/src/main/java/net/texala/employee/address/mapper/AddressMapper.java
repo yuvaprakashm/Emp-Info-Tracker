@@ -4,7 +4,6 @@ import org.mapstruct.Mapper;
 import org.springframework.stereotype.Component;
 import net.texala.employee.address.model.Address;
 import net.texala.employee.address.vo.AddressVo;
-
 import java.util.List;
 
 @Mapper

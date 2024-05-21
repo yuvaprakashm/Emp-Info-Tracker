@@ -9,7 +9,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -50,15 +49,11 @@ public class DepartmentController {
 
 	@GetMapping("/records")
 	public ResponseEntity<RestResponse<List<DepartmentVo>>> findAll() {
-
-		RestStatus<List<DepartmentVo>> restStatus = new RestStatus<>(HttpStatus.OK, RECORD_FETCH_SUCCESS_MESSAGE);
-		List<DepartmentVo> list = departmentService.findAll();
-		if (CollectionUtils.isEmpty(list))
-			restStatus = new RestStatus<>(HttpStatus.OK, NO_RECORD_FOUND_MESSAGE);
-		final RestResponse<List<DepartmentVo>> response = new RestResponse<>(list, restStatus);
-		return new ResponseEntity<>(response, HttpStatus.OK);
+	    List<DepartmentVo> list = departmentService.findAll();
+	    RestStatus<List<DepartmentVo>> restStatus = new RestStatus<>(HttpStatus.OK, RECORD_FETCH_SUCCESS_MESSAGE);
+	    RestResponse<List<DepartmentVo>> response = new RestResponse<>(list, restStatus);
+	    return new ResponseEntity<>(response, HttpStatus.OK);
 	}
-
 	@GetMapping("/records/{id}")
 	public ResponseEntity<RestResponse<Department>> findById(@PathVariable(name = "id", required = true) Long id) {
 		RestStatus<Department> restStatus = new RestStatus<>(HttpStatus.OK, RECORD_FETCH_SUCCESS_MESSAGE);

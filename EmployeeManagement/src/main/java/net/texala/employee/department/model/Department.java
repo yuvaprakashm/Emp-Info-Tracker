@@ -51,9 +51,9 @@ public class Department {
 
 	@Column(name = BUDGET)
 	private BigDecimal budget;
-	
+
 	@OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "employee_id", referencedColumnName = "id")
-    private Employee employee;
+	@JoinColumn(name = "employee_id", referencedColumnName = "id")
+	private Employee employee;
 
 }

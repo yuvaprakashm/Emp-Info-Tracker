@@ -40,7 +40,6 @@ public class DepartmentServiceImpl implements DepartmentService {
 	private EntityManager entityManager;
 	@Autowired
 	private EmployeeRepository employeeRepo;
-
 	@Override
 	public Page<DepartmentVo> search(Integer pageNo, Integer pageSize, String sortBy, String filterBy,
 			String searchText) {
@@ -54,7 +53,7 @@ public class DepartmentServiceImpl implements DepartmentService {
 	public Department findById(Long id) {
 		return repo.findById(id).orElseThrow(() -> new DepartmentNotFoundException(DEPARTMENT_NOT_FOUND + id));
 	}
- 
+	
 	@Override
 	@Transactional
 	public DepartmentVo add(DepartmentVo departmentVo) {
@@ -99,9 +98,6 @@ public class DepartmentServiceImpl implements DepartmentService {
  	        throw new RuntimeException("Failed to add department: " + e.getMessage());
 	    }
 	}
-
-	 
-
 
 	@Transactional
 	@Override
@@ -158,7 +154,8 @@ public class DepartmentServiceImpl implements DepartmentService {
 	@Override
 	public String generateCsvContent() {
 		StringWriter writer = new StringWriter();
-		try (CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT.withHeader(DEPARTMENT_HEADER))) {
+		try (@SuppressWarnings("deprecation")
+		CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT.withHeader(DEPARTMENT_HEADER))) {
 			List<DepartmentVo> departmentList = findAll();
 			if (departmentList != null && !departmentList.isEmpty()) {
 				for (DepartmentVo department : departmentList) {
@@ -172,5 +169,4 @@ public class DepartmentServiceImpl implements DepartmentService {
 		}
 		return writer.toString();
 	}
-
 }

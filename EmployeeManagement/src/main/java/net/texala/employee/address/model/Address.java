@@ -20,7 +20,7 @@ import lombok.Setter;
 import net.texala.employee.enums.AddressType;
 import net.texala.employee.enums.GenericStatus;
 import net.texala.employee.model.Employee;
- 
+
 @Entity
 @Getter
 @Setter
@@ -69,5 +69,6 @@ public class Address {
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(name = "employee_id")
 	private Employee employee;
+	
 	
 }
