@@ -24,7 +24,7 @@ import net.texala.employee.enums.GenericStatus;
 @NoArgsConstructor
 @AllArgsConstructor
 public class EmployeeVo {
-	
+
 	private Long id;
 	@NotBlank(message = FIRSTNAME_REQUIRED)
 	@Pattern(regexp = "^[a-zA-Z]+$", message = FIRSTNAME_ERROR_MESSAGE)
@@ -65,10 +65,9 @@ public class EmployeeVo {
 	@NotBlank(message = JOB_TITLE_REQUIRED)
 	@Size(max = 50, message = JOB_TITLE_LENGTH_ERROR_MESSAGE)
 	private String jobTitle;
-	
-	@JsonIgnore
+
 	private List<AddressVo> addresses;
-	@JsonIgnore
+
 	private DepartmentVo department;
-	
+
 }

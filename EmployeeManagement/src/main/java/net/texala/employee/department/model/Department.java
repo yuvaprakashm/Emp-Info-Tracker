@@ -16,6 +16,8 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.format.annotation.DateTimeFormat;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.Getter;
 import lombok.Setter;
 import net.texala.employee.enums.GenericStatus;
@@ -25,6 +27,7 @@ import net.texala.employee.model.Employee;
 @Getter
 @Setter
 @Table(name = DEPARTMENT_MASTER)
+//@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "deptId")
 public class Department {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

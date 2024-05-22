@@ -8,7 +8,6 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import net.texala.employee.enums.AddressType;
 import net.texala.employee.enums.GenericStatus;
@@ -56,8 +55,6 @@ public class AddressVo {
 	@Size(max = 150, message = LAND_MARK_LENGTH_ERROR_MESSAGE)
 	private String landMark;
 
-	 
-	@JsonIgnore
-	private Long empId;
-	
+ 	private Long empId;
+
 }

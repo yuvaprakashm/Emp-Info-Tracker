@@ -157,7 +157,10 @@ public class EmployeeServiceImpl implements EmployeeService {
             employee.setDepartment(department);
 
              employee = repo.save(employee);
-
+             
+             department.setEmployee(employee);
+             departmentRepo.save(department);
+             
              List<AddressVo> addressVos = employeeVo.getAddresses();
             for (AddressVo addressVo : addressVos) {
                 Address address = new Address();
@@ -180,4 +183,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             throw new RuntimeException("Failed to add employee: " + e.getMessage());
         }
     }
+    
+    
+    
 }
