@@ -10,7 +10,7 @@ public interface EmployeeService {
 
 	public List<EmployeeVo> findAll();
 
-	public Employee findById(Long id);
+	public EmployeeVo findById(Long id);
 
 	public EmployeeVo add(EmployeeVo employeeVo);
 

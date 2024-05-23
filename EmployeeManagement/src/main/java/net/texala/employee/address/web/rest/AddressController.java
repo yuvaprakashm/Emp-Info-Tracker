@@ -58,10 +58,10 @@ public class AddressController {
     }
 
     @GetMapping("/records/{id}")
-    public ResponseEntity<RestResponse<Address>> findById(@PathVariable(name = "id", required = true) Long id) {
-        RestStatus<Address> restStatus = new RestStatus<>(HttpStatus.OK, RECORD_FETCH_SUCCESS_MESSAGE);
-        Address address = addressService.findById(id);
-        final RestResponse<Address> response = new RestResponse<>(address, restStatus);
+    public ResponseEntity<RestResponse<AddressVo>> findById(@PathVariable(name = "id", required = true) Long id) {
+        RestStatus<AddressVo> restStatus = new RestStatus<>(HttpStatus.OK, RECORD_FETCH_SUCCESS_MESSAGE);
+        AddressVo addressVo = addressService.findById(id);
+        final RestResponse<AddressVo> response = new RestResponse<>(addressVo, restStatus);
         return new ResponseEntity<>(response, HttpStatus.OK);    
     }
 

@@ -64,7 +64,7 @@ public class CommonSpecification {
 	public static Specification<Employee> searchEmployee(String searchTerm, String filterBy) {
 		return (root, query, cb) -> {
 			List<Predicate> predicates = new ArrayList<>();
-			if (StringUtils.isNotBlank(searchTerm)) {
+			if (StringUtils.isNotBlank(searchTerm)) {              
 				String containsLikePattern = Utility.getContainsLikePattern(searchTerm);
 				predicates.add(cb.or(cb.like(cb.lower(root.<String>get("firstName")), containsLikePattern),
 						cb.like(cb.lower(root.<String>get("lastName")), containsLikePattern),

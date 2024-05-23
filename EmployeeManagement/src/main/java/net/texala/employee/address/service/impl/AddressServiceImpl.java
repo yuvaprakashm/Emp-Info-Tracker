@@ -24,8 +24,10 @@ import net.texala.employee.address.service.AddressService;
 import net.texala.employee.address.vo.AddressVo;
 import net.texala.employee.enums.GenericStatus;
 import net.texala.employee.exception.Exception.AddressNotFoundException;
+import net.texala.employee.mapper.EmployeeMapper;
 import net.texala.employee.model.Employee;
 import net.texala.employee.service.EmployeeService;
+import net.texala.employee.vo.EmployeeVo;
 
 @Service
 public class AddressServiceImpl implements AddressService {
@@ -36,6 +38,8 @@ public class AddressServiceImpl implements AddressService {
 	private AddressMapper mapper;
 	@Autowired
 	private EmployeeService employeeService;
+	@Autowired
+	private EmployeeMapper employeeMapper;
 
 	@Override
 	public Page<AddressVo> search(Integer pageNo, Integer pageSize, String sortBy, String filterBy, String searchText) {
@@ -51,17 +55,20 @@ public class AddressServiceImpl implements AddressService {
 	}
 
 	@Override
-	public Address findById(Long id) {
-		return repo.findById(id).orElseThrow(() -> new AddressNotFoundException(ADDRESS_NOT_FOUND + id));
+	public AddressVo findById(Long id) {
+		Address address = repo.findById(id).orElseThrow(() -> new AddressNotFoundException(ADDRESS_NOT_FOUND + id));
+		return mapper.toDto(address);
 	}
-
+	
 	@Override
 	@Transactional
 	public AddressVo add(AddressVo addressVo) {
-		Employee employee = employeeService.findById(addressVo.getEmpId());
-		Address address = mapper.toEntity(addressVo);
-		address.setEmployee(employee);
-		return mapper.toDto(repo.save(address));
+ 	    EmployeeVo employeeVo = employeeService.findById(addressVo.getEmpId());
+	    Employee employee = employeeMapper.toEntity(employeeVo);
+	    Address address = mapper.toEntity(addressVo);
+	    address.setEmployee(employee);
+	    Address savedAddress = repo.save(address);
+	    return mapper.toDto(savedAddress);
 	}
 
 	@Override

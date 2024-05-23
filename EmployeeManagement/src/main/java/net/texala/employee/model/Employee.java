@@ -43,7 +43,6 @@ import net.texala.employee.enums.GenericStatus;
 @Getter
 @Setter
 @Table(name = EMPLOYEE_MASTER)
-//@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Employee {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

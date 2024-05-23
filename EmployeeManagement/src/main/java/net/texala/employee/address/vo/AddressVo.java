@@ -56,5 +56,7 @@ public class AddressVo {
 	private String landMark;
 
  	private Long empId;
+ 	
+ 	
 
 }

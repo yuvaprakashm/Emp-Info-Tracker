@@ -11,7 +11,7 @@ public interface DepartmentService {
 
 	public List<DepartmentVo> findAll();
 
-	public Department findById(Long id);
+	public DepartmentVo findById(Long id);
 
 	public DepartmentVo add(DepartmentVo departmentVo);
 

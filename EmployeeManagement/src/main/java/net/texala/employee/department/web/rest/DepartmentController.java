@@ -55,10 +55,10 @@ public class DepartmentController {
 	    return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 	@GetMapping("/records/{id}")
-	public ResponseEntity<RestResponse<Department>> findById(@PathVariable(name = "id", required = true) Long id) {
-		RestStatus<Department> restStatus = new RestStatus<>(HttpStatus.OK, RECORD_FETCH_SUCCESS_MESSAGE);
-		Department department = departmentService.findById(id);
-		final RestResponse<Department> response = new RestResponse<>(department, restStatus);
+	public ResponseEntity<RestResponse<DepartmentVo>> findById(@PathVariable(name = "id", required = true) Long id) {
+		RestStatus<DepartmentVo> restStatus = new RestStatus<>(HttpStatus.OK, RECORD_FETCH_SUCCESS_MESSAGE);
+		DepartmentVo departmentVo = departmentService.findById(id);
+		final RestResponse<DepartmentVo> response = new RestResponse<>(departmentVo, restStatus);
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
  

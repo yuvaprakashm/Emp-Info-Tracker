@@ -2,7 +2,6 @@ package net.texala.employee.web.rest;
 
 import static net.texala.employee.constants.Constants.*;
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.domain.Page;
@@ -58,10 +57,10 @@ public class EmployeeController {
 
 
 	@GetMapping("/records/{id}")
-	public ResponseEntity<RestResponse<Employee>> findById(@PathVariable(name = "id", required = true) Long id) {
-		RestStatus<Employee> restStatus = new RestStatus<>(HttpStatus.OK, RECORD_FETCH_SUCCESS_MESSAGE);
-		Employee employee = employeeService.findById(id);
-		final RestResponse<Employee> response = new RestResponse<>(employee, restStatus);
+	public ResponseEntity<RestResponse<EmployeeVo>> findById(@PathVariable(name = "id", required = true) Long id) {
+		RestStatus<EmployeeVo> restStatus = new RestStatus<>(HttpStatus.OK, RECORD_FETCH_SUCCESS_MESSAGE);
+		EmployeeVo employeeVo = employeeService.findById(id);
+		final RestResponse<EmployeeVo> response = new RestResponse<>(employeeVo, restStatus);
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 

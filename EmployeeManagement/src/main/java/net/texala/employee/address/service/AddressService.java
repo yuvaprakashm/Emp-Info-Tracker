@@ -11,7 +11,7 @@ public interface AddressService {
 
 	public List<AddressVo> findAll();
 
-	public Address findById(Long id);
+	public AddressVo findById(Long id);
 
 	public AddressVo add(AddressVo addressVo);
 
