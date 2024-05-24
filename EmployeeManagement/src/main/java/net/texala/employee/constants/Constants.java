@@ -100,5 +100,7 @@ public class Constants {
 	public static final String JOB_TITLE_LENGTH_ERROR_MESSAGE = "Job title length should not exceed maximum characters";
 	public static final String DEPT_CONTACT_NUMBER_FORMAT_ERROR_MESSAGE = "Invalid department contact number format. It should contain exactly 10 digits";
 	public static final String BUDGET_MIN_VALUE_ERROR_MESSAGE = "Budget must be greater than 0.0";
+	public static final String FAILED_ADD_EMP = "Failed to add employee: ";
+	public static final String FAILED_ADD_DEPT ="Failed to add department: ";
 	
 }

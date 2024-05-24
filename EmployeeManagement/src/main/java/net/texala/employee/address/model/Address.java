@@ -20,7 +20,6 @@ import lombok.Setter;
 import net.texala.employee.enums.AddressType;
 import net.texala.employee.enums.GenericStatus;
 import net.texala.employee.model.Employee;
-import net.texala.employee.vo.EmployeeVo;
 
 @Entity
 @Getter

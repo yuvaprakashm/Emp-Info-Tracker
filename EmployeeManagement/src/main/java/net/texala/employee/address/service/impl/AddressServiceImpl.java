@@ -33,9 +33,9 @@ import net.texala.employee.vo.EmployeeVo;
 public class AddressServiceImpl implements AddressService {
 
 	@Autowired
-	private AddressRepository repo;
+	private AddressRepository addressRepo;
 	@Autowired
-	private AddressMapper mapper;
+	private AddressMapper addressMapper;
 	@Autowired
 	private EmployeeService employeeService;
 	@Autowired
@@ -45,35 +45,37 @@ public class AddressServiceImpl implements AddressService {
 	public Page<AddressVo> search(Integer pageNo, Integer pageSize, String sortBy, String filterBy, String searchText) {
 		final Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(Utility.sortByValues(sortBy)));
 		final Specification<Address> joins = CommonSpecification.searchAddress(searchText, filterBy);
-		final Page<Address> page = repo.findAll(joins, pageable);
-		return new PageImpl<>(mapper.toDtos(page.getContent()), pageable, page.getTotalElements());
+		final Page<Address> page = addressRepo.findAll(joins, pageable);
+		return new PageImpl<>(addressMapper.toDtos(page.getContent()), pageable, page.getTotalElements());
 	}
 
 	@Override
 	public List<AddressVo> findAll() {
-		return mapper.toDtos(repo.findAll());
+		return addressMapper.toDtos(addressRepo.findAll());
 	}
 
 	@Override
 	public AddressVo findById(Long id) {
-		Address address = repo.findById(id).orElseThrow(() -> new AddressNotFoundException(ADDRESS_NOT_FOUND + id));
-		return mapper.toDto(address);
+		Address address = addressRepo.findById(id)
+				.orElseThrow(() -> new AddressNotFoundException(ADDRESS_NOT_FOUND + id));
+		return addressMapper.toDto(address);
 	}
-	
+
 	@Override
 	@Transactional
 	public AddressVo add(AddressVo addressVo) {
- 	    EmployeeVo employeeVo = employeeService.findById(addressVo.getEmpId());
-	    Employee employee = employeeMapper.toEntity(employeeVo);
-	    Address address = mapper.toEntity(addressVo);
-	    address.setEmployee(employee);
-	    Address savedAddress = repo.save(address);
-	    return mapper.toDto(savedAddress);
+		EmployeeVo employeeVo = employeeService.findById(addressVo.getEmpId());
+		Employee employee = employeeMapper.toEntity(employeeVo);
+		Address address = addressMapper.toEntity(addressVo);
+		address.setEmployee(employee);
+		Address savedAddress = addressRepo.save(address);
+		return addressMapper.toDto(savedAddress);
 	}
 
 	@Override
 	public AddressVo update(AddressVo addressVo, Long id, boolean partialUpdate) {
-		Address existingAddress = repo.findById(id).orElseThrow(() -> new RuntimeException(ADDRESS_NOT_FOUND + id));
+		Address existingAddress = addressRepo.findById(id)
+				.orElseThrow(() -> new RuntimeException(ADDRESS_NOT_FOUND + id));
 		if (partialUpdate) {
 			if (addressVo.getStreet() != null) {
 				existingAddress.setStreet(addressVo.getStreet());
@@ -84,7 +86,6 @@ public class AddressServiceImpl implements AddressService {
 			if (addressVo.getZipcode() != null) {
 				existingAddress.setZipcode(addressVo.getZipcode());
 			}
-
 		} else
 
 		{
@@ -98,29 +99,28 @@ public class AddressServiceImpl implements AddressService {
 			existingAddress.setCountry(addressVo.getCountry());
 			existingAddress.setAddressType(addressVo.getAddressType());
 			existingAddress.setLandMark(addressVo.getLandMark());
-
 		}
-		Address updatedAddress = repo.save(existingAddress);
-		return mapper.toDto(updatedAddress);
+		Address updatedAddress = addressRepo.save(existingAddress);
+		return addressMapper.toDto(updatedAddress);
 
-	}
-	
-	@Transactional
-	@Override
-	public int active(Long id) {
-		return repo.updateStatus(GenericStatus.ACTIVE, id);
-	}
-
-	@Transactional
-	@Override
-	public int deactive(Long id) {
-		return repo.updateStatus(GenericStatus.DEACTIVE, id);
 	}
 
 	@Override
 	public void delete(Long id) {
 		findById(id);
-		repo.deleteById(id);
+		addressRepo.deleteById(id);
+	}
+
+	@Transactional
+	@Override
+	public int active(Long id) {
+		return addressRepo.updateStatus(GenericStatus.ACTIVE, id);
+	}
+
+	@Transactional
+	@Override
+	public int deactive(Long id) {
+		return addressRepo.updateStatus(GenericStatus.DEACTIVE, id);
 	}
 
 	@Override

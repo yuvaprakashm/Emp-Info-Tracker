@@ -28,9 +28,11 @@ public class DepartmentVo {
 
 	@NotNull(message = STATUS_REQUIRED)
 	private GenericStatus status;
+	
 	@NotBlank(message = DEPT_CONTACT_NUMBER_REQUIRED)
 	@Pattern(regexp = "^\\d{10}$", message = DEPT_CONTACT_NUMBER_FORMAT_ERROR_MESSAGE)
 	private String deptContactNumber;
+	
 	@NotBlank(message = EMAIL_REQUIRED)
 	@Email(message = EMAIL_VALID_ERROR_MESSAGE)
 	private String emailAddress;

@@ -1,20 +1,6 @@
 package net.texala.employee.model;
 
-import static net.texala.employee.constants.Constants.AGE;
-import static net.texala.employee.constants.Constants.CONTACT_NUMBER;
-import static net.texala.employee.constants.Constants.CREATED_DATE;
-import static net.texala.employee.constants.Constants.DOB;
-import static net.texala.employee.constants.Constants.EMAIL;
-import static net.texala.employee.constants.Constants.EMPLOYEE_MASTER;
-import static net.texala.employee.constants.Constants.FIRST_NAME;
-import static net.texala.employee.constants.Constants.GENDER;
-import static net.texala.employee.constants.Constants.HIRE_DATE;
-import static net.texala.employee.constants.Constants.ID;
-import static net.texala.employee.constants.Constants.JOB_TITLE;
-import static net.texala.employee.constants.Constants.LAST_NAME;
-import static net.texala.employee.constants.Constants.SALARY;
-import static net.texala.employee.constants.Constants.STATUS;
-import static net.texala.employee.constants.Constants.TIMESTAMP;
+import static net.texala.employee.constants.Constants.*;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.CascadeType;
@@ -46,11 +32,10 @@ import net.texala.employee.enums.GenericStatus;
 public class Employee {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-
 	@Column(name = ID)
 	private Long id;
 
-	@Column(name = FIRST_NAME)
+	@Column(name = FIRST_NAME,length = 30)
 	private String firstName;
 
 	@Column(name = LAST_NAME)
@@ -59,7 +44,7 @@ public class Employee {
 	@Column(name = AGE)
 	private Integer age;
 
-	@Column(name = EMAIL)
+	@Column(name = EMAIL,length = 100)
 	private String email;
 
 	@Enumerated(EnumType.STRING)
@@ -98,5 +83,4 @@ public class Employee {
 	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@JoinColumn(name = "department_id")
 	private Department department;
-
 }

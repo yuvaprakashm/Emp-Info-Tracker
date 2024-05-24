@@ -17,11 +17,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import net.texala.employee.Specification.CommonSpecification;
 import net.texala.employee.Util.Utility;
-import net.texala.employee.address.mapper.AddressMapper;
 import net.texala.employee.address.model.Address;
 import net.texala.employee.address.repository.AddressRepository;
 import net.texala.employee.address.vo.AddressVo;
-import net.texala.employee.department.mapper.DepartmentMapper;
 import net.texala.employee.department.model.Department;
 import net.texala.employee.department.repository.DepartmentRepository;
 import net.texala.employee.department.vo.DepartmentVo;
@@ -39,102 +37,32 @@ public class EmployeeServiceImpl implements EmployeeService {
 	@Autowired
 	private AddressRepository addressRepo;
 	@Autowired
-	private EmployeeRepository repo;
+	private EmployeeRepository employeeRepo;
 	@Autowired
-	private EmployeeMapper mapper;
+	private EmployeeMapper employeeMapper;
 	@Autowired
 	private DepartmentRepository departmentRepo;
-	@Autowired
-	private AddressMapper addressMapper;
-	@Autowired
-	private DepartmentMapper departmentMapper;
 
 	@Override
 	public Page<EmployeeVo> search(Integer pageNo, Integer pageSize, String sortBy, String filterBy,
 			String searchText) {
 		Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(Utility.sortByValues(sortBy)));
 		Specification<Employee> joins = CommonSpecification.searchEmployee(searchText, filterBy);
-		Page<Employee> page = repo.findAll(joins, pageable);
-		List<EmployeeVo> employeeVoList = mapper.toDtos(page.getContent());
+		Page<Employee> page = employeeRepo.findAll(joins, pageable);
+		List<EmployeeVo> employeeVoList = employeeMapper.toDtos(page.getContent());
 		return new PageImpl<>(employeeVoList, pageable, page.getTotalElements());
 	}
 
 	@Override
-	public EmployeeVo findById(Long id) {
-		Employee employee = repo.findById(id).orElseThrow(() -> new EmployeeNotFoundException(EMPLOYEE_NOT_FOUND + id));
-		return mapper.toDto(employee);
-	}
-
-	@Transactional
-	@Override
-	public int active(Long id) {
-		return repo.updateStatus(GenericStatus.ACTIVE, id);
-	}
-
-	@Transactional
-	@Override
-	public int deactive(Long id) {
-		return repo.updateStatus(GenericStatus.DEACTIVE, id);
-	}
-
-	@Override
-	public void delete(Long id) {
-		findById(id);
-		repo.deleteById(id);
-	}
-
-	@Override
 	public List<EmployeeVo> findAll() {
-		return mapper.toDtos(repo.findAll());
+		return employeeMapper.toDtos(employeeRepo.findAll());
 	}
 
 	@Override
-	public EmployeeVo update(EmployeeVo employeeVo, Long id, boolean partialUpdate) {
-		Employee existingEmployee = repo.findById(id).orElseThrow(() -> new RuntimeException(EMPLOYEE_NOT_FOUND + id));
-
-		if (partialUpdate) {
-			if (employeeVo.getFirstName() != null)
-				existingEmployee.setFirstName(employeeVo.getFirstName());
-			if (employeeVo.getLastName() != null)
-				existingEmployee.setLastName(employeeVo.getLastName());
-			if (employeeVo.getEmail() != null)
-				existingEmployee.setEmail(employeeVo.getEmail());
-			if (employeeVo.getSalary() != null)
-				existingEmployee.setSalary(employeeVo.getSalary());
-		} else {
-			existingEmployee.setFirstName(employeeVo.getFirstName());
-			existingEmployee.setLastName(employeeVo.getLastName());
-			existingEmployee.setAge(employeeVo.getAge());
-			existingEmployee.setEmail(employeeVo.getEmail());
-			existingEmployee.setGender(employeeVo.getGender());
-			existingEmployee.setSalary(employeeVo.getSalary());
-			existingEmployee.setStatus(employeeVo.getStatus());
-			existingEmployee.setContactNumber(employeeVo.getContactNumber());
-			existingEmployee.setDateOfBirth(employeeVo.getDateOfBirth());
-			existingEmployee.setHireDate(employeeVo.getHireDate());
-			existingEmployee.setJobTitle(employeeVo.getJobTitle());
-		}
-
-		Employee updatedEmployee = repo.save(existingEmployee);
-		return mapper.toDto(updatedEmployee);
-	}
-
-	@Override
-	public String generateCsvContent() {
-		StringWriter writer = new StringWriter();
-		try (@SuppressWarnings("deprecation")
-		CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT.withHeader(EMPLOYEE_HEADER))) {
-			List<EmployeeVo> employeeList = findAll();
-			for (EmployeeVo employee : employeeList) {
-				csvPrinter.printRecord(employee.getId(), employee.getFirstName(), employee.getLastName(),
-						employee.getAge(), employee.getEmail(), employee.getGender(), employee.getSalary(),
-						employee.getStatus(), employee.getCreatedDate(), employee.getContactNumber(),
-						employee.getDateOfBirth(), employee.getHireDate(), employee.getJobTitle());
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return writer.toString();
+	public EmployeeVo findById(Long id) {
+		Employee employee = employeeRepo.findById(id)
+				.orElseThrow(() -> new EmployeeNotFoundException(EMPLOYEE_NOT_FOUND + id));
+		return employeeMapper.toDto(employee);
 	}
 
 	@Override
@@ -163,7 +91,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 			department.setStatus(departmentVo.getStatus());
 			department = departmentRepo.save(department);
 			employee.setDepartment(department);
-			employee = repo.save(employee);
+			employee = employeeRepo.save(employee);
 			department.setEmployee(employee);
 			departmentRepo.save(department);
 			List<AddressVo> addressVos = employeeVo.getAddresses();
@@ -182,10 +110,80 @@ public class EmployeeServiceImpl implements EmployeeService {
 				address.setEmployee(employee);
 				addressRepo.save(address);
 			}
-			return mapper.toDto(employee);
+			return employeeMapper.toDto(employee);
 		} catch (Exception e) {
-			throw new RuntimeException("Failed to add employee: " + e.getMessage());
+			throw new RuntimeException(FAILED_ADD_EMP + e.getMessage());
 		}
+	}
+
+	@Transactional
+	@Override
+	public EmployeeVo update(EmployeeVo employeeVo, Long id, boolean partialUpdate) {
+		Employee existingEmployee = employeeRepo.findById(id)
+				.orElseThrow(() -> new RuntimeException(EMPLOYEE_NOT_FOUND + id));
+
+		if (partialUpdate) {
+			if (employeeVo.getFirstName() != null)
+				existingEmployee.setFirstName(employeeVo.getFirstName());
+			if (employeeVo.getLastName() != null)
+				existingEmployee.setLastName(employeeVo.getLastName());
+			if (employeeVo.getEmail() != null)
+				existingEmployee.setEmail(employeeVo.getEmail());
+			if (employeeVo.getSalary() != null)
+				existingEmployee.setSalary(employeeVo.getSalary());
+		} else {
+			existingEmployee.setFirstName(employeeVo.getFirstName());
+			existingEmployee.setLastName(employeeVo.getLastName());
+			existingEmployee.setAge(employeeVo.getAge());
+			existingEmployee.setEmail(employeeVo.getEmail());
+			existingEmployee.setGender(employeeVo.getGender());
+			existingEmployee.setSalary(employeeVo.getSalary());
+			existingEmployee.setStatus(employeeVo.getStatus());
+			existingEmployee.setContactNumber(employeeVo.getContactNumber());
+			existingEmployee.setDateOfBirth(employeeVo.getDateOfBirth());
+			existingEmployee.setHireDate(employeeVo.getHireDate());
+			existingEmployee.setJobTitle(employeeVo.getJobTitle());
+		}
+
+		Employee updatedEmployee = employeeRepo.save(existingEmployee);
+		return employeeMapper.toDto(updatedEmployee);
+	}
+
+	@Transactional
+	@Override
+	public void delete(Long id) {
+		findById(id);
+		employeeRepo.deleteById(id);
+	}
+
+	@Transactional
+	@Override
+	public int active(Long id) {
+		return employeeRepo.updateStatus(GenericStatus.ACTIVE, id);
+	}
+
+	@Transactional
+	@Override
+	public int deactive(Long id) {
+		return employeeRepo.updateStatus(GenericStatus.DEACTIVE, id);
+	}
+
+	@Override
+	public String generateCsvContent() {
+		StringWriter writer = new StringWriter();
+		try (@SuppressWarnings("deprecation")
+		CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT.withHeader(EMPLOYEE_HEADER))) {
+			List<EmployeeVo> employeeList = findAll();
+			for (EmployeeVo employee : employeeList) {
+				csvPrinter.printRecord(employee.getId(), employee.getFirstName(), employee.getLastName(),
+						employee.getAge(), employee.getEmail(), employee.getGender(), employee.getSalary(),
+						employee.getStatus(), employee.getCreatedDate(), employee.getContactNumber(),
+						employee.getDateOfBirth(), employee.getHireDate(), employee.getJobTitle());
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return writer.toString();
 	}
 
 }

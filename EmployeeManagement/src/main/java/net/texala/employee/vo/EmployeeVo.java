@@ -25,12 +25,15 @@ import net.texala.employee.enums.GenericStatus;
 public class EmployeeVo {
 
 	private Long id;
+	
 	@NotBlank(message = FIRSTNAME_REQUIRED)
 	@Pattern(regexp = "^[a-zA-Z]+$", message = FIRSTNAME_ERROR_MESSAGE)
 	private String firstName;
+	
 	@NotBlank(message = LASTNAME_REQUIRED)
 	@Pattern(regexp = "^[a-zA-Z]+$", message = LASTNAME_ERROR_MESSAGE)
 	private String lastName;
+	
 	@NotNull(message = AGE_REQUIRED)
 	@Min(value = 18, message = MIN_AGE_ERROR_MESSAGE)
 	@Max(value = 100, message = MAX_AGE_ERROR_MESSAGE)
@@ -42,11 +45,14 @@ public class EmployeeVo {
 
 	@NotBlank(message = GENDER_REQUIRED)
 	private Gender gender;
+	
 	@NotNull(message = SALARY_REQUIRED)
 	@Min(value = 0, message = NON_NEGATIVE_SALARY_ERROR_MESSAGE)
 	private Integer salary;
-
+	
+	@NotNull(message = DATE_REQUIRED)
 	private Date createdDate = new Date();
+	
 	@NotNull(message = STATUS_REQUIRED)
 	private GenericStatus status;
 

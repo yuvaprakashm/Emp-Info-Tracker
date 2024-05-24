@@ -2,7 +2,6 @@ package net.texala.employee.department.service;
 
 import java.util.List;
 import org.springframework.data.domain.Page;
-import net.texala.employee.department.model.Department;
 import net.texala.employee.department.vo.DepartmentVo;
 
 public interface DepartmentService {

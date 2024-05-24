@@ -34,9 +34,9 @@ import net.texala.employee.vo.EmployeeVo;
 public class DepartmentServiceImpl implements DepartmentService {
 
 	@Autowired
-	private DepartmentRepository repo;
+	private DepartmentRepository departmentRepo;
 	@Autowired
-	private DepartmentMapper mapper;
+	private DepartmentMapper departmentMapper;
 	@Autowired
 	private EntityManager entityManager;
 	@Autowired
@@ -49,23 +49,28 @@ public class DepartmentServiceImpl implements DepartmentService {
 			String searchText) {
 		final Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(Utility.sortByValues(sortBy)));
 		final Specification<Department> joins = CommonSpecification.searchDepartment(searchText, filterBy);
-		final Page<Department> page = repo.findAll(joins, pageable);
-		return new PageImpl<>(mapper.toDtos(page.getContent()), pageable, page.getTotalElements());
+		final Page<Department> page = departmentRepo.findAll(joins, pageable);
+		return new PageImpl<>(departmentMapper.toDtos(page.getContent()), pageable, page.getTotalElements());
+	}
+
+	@Override
+	public List<DepartmentVo> findAll() {
+		return departmentMapper.toDtos(departmentRepo.findAll());
 	}
 
 	@Override
 	public DepartmentVo findById(Long id) {
-		Department department = repo.findById(id)
+		Department department = departmentRepo.findById(id)
 				.orElseThrow(() -> new DepartmentNotFoundException(DEPARTMENT_NOT_FOUND + id));
-		return mapper.toDto(department);
+		return departmentMapper.toDto(department);
 	}
 
 	@Override
 	@Transactional
 	public DepartmentVo add(DepartmentVo departmentVo) {
 		try {
-			Department department = mapper.toEntity(departmentVo);
-			department = repo.save(department);
+			Department department = departmentMapper.toEntity(departmentVo);
+			department = departmentRepo.save(department);
 			Employee employee = null;
 			for (EmployeeVo employeeVo : departmentVo.getEmployees()) {
 				employee = employeeMapper.toEntity(employeeVo);
@@ -73,16 +78,16 @@ public class DepartmentServiceImpl implements DepartmentService {
 				employee = employeeRepo.save(employee);
 			}
 			department.setEmployee(employee);
-			return mapper.toDto(department);
+			return departmentMapper.toDto(department);
 		} catch (Exception e) {
-			throw new RuntimeException("Failed to add department: " + e.getMessage());
+			throw new RuntimeException(FAILED_ADD_DEPT + e.getMessage());
 		}
 	}
 
 	@Transactional
 	@Override
 	public DepartmentVo update(DepartmentVo departmentVo, Long id, boolean partialUpdate) {
-		Department existingDepartment = repo.findById(id)
+		Department existingDepartment = departmentRepo.findById(id)
 				.orElseThrow(() -> new DepartmentNotFoundException(DEPARTMENT_NOT_FOUND + id));
 		if (partialUpdate) {
 			if (departmentVo.getDeptName() != null) {
@@ -102,33 +107,28 @@ public class DepartmentServiceImpl implements DepartmentService {
 			existingDepartment.setEmailAddress(departmentVo.getEmailAddress());
 			existingDepartment.setBudget(departmentVo.getBudget());
 		}
-		Department updatedDepartment = repo.save(existingDepartment);
+		Department updatedDepartment = departmentRepo.save(existingDepartment);
 		entityManager.flush();
-		return mapper.toDto(updatedDepartment);
-	}
-
-	@Transactional
-	@Override
-	public int active(Long id) {
-		return repo.updateStatus(GenericStatus.ACTIVE, id);
-	}
-
-	@Transactional
-	@Override
-	public int deactive(Long id) {
-		return repo.updateStatus(GenericStatus.DEACTIVE, id);
+		return departmentMapper.toDto(updatedDepartment);
 	}
 
 	@Override
 	public void delete(Long id) {
 		findById(id);
-		repo.deleteById(id);
+		departmentRepo.deleteById(id);
 
 	}
 
+	@Transactional
 	@Override
-	public List<DepartmentVo> findAll() {
-		return mapper.toDtos(repo.findAll());
+	public int active(Long id) {
+		return departmentRepo.updateStatus(GenericStatus.ACTIVE, id);
+	}
+
+	@Transactional
+	@Override
+	public int deactive(Long id) {
+		return departmentRepo.updateStatus(GenericStatus.DEACTIVE, id);
 	}
 
 	@Override

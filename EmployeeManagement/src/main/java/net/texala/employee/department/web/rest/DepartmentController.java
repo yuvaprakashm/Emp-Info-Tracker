@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
-import net.texala.employee.department.model.Department;
 import net.texala.employee.department.service.DepartmentService;
 import net.texala.employee.department.vo.DepartmentVo;
 import net.texala.employee.restresponse.RestResponse;
@@ -31,7 +30,7 @@ import net.texala.employee.reststatus.RestStatus;
 @RequiredArgsConstructor
 public class DepartmentController {
 	@Autowired
-	private DepartmentService departmentService;
+	private final DepartmentService departmentService;
 
 	@GetMapping("/search")
 	public ResponseEntity<RestResponse<Page<DepartmentVo>>> search(
@@ -40,7 +39,6 @@ public class DepartmentController {
 			@RequestParam(name = SORT_BY, required = false, defaultValue = "createdDate:asc") String sortBy,
 			@RequestParam(name = FILTER_BY, required = false, defaultValue = "") String filterBy,
 			@RequestParam(name = SEARCH_TEXT, required = false) String searchText) {
-
 		final RestStatus<?> restStatus = new RestStatus<>(HttpStatus.OK, RECORD_FETCH_SUCCESS_MESSAGE);
 		final Page<DepartmentVo> search = departmentService.search(pageNo, pageSize, sortBy, filterBy, searchText);
 		final RestResponse<Page<DepartmentVo>> response = new RestResponse<>(search, restStatus);
@@ -49,11 +47,12 @@ public class DepartmentController {
 
 	@GetMapping("/records")
 	public ResponseEntity<RestResponse<List<DepartmentVo>>> findAll() {
-	    List<DepartmentVo> list = departmentService.findAll();
-	    RestStatus<List<DepartmentVo>> restStatus = new RestStatus<>(HttpStatus.OK, RECORD_FETCH_SUCCESS_MESSAGE);
-	    RestResponse<List<DepartmentVo>> response = new RestResponse<>(list, restStatus);
-	    return new ResponseEntity<>(response, HttpStatus.OK);
+		List<DepartmentVo> list = departmentService.findAll();
+		RestStatus<List<DepartmentVo>> restStatus = new RestStatus<>(HttpStatus.OK, RECORD_FETCH_SUCCESS_MESSAGE);
+		RestResponse<List<DepartmentVo>> response = new RestResponse<>(list, restStatus);
+		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
+
 	@GetMapping("/records/{id}")
 	public ResponseEntity<RestResponse<DepartmentVo>> findById(@PathVariable(name = "id", required = true) Long id) {
 		RestStatus<DepartmentVo> restStatus = new RestStatus<>(HttpStatus.OK, RECORD_FETCH_SUCCESS_MESSAGE);
@@ -61,21 +60,11 @@ public class DepartmentController {
 		final RestResponse<DepartmentVo> response = new RestResponse<>(departmentVo, restStatus);
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
- 
+
 	@PostMapping("/records")
 	public ResponseEntity<RestResponse<DepartmentVo>> add(@RequestBody(required = true) DepartmentVo departmentVo) {
-	    RestStatus<?> restStatus = new RestStatus<>(HttpStatus.OK, RECORD_ADD_SUCCESS_MESSAGE);
-	    final RestResponse<DepartmentVo> response = new RestResponse<>(departmentService.add(departmentVo), restStatus);
-	    return new ResponseEntity<>(response, HttpStatus.OK);
-	}
-
-
-	@DeleteMapping("/records/{id}")
-	public ResponseEntity<RestResponse<Void>> delete(@PathVariable(name = "id", required = true) Long id) {
-
-		RestStatus<?> restStatus = new RestStatus<>(HttpStatus.OK, RECORD_DELETED_SUCCESS_MESSAGE);
-		departmentService.delete(id);
-		final RestResponse<Void> response = new RestResponse<>(null, restStatus);
+		RestStatus<?> restStatus = new RestStatus<>(HttpStatus.OK, RECORD_ADD_SUCCESS_MESSAGE);
+		final RestResponse<DepartmentVo> response = new RestResponse<>(departmentService.add(departmentVo), restStatus);
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
@@ -99,9 +88,16 @@ public class DepartmentController {
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
+	@DeleteMapping("/records/{id}")
+	public ResponseEntity<RestResponse<Void>> delete(@PathVariable(name = "id", required = true) Long id) {
+		RestStatus<?> restStatus = new RestStatus<>(HttpStatus.OK, RECORD_DELETED_SUCCESS_MESSAGE);
+		departmentService.delete(id);
+		final RestResponse<Void> response = new RestResponse<>(null, restStatus);
+		return new ResponseEntity<>(response, HttpStatus.OK);
+	}
+
 	@PatchMapping("/records/{id}/activate")
 	public ResponseEntity<RestResponse<Void>> activate(@PathVariable(name = "id", required = true) Long id) {
-
 		RestStatus<?> restStatus = new RestStatus<>(HttpStatus.OK, RECORD_ACTIVE_SUCCESS_MESSAGE);
 		departmentService.active(id);
 		final RestResponse<Void> response = new RestResponse<>(null, restStatus);
@@ -110,7 +106,6 @@ public class DepartmentController {
 
 	@PatchMapping("/records/{id}/deactivate")
 	public ResponseEntity<RestResponse<Void>> deactivate(@PathVariable(name = "id", required = true) Long id) {
-
 		RestStatus<?> restStatus = new RestStatus<>(HttpStatus.OK, RECORD_DEACTIVE_SUCCESS_MESSAGE);
 		departmentService.deactive(id);
 		final RestResponse<Void> response = new RestResponse<>(null, restStatus);
