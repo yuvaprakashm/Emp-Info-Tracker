@@ -13,11 +13,14 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.format.annotation.DateTimeFormat;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import lombok.Getter;
 import lombok.Setter;
 import net.texala.employee.address.model.Address;
@@ -38,7 +41,7 @@ public class Employee {
 	@Column(name = FIRST_NAME,length = 30)
 	private String firstName;
 
-	@Column(name = LAST_NAME)
+	@Column(name = LAST_NAME,length = 30)
 	private String lastName;
 
 	@Column(name = AGE)
@@ -63,7 +66,7 @@ public class Employee {
 	@Column(name = CREATED_DATE, nullable = false, updatable = false, columnDefinition = TIMESTAMP)
 	private Date createdDate = new Date();
 
-	@Column(name = CONTACT_NUMBER)
+	@Column(name = CONTACT_NUMBER, length = 10)
 	private String contactNumber;
 
 	@DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
@@ -74,13 +77,14 @@ public class Employee {
 	@Column(name = HIRE_DATE)
 	private Date hireDate;
 
-	@Column(name = JOB_TITLE)
+	@Column(name = JOB_TITLE,length = 20)
 	private String jobTitle;
 
 	@OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
 	private List<Address> addresses;
 
-	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.LAZY,optional = false)
 	@JoinColumn(name = "department_id")
+	@JsonBackReference
 	private Department department;
 }

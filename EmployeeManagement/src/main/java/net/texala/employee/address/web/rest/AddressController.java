@@ -1,7 +1,5 @@
 package net.texala.employee.address.web.rest;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.domain.Page;
@@ -9,7 +7,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -47,17 +44,17 @@ public class AddressController {
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
-	@GetMapping("/records")
-	public ResponseEntity<RestResponse<List<AddressVo>>> findAll() {
-		RestStatus<List<AddressVo>> restStatus = new RestStatus<>(HttpStatus.OK, RECORD_FETCH_SUCCESS_MESSAGE);
-		List<AddressVo> list = addressService.findAll();
-		if (CollectionUtils.isEmpty(list))
-			restStatus = new RestStatus<>(HttpStatus.OK, NO_RECORD_FOUND_MESSAGE);
-		final RestResponse<List<AddressVo>> response = new RestResponse<>(list, restStatus);
-		return new ResponseEntity<>(response, HttpStatus.OK);
-	}
+//	@GetMapping("/")
+//	public ResponseEntity<RestResponse<List<AddressVo>>> findAll() {
+//		RestStatus<List<AddressVo>> restStatus = new RestStatus<>(HttpStatus.OK, RECORD_FETCH_SUCCESS_MESSAGE);
+//		List<AddressVo> list = addressService.findAll();
+//		if (CollectionUtils.isEmpty(list))
+//			restStatus = new RestStatus<>(HttpStatus.OK, NO_RECORD_FOUND_MESSAGE);
+//		final RestResponse<List<AddressVo>> response = new RestResponse<>(list, restStatus);
+//		return new ResponseEntity<>(response, HttpStatus.OK);
+//	}
 
-	@GetMapping("/records/{id}")
+	@GetMapping("/{id}")
 	public ResponseEntity<RestResponse<AddressVo>> findById(@PathVariable(name = "id", required = true) Long id) {
 		RestStatus<AddressVo> restStatus = new RestStatus<>(HttpStatus.OK, RECORD_FETCH_SUCCESS_MESSAGE);
 		AddressVo addressVo = addressService.findById(id);
@@ -65,16 +62,16 @@ public class AddressController {
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
-	@PostMapping("/records")
+	@PostMapping("/")
 	public ResponseEntity<RestResponse<AddressVo>> add(@RequestBody(required = true) AddressVo addressVo) {
-		Long employeeId = addressVo.getId();
-		addressVo.setId(employeeId);
+		Long employeeId = addressVo.getEmpId();
+		 AddressVo addedAddressVo = addressService.add(addressVo, employeeId);
 		RestStatus<?> restStatus = new RestStatus<>(HttpStatus.OK, RECORD_ADD_SUCCESS_MESSAGE);
-		final RestResponse<AddressVo> response = new RestResponse<>(addressService.add(addressVo), restStatus);
+		final RestResponse<AddressVo> response = new RestResponse<>(addedAddressVo, restStatus);
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
-	@PutMapping("/records/{id}")
+	@PutMapping("/{id}")
 	public ResponseEntity<RestResponse<AddressVo>> update(@PathVariable(name = "id", required = true) Long id,
 			@RequestBody(required = true) AddressVo addressVo) {
 		addressVo.setId(id);
@@ -84,7 +81,7 @@ public class AddressController {
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
-	@PatchMapping("/records/{id}")
+	@PatchMapping("/{id}")
 	public ResponseEntity<RestResponse<AddressVo>> updatePatch(@PathVariable(name = "id", required = true) Long id,
 			@RequestBody(required = true) AddressVo addressVo) {
 		RestStatus<?> restStatus = new RestStatus<>(HttpStatus.OK, RECORD_UPDATE_SUCCESS_MESSAGE);
@@ -93,7 +90,7 @@ public class AddressController {
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
-	@DeleteMapping("/records/{id}")
+	@DeleteMapping("/{id}")
 	public ResponseEntity<RestResponse<Void>> delete(@PathVariable(name = "id", required = true) Long id) {
 		RestStatus<?> restStatus = new RestStatus<>(HttpStatus.OK, RECORD_DELETED_SUCCESS_MESSAGE);
 		addressService.delete(id);
@@ -101,7 +98,7 @@ public class AddressController {
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
-	@PatchMapping("/records/{id}/activate")
+	@PatchMapping("/{id}/activate")
 	public ResponseEntity<RestResponse<Void>> activate(@PathVariable(name = "id", required = true) Long id) {
 		RestStatus<?> restStatus = new RestStatus<>(HttpStatus.OK, RECORD_ACTIVE_SUCCESS_MESSAGE);
 		addressService.active(id);
@@ -109,7 +106,7 @@ public class AddressController {
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
-	@PatchMapping("/records/{id}/deactivate")
+	@PatchMapping("/{id}/deactivate")
 	public ResponseEntity<RestResponse<Void>> deactivate(@PathVariable(name = "id", required = true) Long id) {
 		RestStatus<?> restStatus = new RestStatus<>(HttpStatus.OK, RECORD_DEACTIVE_SUCCESS_MESSAGE);
 		addressService.deactive(id);

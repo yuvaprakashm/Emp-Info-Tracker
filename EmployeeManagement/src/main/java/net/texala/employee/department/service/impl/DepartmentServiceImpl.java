@@ -25,7 +25,6 @@ import net.texala.employee.department.service.DepartmentService;
 import net.texala.employee.department.vo.DepartmentVo;
 import net.texala.employee.enums.GenericStatus;
 import net.texala.employee.exception.Exception.DepartmentNotFoundException;
-import net.texala.employee.mapper.EmployeeMapper;
 import net.texala.employee.model.Employee;
 import net.texala.employee.repository.EmployeeRepository;
 import net.texala.employee.vo.EmployeeVo;
@@ -41,9 +40,6 @@ public class DepartmentServiceImpl implements DepartmentService {
 	private EntityManager entityManager;
 	@Autowired
 	private EmployeeRepository employeeRepo;
-	@Autowired
-	private EmployeeMapper employeeMapper;
-
 	@Override
 	public Page<DepartmentVo> search(Integer pageNo, Integer pageSize, String sortBy, String filterBy,
 			String searchText) {
@@ -64,24 +60,40 @@ public class DepartmentServiceImpl implements DepartmentService {
 				.orElseThrow(() -> new DepartmentNotFoundException(DEPARTMENT_NOT_FOUND + id));
 		return departmentMapper.toDto(department);
 	}
-
-	@Override
+ 
 	@Transactional
+	@Override
 	public DepartmentVo add(DepartmentVo departmentVo) {
-		try {
-			Department department = departmentMapper.toEntity(departmentVo);
-			department = departmentRepo.save(department);
-			Employee employee = null;
-			for (EmployeeVo employeeVo : departmentVo.getEmployees()) {
-				employee = employeeMapper.toEntity(employeeVo);
+	    try {
+	         Department department = new Department();
+	         department.setDeptName(departmentVo.getDeptName());
+	         department.setStatus(departmentVo.getStatus());
+	         department.setCreatedDate(departmentVo.getCreatedDate());
+	         department.setDeptContactNumber(departmentVo.getDeptContactNumber());
+	         department.setEmailAddress(departmentVo.getEmailAddress());
+	         department.setBudget(departmentVo.getBudget());
+	         departmentRepo.save(department);
+	         List<EmployeeVo> employeeVos = departmentVo.getEmployees();
+	         for (EmployeeVo employeeVo : employeeVos) {
+				Employee employee = new Employee();
+				employee.setFirstName(employeeVo.getFirstName());
+				employee.setLastName(employeeVo.getLastName());
+				employee.setAge(employeeVo.getAge());
+				employee.setEmail(employeeVo.getEmail());
+				employee.setSalary(employeeVo.getSalary());
+				employee.setGender(employeeVo.getGender());
+				employee.setStatus(employeeVo.getStatus());
+				employee.setContactNumber(employeeVo.getContactNumber());
+				employee.setDateOfBirth(employeeVo.getDateOfBirth());
+				employee.setHireDate(employeeVo.getHireDate());
+				employee.setJobTitle(employeeVo.getJobTitle());
 				employee.setDepartment(department);
-				employee = employeeRepo.save(employee);
+				employeeRepo.save(employee);
 			}
-			department.setEmployee(employee);
-			return departmentMapper.toDto(department);
-		} catch (Exception e) {
-			throw new RuntimeException(FAILED_ADD_DEPT + e.getMessage());
-		}
+	         return departmentMapper.toDto(department);
+	    } catch (Exception e) {
+	        throw new RuntimeException("Failed to add department: " + e.getMessage());
+	    }
 	}
 
 	@Transactional

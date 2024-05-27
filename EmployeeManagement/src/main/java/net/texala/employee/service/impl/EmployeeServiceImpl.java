@@ -81,6 +81,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 			employee.setDateOfBirth(employeeVo.getDateOfBirth());
 			employee.setHireDate(employeeVo.getHireDate());
 			employee.setJobTitle(employeeVo.getJobTitle());
+			
 			DepartmentVo departmentVo = employeeVo.getDepartment();
 			Department department = new Department();
 			department.setDeptName(departmentVo.getDeptName());
@@ -90,10 +91,11 @@ public class EmployeeServiceImpl implements EmployeeService {
 			department.setCreatedDate(departmentVo.getCreatedDate());
 			department.setStatus(departmentVo.getStatus());
 			department = departmentRepo.save(department);
+			
 			employee.setDepartment(department);
 			employee = employeeRepo.save(employee);
-			department.setEmployee(employee);
-			departmentRepo.save(department);
+			
+			 
 			List<AddressVo> addressVos = employeeVo.getAddresses();
 			for (AddressVo addressVo : addressVos) {
 				Address address = new Address();

@@ -3,6 +3,8 @@ package net.texala.employee.department.model;
 import static net.texala.employee.constants.Constants.*;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -11,11 +13,13 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.format.annotation.DateTimeFormat;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import lombok.Getter;
 import lombok.Setter;
 import net.texala.employee.enums.GenericStatus;
@@ -31,7 +35,7 @@ public class Department {
 	@Column(name = DEPT_ID)
 	private Long deptId;
 
-	@Column(name = DEPT_NAME)
+	@Column(name = DEPT_NAME,length = 20)
 	private String deptName;
 
 	@Enumerated(EnumType.STRING)
@@ -43,17 +47,17 @@ public class Department {
 	@Column(name = CREATED_DATE, nullable = false, updatable = false, columnDefinition = TIMESTAMP)
 	private Date createdDate = new Date();
 
-	@Column(name = DEPT_CONTACT_NUMBER)
+	@Column(name = DEPT_CONTACT_NUMBER,length = 10)
 	private String deptContactNumber;
 
-	@Column(name = EMAIL_ADDRESS)
+	@Column(name = EMAIL_ADDRESS,length = 30)
 	private String emailAddress;
 
 	@Column(name = BUDGET)
 	private BigDecimal budget;
 
-	@OneToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "employee_id", referencedColumnName = "id")
-	private Employee employee;
+	@OneToMany(mappedBy = "department",cascade = CascadeType.ALL,fetch = FetchType.LAZY,orphanRemoval = true)
+	@JsonBackReference
+	private List<Employee> employees;
 
 }

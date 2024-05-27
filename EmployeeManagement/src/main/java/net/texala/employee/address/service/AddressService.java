@@ -12,9 +12,9 @@ public interface AddressService {
 
 	public AddressVo findById(Long id);
 
-	public AddressVo add(AddressVo addressVo);
+	AddressVo add(AddressVo addressVo, Long empId);
 
-	public AddressVo update(AddressVo addressVo,Long id,boolean partialUpdate);
+	public AddressVo update(AddressVo addressVo, Long id, boolean partialUpdate);
 
 	public int active(Long id);
 

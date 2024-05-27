@@ -102,5 +102,6 @@ public class Constants {
 	public static final String BUDGET_MIN_VALUE_ERROR_MESSAGE = "Budget must be greater than 0.0";
 	public static final String FAILED_ADD_EMP = "Failed to add employee: ";
 	public static final String FAILED_ADD_DEPT ="Failed to add department: ";
+	public static final String FAILED_ADD_ADD ="Failed to add address: ";
 	
 }

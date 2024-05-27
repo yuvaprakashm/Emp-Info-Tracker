@@ -32,16 +32,16 @@ public class Address {
 	@Column(name = ID)
 	private Long id;
 
-	@Column(name = STREET)
+	@Column(name = STREET, length = 100)
 	private String street;
 
-	@Column(name = CITY)
+	@Column(name = CITY, length = 50)
 	private String city;
 
-	@Column(name = STATE)
+	@Column(name = STATE, length = 50)
 	private String state;
 
-	@Column(name = ZIPCODE)
+	@Column(name = ZIPCODE, length = 20)
 	private String zipcode;
 
 	@Enumerated(EnumType.STRING)
@@ -53,17 +53,17 @@ public class Address {
 	@Column(name = CREATED_DATE, nullable = false, updatable = false, columnDefinition = TIMESTAMP)
 	private Date createdDate = new Date();
 
-	@Column(name = DOORNUMBER)
+	@Column(name = DOORNUMBER, length = 10)
 	private String doorNumber;
 
-	@Column(name = COUNTRY)
+	@Column(name = COUNTRY, length = 20)
 	private String country;
 
 	@Enumerated(EnumType.STRING)
 	@Column(name = ADDRESS_TYPE)
 	private AddressType addressType;
 
-	@Column(name = LAND_MARK)
+	@Column(name = LAND_MARK, length = 20)
 	private String landMark;
 	
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)

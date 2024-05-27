@@ -3,6 +3,7 @@ package net.texala.employee.address.service.impl;
 import static net.texala.employee.constants.Constants.*;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.util.Date;
 import java.util.List;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
@@ -24,10 +25,8 @@ import net.texala.employee.address.service.AddressService;
 import net.texala.employee.address.vo.AddressVo;
 import net.texala.employee.enums.GenericStatus;
 import net.texala.employee.exception.Exception.AddressNotFoundException;
-import net.texala.employee.mapper.EmployeeMapper;
 import net.texala.employee.model.Employee;
-import net.texala.employee.service.EmployeeService;
-import net.texala.employee.vo.EmployeeVo;
+import net.texala.employee.repository.EmployeeRepository;
 
 @Service
 public class AddressServiceImpl implements AddressService {
@@ -37,9 +36,7 @@ public class AddressServiceImpl implements AddressService {
 	@Autowired
 	private AddressMapper addressMapper;
 	@Autowired
-	private EmployeeService employeeService;
-	@Autowired
-	private EmployeeMapper employeeMapper;
+	private EmployeeRepository employeeRepo;
 
 	@Override
 	public Page<AddressVo> search(Integer pageNo, Integer pageSize, String sortBy, String filterBy, String searchText) {
@@ -63,13 +60,31 @@ public class AddressServiceImpl implements AddressService {
 
 	@Override
 	@Transactional
-	public AddressVo add(AddressVo addressVo) {
-		EmployeeVo employeeVo = employeeService.findById(addressVo.getEmpId());
-		Employee employee = employeeMapper.toEntity(employeeVo);
-		Address address = addressMapper.toEntity(addressVo);
-		address.setEmployee(employee);
-		Address savedAddress = addressRepo.save(address);
-		return addressMapper.toDto(savedAddress);
+	public AddressVo add(AddressVo addressVo, Long empId) {
+		try {
+			Employee employee = employeeRepo.findById(empId)
+					.orElseThrow(() -> new RuntimeException(EMPLOYEE_NOT_FOUND + empId));
+
+			Address address = new Address();
+			address.setStreet(addressVo.getStreet());
+			address.setCity(addressVo.getCity());
+			address.setState(addressVo.getState());
+			address.setZipcode(addressVo.getZipcode());
+			address.setStatus(addressVo.getStatus());
+			address.setCountry(addressVo.getCountry());
+			address.setCreatedDate(new Date());
+			address.setDoorNumber(addressVo.getDoorNumber());
+			address.setAddressType(addressVo.getAddressType());
+			address.setLandMark(addressVo.getLandMark());
+
+			address.setEmployee(employee);
+
+			address = addressRepo.save(address);
+
+			return addressMapper.toDto(address);
+		} catch (Exception e) {
+			throw new RuntimeException(FAILED_ADD_ADD + e.getMessage());
+		}
 	}
 
 	@Override
