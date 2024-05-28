@@ -1,9 +1,7 @@
 package net.texala.employee.web.rest;
 
 import static net.texala.employee.constants.Constants.*;
-
-import java.util.List;
-
+import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.domain.Page;
@@ -22,8 +20,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import lombok.AllArgsConstructor;
-import net.texala.employee.restresponse.RestResponse;
-import net.texala.employee.reststatus.RestStatus;
+import net.texala.employee.common.RestResponse;
+import net.texala.employee.common.RestStatus;
 import net.texala.employee.service.EmployeeService;
 import net.texala.employee.vo.EmployeeVo;
 
@@ -47,24 +45,23 @@ public class EmployeeController {
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
-	@GetMapping("/")
-	public ResponseEntity<RestResponse<List<EmployeeVo>>> findAll() {
-		List<EmployeeVo> list = employeeService.findAll();
-		RestStatus<List<EmployeeVo>> restStatus = new RestStatus<>(HttpStatus.OK, RECORD_FETCH_SUCCESS_MESSAGE);
-		RestResponse<List<EmployeeVo>> response = new RestResponse<>(list, restStatus);
-		return new ResponseEntity<>(response, HttpStatus.OK);
-	}
+//	@GetMapping("/")
+//	public ResponseEntity<RestResponse<List<EmployeeVo>>> findAll() {
+//		List<EmployeeVo> list = employeeService.findAll();
+//		RestStatus<List<EmployeeVo>> restStatus = new RestStatus<>(HttpStatus.OK, RECORD_FETCH_SUCCESS_MESSAGE);
+//		RestResponse<List<EmployeeVo>> response = new RestResponse<>(list, restStatus);
+//		return new ResponseEntity<>(response, HttpStatus.OK);
+//	}
 
 	@GetMapping("/{id}")
 	public ResponseEntity<RestResponse<EmployeeVo>> findById(@PathVariable(name = "id", required = true) Long id) {
 		RestStatus<EmployeeVo> restStatus = new RestStatus<>(HttpStatus.OK, RECORD_FETCH_SUCCESS_MESSAGE);
-		EmployeeVo employeeVo = employeeService.findById(id);
-		final RestResponse<EmployeeVo> response = new RestResponse<>(employeeVo, restStatus);
+		final RestResponse<EmployeeVo> response = new RestResponse<>(employeeService.findEmployeeVoById(id), restStatus);
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
 	@PostMapping("/")
-	public ResponseEntity<RestResponse<EmployeeVo>> add(@RequestBody(required = true) EmployeeVo employeeVo) {
+	public ResponseEntity<RestResponse<EmployeeVo>> add(@RequestBody(required = true) @Valid EmployeeVo employeeVo) {
 		RestStatus<?> restStatus = new RestStatus<>(HttpStatus.OK, RECORD_ADD_SUCCESS_MESSAGE);
 		final RestResponse<EmployeeVo> response = new RestResponse<>(employeeService.add(employeeVo), restStatus);
 		return new ResponseEntity<>(response, HttpStatus.OK);
@@ -72,7 +69,7 @@ public class EmployeeController {
 
 	@PutMapping("/{id}")
 	public ResponseEntity<RestResponse<EmployeeVo>> update(@PathVariable(name = "id", required = true) Long id,
-			@RequestBody(required = true) EmployeeVo employeeVo) {
+			@RequestBody(required = true) @Valid EmployeeVo employeeVo) {
 		employeeVo.setId(id);
 		EmployeeVo updatedEmployee = employeeService.update(employeeVo, id, false);
 		RestStatus<?> restStatus = new RestStatus<>(HttpStatus.OK, RECORD_UPDATE_SUCCESS_MESSAGE);
@@ -91,7 +88,12 @@ public class EmployeeController {
 
 	@DeleteMapping("/{id}")
 	public ResponseEntity<RestResponse<Void>> delete(@PathVariable(name = "id", required = true) Long id) {
-		RestStatus<?> restStatus = new RestStatus<>(HttpStatus.OK, RECORD_DELETED_SUCCESS_MESSAGE);
+//		RestStatus<?> restStatus = new RestStatus<>(HttpStatus.OK, RECORD_DELETED_SUCCESS_MESSAGE);
+//		employeeService.delete(id);
+//		final RestResponse<Void> response = new RestResponse<>(null, restStatus);
+//		return new ResponseEntity<>(response, HttpStatus.OK);
+		
+		RestStatus<?> restStatus = new RestStatus<>(HttpStatus.OK, RECORD_ACTIVE_SUCCESS_MESSAGE);
 		employeeService.delete(id);
 		final RestResponse<Void> response = new RestResponse<>(null, restStatus);
 		return new ResponseEntity<>(response, HttpStatus.OK);

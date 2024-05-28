@@ -16,15 +16,15 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import net.texala.employee.Specification.CommonSpecification;
-import net.texala.employee.Util.Utility;
+import net.texala.employee.common.CommonSpecification;
+import net.texala.employee.common.Utility;
 import net.texala.employee.department.mapper.DepartmentMapper;
 import net.texala.employee.department.model.Department;
 import net.texala.employee.department.repository.DepartmentRepository;
 import net.texala.employee.department.service.DepartmentService;
 import net.texala.employee.department.vo.DepartmentVo;
 import net.texala.employee.enums.GenericStatus;
-import net.texala.employee.exception.Exception.DepartmentNotFoundException;
+import net.texala.employee.exception.Exception.ServiceException;
 import net.texala.employee.model.Employee;
 import net.texala.employee.repository.EmployeeRepository;
 import net.texala.employee.vo.EmployeeVo;
@@ -40,6 +40,7 @@ public class DepartmentServiceImpl implements DepartmentService {
 	private EntityManager entityManager;
 	@Autowired
 	private EmployeeRepository employeeRepo;
+	
 	@Override
 	public Page<DepartmentVo> search(Integer pageNo, Integer pageSize, String sortBy, String filterBy,
 			String searchText) {
@@ -55,10 +56,10 @@ public class DepartmentServiceImpl implements DepartmentService {
 	}
 
 	@Override
-	public DepartmentVo findById(Long id) {
-		Department department = departmentRepo.findById(id)
-				.orElseThrow(() -> new DepartmentNotFoundException(DEPARTMENT_NOT_FOUND + id));
-		return departmentMapper.toDto(department);
+	public Department findById(Long id) {
+		return departmentRepo.findById(id)
+				.orElseThrow(() -> new ServiceException(DEPARTMENT_NOT_FOUND + id));
+		 
 	}
  
 	@Transactional
@@ -100,7 +101,7 @@ public class DepartmentServiceImpl implements DepartmentService {
 	@Override
 	public DepartmentVo update(DepartmentVo departmentVo, Long id, boolean partialUpdate) {
 		Department existingDepartment = departmentRepo.findById(id)
-				.orElseThrow(() -> new DepartmentNotFoundException(DEPARTMENT_NOT_FOUND + id));
+				.orElseThrow(() -> new ServiceException(DEPARTMENT_NOT_FOUND + id));
 		if (partialUpdate) {
 			if (departmentVo.getDeptName() != null) {
 				existingDepartment.setDeptName(departmentVo.getDeptName());

@@ -20,7 +20,6 @@ public class Constants {
 	public static final String STATE_REQUIRED = "State is required";
 	public static final String ZIPCODE_REQUIRED = "Zipcode is required";
 	public static final String STATUS_REQUIRED = "Status is required";
-	public static final int MAX_STREET_LENGTH = 100;
 	public static final String STREET_LENGTH_ERROR_MESSAGE = "Street length must be less than or equal to 100 characters";
 	public static final String CITY_LENGTH_ERROR_MESSAGE = "City must contain only alphabetic characters";
 	public static final String STATE_LENGTH_ERROR_MESSAGE = "State must contain only alphabetic characters";

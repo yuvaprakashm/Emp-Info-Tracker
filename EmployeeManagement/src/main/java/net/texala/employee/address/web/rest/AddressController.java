@@ -18,10 +18,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import lombok.AllArgsConstructor;
+import net.texala.employee.address.model.Address;
 import net.texala.employee.address.service.AddressService;
 import net.texala.employee.address.vo.AddressVo;
-import net.texala.employee.restresponse.RestResponse;
-import net.texala.employee.reststatus.RestStatus;
+import net.texala.employee.common.RestResponse;
+import net.texala.employee.common.RestStatus;
+
 import static net.texala.employee.constants.Constants.*;
 
 @RestController
@@ -55,10 +57,10 @@ public class AddressController {
 //	}
 
 	@GetMapping("/{id}")
-	public ResponseEntity<RestResponse<AddressVo>> findById(@PathVariable(name = "id", required = true) Long id) {
-		RestStatus<AddressVo> restStatus = new RestStatus<>(HttpStatus.OK, RECORD_FETCH_SUCCESS_MESSAGE);
-		AddressVo addressVo = addressService.findById(id);
-		final RestResponse<AddressVo> response = new RestResponse<>(addressVo, restStatus);
+	public ResponseEntity<RestResponse<Address>> findById(@PathVariable(name = "id", required = true) Long id) {
+		RestStatus<Address> restStatus = new RestStatus<>(HttpStatus.OK, RECORD_FETCH_SUCCESS_MESSAGE);
+		Address address = addressService.findById(id);
+		final RestResponse<Address> response = new RestResponse<>(address, restStatus);
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 

@@ -19,10 +19,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
+import net.texala.employee.common.RestResponse;
+import net.texala.employee.common.RestStatus;
+import net.texala.employee.department.model.Department;
 import net.texala.employee.department.service.DepartmentService;
 import net.texala.employee.department.vo.DepartmentVo;
-import net.texala.employee.restresponse.RestResponse;
-import net.texala.employee.reststatus.RestStatus;
 
 @RestController
 @RequestMapping("/dept")
@@ -53,10 +54,10 @@ public class DepartmentController {
 //	}
 
 	@GetMapping("/{id}")
-	public ResponseEntity<RestResponse<DepartmentVo>> findById(@PathVariable(name = "id", required = true) Long id) {
-		RestStatus<DepartmentVo> restStatus = new RestStatus<>(HttpStatus.OK, RECORD_FETCH_SUCCESS_MESSAGE);
-		DepartmentVo departmentVo = departmentService.findById(id);
-		final RestResponse<DepartmentVo> response = new RestResponse<>(departmentVo, restStatus);
+	public ResponseEntity<RestResponse<Department>> findById(@PathVariable(name = "id", required = true) Long id) {
+		RestStatus<Department> restStatus = new RestStatus<>(HttpStatus.OK, RECORD_FETCH_SUCCESS_MESSAGE);
+		Department department = departmentService.findById(id);
+		final RestResponse<Department> response = new RestResponse<>(department, restStatus);
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 

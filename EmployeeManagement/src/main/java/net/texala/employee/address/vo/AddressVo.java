@@ -18,7 +18,7 @@ public class AddressVo {
 	private Long id;
 
 	@NotBlank(message = STREET_REQUIRED)
-	@Size(max = MAX_STREET_LENGTH, message = STREET_LENGTH_ERROR_MESSAGE)
+	@Size(max = 100, message = STREET_LENGTH_ERROR_MESSAGE)
 	private String street;
 
 	@NotBlank(message = CITY_REQUIRED)
@@ -56,7 +56,6 @@ public class AddressVo {
 	private String landMark;
 
  	private Long empId;
- 	
  	
 
 }

@@ -16,15 +16,15 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import net.texala.employee.Specification.CommonSpecification;
-import net.texala.employee.Util.Utility;
 import net.texala.employee.address.mapper.AddressMapper;
 import net.texala.employee.address.model.Address;
 import net.texala.employee.address.repository.AddressRepository;
 import net.texala.employee.address.service.AddressService;
 import net.texala.employee.address.vo.AddressVo;
+import net.texala.employee.common.CommonSpecification;
+import net.texala.employee.common.Utility;
 import net.texala.employee.enums.GenericStatus;
-import net.texala.employee.exception.Exception.AddressNotFoundException;
+import net.texala.employee.exception.Exception.ServiceException;
 import net.texala.employee.model.Employee;
 import net.texala.employee.repository.EmployeeRepository;
 
@@ -52,10 +52,10 @@ public class AddressServiceImpl implements AddressService {
 	}
 
 	@Override
-	public AddressVo findById(Long id) {
-		Address address = addressRepo.findById(id)
-				.orElseThrow(() -> new AddressNotFoundException(ADDRESS_NOT_FOUND + id));
-		return addressMapper.toDto(address);
+	public Address findById(Long id) {
+		return addressRepo.findById(id)
+				.orElseThrow(() -> new ServiceException(ADDRESS_NOT_FOUND + id));
+		 
 	}
 
 	@Override

@@ -1,4 +1,4 @@
-package net.texala.employee.reststatus;
+package net.texala.employee.common;
 
 import java.util.Map;
 import org.springframework.http.HttpStatus;

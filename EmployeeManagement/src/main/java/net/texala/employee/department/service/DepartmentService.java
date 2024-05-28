@@ -2,6 +2,8 @@ package net.texala.employee.department.service;
 
 import java.util.List;
 import org.springframework.data.domain.Page;
+
+import net.texala.employee.department.model.Department;
 import net.texala.employee.department.vo.DepartmentVo;
 
 public interface DepartmentService {
@@ -10,7 +12,7 @@ public interface DepartmentService {
 
 	public List<DepartmentVo> findAll();
 
-	public DepartmentVo findById(Long id);
+	public Department findById(Long id);
 
 	public DepartmentVo add(DepartmentVo departmentVo);
 

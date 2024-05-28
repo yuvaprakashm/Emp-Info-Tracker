@@ -1,7 +1,7 @@
 package net.texala.employee.enums;
 
 public enum GenericStatus {
-	ACTIVE("active"), DEACTIVE("deactive");
+	ACTIVE("active"), DEACTIVE("deactive"), DELETED("deleted");
 
 	private String name;
 	

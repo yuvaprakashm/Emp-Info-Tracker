@@ -2,6 +2,8 @@ package net.texala.employee.address.service;
 
 import java.util.List;
 import org.springframework.data.domain.Page;
+
+import net.texala.employee.address.model.Address;
 import net.texala.employee.address.vo.AddressVo;
 
 public interface AddressService {
@@ -10,7 +12,7 @@ public interface AddressService {
 
 	public List<AddressVo> findAll();
 
-	public AddressVo findById(Long id);
+	public Address findById(Long id);
 
 	AddressVo add(AddressVo addressVo, Long empId);
 

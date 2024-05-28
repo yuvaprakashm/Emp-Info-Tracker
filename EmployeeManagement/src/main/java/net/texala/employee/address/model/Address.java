@@ -66,8 +66,8 @@ public class Address {
 	@Column(name = LAND_MARK, length = 20)
 	private String landMark;
 	
-	@ManyToOne(fetch = FetchType.LAZY, optional = false)
-	@JoinColumn(name = "employee_id")
+	@ManyToOne(fetch = FetchType.LAZY) //, optional = false
+	@JoinColumn(name = "employee_id",nullable = false)
 	private Employee employee;
 	
 	

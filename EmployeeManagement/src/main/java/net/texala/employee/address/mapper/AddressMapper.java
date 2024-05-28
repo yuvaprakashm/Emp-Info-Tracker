@@ -6,7 +6,7 @@ import net.texala.employee.address.model.Address;
 import net.texala.employee.address.vo.AddressVo;
 import java.util.List;
 
-@Mapper
+@Mapper 
 @Component
 public interface AddressMapper {
 	
@@ -16,4 +16,6 @@ public interface AddressMapper {
     AddressVo toDto(Address address);
 
     List<AddressVo> toDtos(List<Address> addresses);
+    
+    
 }

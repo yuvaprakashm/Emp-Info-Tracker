@@ -1,4 +1,4 @@
-package net.texala.employee.Util;
+package net.texala.employee.common;
 
 import java.util.ArrayList;
 import java.util.HashMap;
