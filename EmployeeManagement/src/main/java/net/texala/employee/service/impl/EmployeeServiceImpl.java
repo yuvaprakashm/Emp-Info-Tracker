@@ -17,9 +17,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
+import net.texala.employee.address.mapper.AddressMapper;
 import net.texala.employee.address.model.Address;
-import net.texala.employee.address.repository.AddressRepository;
 import net.texala.employee.address.vo.AddressVo;
 import net.texala.employee.common.CommonSpecification;
 import net.texala.employee.common.Utility;
@@ -41,7 +40,9 @@ public class EmployeeServiceImpl implements EmployeeService {
 	private EmployeeMapper employeeMapper;
 	@Autowired
 	private DepartmentService departmentService;
-	
+	@Autowired
+	private AddressMapper addressMapper;
+
 	@Override
 	public Page<EmployeeVo> search(Integer pageNo, Integer pageSize, String sortBy, String filterBy,
 			String searchText) {
@@ -54,129 +55,64 @@ public class EmployeeServiceImpl implements EmployeeService {
 
 	@Override
 	public Employee findById(Long id) {
-	    return employeeRepo.findById(id)
-	            .orElseThrow(() -> new ServiceException(EMPLOYEE_NOT_FOUND + id));
+		return employeeRepo.findById(id).orElseThrow(() -> new ServiceException(EMPLOYEE_NOT_FOUND + id));
 	}
-
-
+ 
 	@Override
 	@Transactional
 	public EmployeeVo add(EmployeeVo employeeVo) {
 		try {
-			//use mapper here
-			Employee employee = new Employee();
-			employee.setFirstName(employeeVo.getFirstName());
-			employee.setLastName(employeeVo.getLastName());
-			employee.setAge(employeeVo.getAge());
-			employee.setEmail(employeeVo.getEmail());
-			employee.setSalary(employeeVo.getSalary());
-			employee.setGender(employeeVo.getGender());
-			employee.setStatus(employeeVo.getStatus());
-			employee.setContactNumber(employeeVo.getContactNumber());
-			employee.setDateOfBirth(employeeVo.getDateOfBirth());
-			employee.setHireDate(employeeVo.getHireDate());
-			employee.setJobTitle(employeeVo.getJobTitle());
-
-			employee.setDepartment(departmentService.findById(employeeVo.getDepartment().getDeptId()));
-//			DepartmentVo departmentVo = employeeVo.getDepartment();
-//			Department department = new Department();
-//			department.setDeptName(departmentVo.getDeptName());
-//			department.setBudget(departmentVo.getBudget());
-//			department.setDeptContactNumber(departmentVo.getDeptContactNumber());
-//			department.setEmailAddress(departmentVo.getEmailAddress());
-//			department.setCreatedDate(departmentVo.getCreatedDate());
-//			department.setStatus(departmentVo.getStatus());
-//			department = departmentRepo.save(department);
-			
-			List<Address> addressVos = new ArrayList<>();
+ 			Employee employee = employeeMapper.toEntity(employeeVo);
+			employee.setDepartment(departmentService.findById(employeeVo.getDeptId()));
+			List<Address> addresses = new ArrayList<>();
 			for (AddressVo addressVo : employeeVo.getAddresses()) {
-				//use mapper here
-				Address address = new Address();
-				address.setStreet(addressVo.getStreet());
-				address.setCity(addressVo.getCity());
-				address.setZipcode(addressVo.getZipcode());
-				address.setCreatedDate(addressVo.getCreatedDate());
-				address.setState(addressVo.getState());
-				address.setStatus(addressVo.getStatus());
-				address.setDoorNumber(addressVo.getDoorNumber());
-				address.setCountry(addressVo.getCountry());
-				address.setAddressType(addressVo.getAddressType());
-				address.setLandMark(addressVo.getLandMark());
-				address.setEmployee(employee);
-//				addressRepo.save(address);
-				
-				addressVos.add(address);
+				Address address = addressMapper.toEntity(addressVo);
+	            address.setEmployee(employee);
+	            addresses.add(address);	 
 			}
-			employee.setAddresses(addressVos);
-			
+			employee.setAddresses(addresses);
 			return employeeMapper.toDto(employeeRepo.save(employee));
 		} catch (Exception e) {
 			throw new ServiceException(FAILED_ADD_EMP + e.getMessage());
 		}
-	}
+	}     
 
 	@Transactional
 	@Override
-	public EmployeeVo update(EmployeeVo employeeVo, Long id, boolean partialUpdate) {
-		Employee existingEmployee = findById(id);
-//		Employee existingEmployee = employeeRepo.findById(id)
-//				.orElseThrow(() -> new RuntimeException(EMPLOYEE_NOT_FOUND + id));
-
-		if (partialUpdate) {
-			if (employeeVo.getFirstName() != null)
-				existingEmployee.setFirstName(employeeVo.getFirstName());
-			if (employeeVo.getLastName() != null)
-				existingEmployee.setLastName(employeeVo.getLastName());
-			if (employeeVo.getEmail() != null)
-				existingEmployee.setEmail(employeeVo.getEmail());
-			if (employeeVo.getSalary() != null)
-				existingEmployee.setSalary(employeeVo.getSalary());
-		} else {
-			//use mapper here
-			existingEmployee.setFirstName(employeeVo.getFirstName());
-			existingEmployee.setLastName(employeeVo.getLastName());
-			existingEmployee.setAge(employeeVo.getAge());
-			existingEmployee.setEmail(employeeVo.getEmail());
-			existingEmployee.setGender(employeeVo.getGender());
-			existingEmployee.setSalary(employeeVo.getSalary());
-			existingEmployee.setStatus(employeeVo.getStatus());
-			existingEmployee.setContactNumber(employeeVo.getContactNumber());
-			existingEmployee.setDateOfBirth(employeeVo.getDateOfBirth());
-			existingEmployee.setHireDate(employeeVo.getHireDate());
-			existingEmployee.setJobTitle(employeeVo.getJobTitle());
+	public EmployeeVo update(EmployeeVo employeeVo, Long id) {
+		findById(id);
+		employeeVo.setId(id);
+		Employee emp = employeeMapper.toEntity(employeeVo);
+		emp.setDepartment(departmentService.findById(employeeVo.getDeptId()));
+		List<Address> addresses = new ArrayList<>();
+		for (AddressVo addressVo : employeeVo.getAddresses()) {
+			Address address = addressMapper.toEntity(addressVo);
+            address.setEmployee(emp);
+            addresses.add(address);	 
 		}
-
-//		Employee updatedEmployee = employeeRepo.save(existingEmployee);
-		return employeeMapper.toDto(employeeRepo.save(existingEmployee));
+		emp.setAddresses(addresses);
+		return employeeMapper.toDto(employeeRepo.save(emp));
 	}
 
 	@Transactional
 	@Override
 	public void delete(Long id) {
 		findById(id);
-//		employeeRepo.deleteById(id);
 		employeeRepo.updateStatus(GenericStatus.DELETED, id);
 	}
-
+	
 	@Transactional
 	@Override
-	public int active(Long id) {
+	public void updateGenericStatus(GenericStatus status,Long id) {
 		findById(id);
-		return employeeRepo.updateStatus(GenericStatus.ACTIVE, id);
-	}
-
-	@Transactional
-	@Override
-	public int deactive(Long id) {
-		findById(id);
-		return employeeRepo.updateStatus(GenericStatus.DEACTIVE, id);
+	 employeeRepo.updateStatus(status, id);
 	}
 
 	@Override
 	public String generateCsvContent() {
 		StringWriter writer = new StringWriter();
 		try (@SuppressWarnings("deprecation")
-			CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT.withHeader(EMPLOYEE_HEADER))) {
+		CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT.withHeader(EMPLOYEE_HEADER))) {
 			Page<EmployeeVo> employeeList = search(0, Integer.MAX_VALUE, "createdDate:asc", Strings.EMPTY,
 					Strings.EMPTY);
 			for (EmployeeVo employee : employeeList.getContent()) {
@@ -195,5 +131,4 @@ public class EmployeeServiceImpl implements EmployeeService {
 	public EmployeeVo findEmployeeVoById(Long id) {
 		return employeeMapper.toDto(findById(id));
 	}
-
 }

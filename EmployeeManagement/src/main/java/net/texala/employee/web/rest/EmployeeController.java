@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.AllArgsConstructor;
 import net.texala.employee.common.RestResponse;
 import net.texala.employee.common.RestStatus;
+import net.texala.employee.enums.GenericStatus;
 import net.texala.employee.service.EmployeeService;
 import net.texala.employee.vo.EmployeeVo;
 
@@ -45,14 +46,6 @@ public class EmployeeController {
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
-//	@GetMapping("/")
-//	public ResponseEntity<RestResponse<List<EmployeeVo>>> findAll() {
-//		List<EmployeeVo> list = employeeService.findAll();
-//		RestStatus<List<EmployeeVo>> restStatus = new RestStatus<>(HttpStatus.OK, RECORD_FETCH_SUCCESS_MESSAGE);
-//		RestResponse<List<EmployeeVo>> response = new RestResponse<>(list, restStatus);
-//		return new ResponseEntity<>(response, HttpStatus.OK);
-//	}
-
 	@GetMapping("/{id}")
 	public ResponseEntity<RestResponse<EmployeeVo>> findById(@PathVariable(name = "id", required = true) Long id) {
 		RestStatus<EmployeeVo> restStatus = new RestStatus<>(HttpStatus.OK, RECORD_FETCH_SUCCESS_MESSAGE);
@@ -60,10 +53,11 @@ public class EmployeeController {
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
-	@PostMapping("/")
+	@PostMapping
 	public ResponseEntity<RestResponse<EmployeeVo>> add(@RequestBody(required = true) @Valid EmployeeVo employeeVo) {
 		RestStatus<?> restStatus = new RestStatus<>(HttpStatus.OK, RECORD_ADD_SUCCESS_MESSAGE);
-		final RestResponse<EmployeeVo> response = new RestResponse<>(employeeService.add(employeeVo), restStatus);
+		EmployeeVo add = employeeService.add(employeeVo);
+		final RestResponse<EmployeeVo> response = new RestResponse<>(add, restStatus);
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
@@ -71,50 +65,28 @@ public class EmployeeController {
 	public ResponseEntity<RestResponse<EmployeeVo>> update(@PathVariable(name = "id", required = true) Long id,
 			@RequestBody(required = true) @Valid EmployeeVo employeeVo) {
 		employeeVo.setId(id);
-		EmployeeVo updatedEmployee = employeeService.update(employeeVo, id, false);
 		RestStatus<?> restStatus = new RestStatus<>(HttpStatus.OK, RECORD_UPDATE_SUCCESS_MESSAGE);
-		final RestResponse<EmployeeVo> response = new RestResponse<>(updatedEmployee, restStatus);
-		return new ResponseEntity<>(response, HttpStatus.OK);
-	}
-
-	@PatchMapping("/{id}")
-	public ResponseEntity<RestResponse<EmployeeVo>> updatePatch(@PathVariable(name = "id", required = true) Long id,
-			@RequestBody(required = true) EmployeeVo employeeVo) {
-		RestStatus<?> restStatus = new RestStatus<>(HttpStatus.OK, RECORD_UPDATE_SUCCESS_MESSAGE);
-		final RestResponse<EmployeeVo> response = new RestResponse<>(employeeService.update(employeeVo, id, true),
-				restStatus);
+		final RestResponse<EmployeeVo> response = new RestResponse<>(employeeService.update(employeeVo, id), restStatus);
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
 	@DeleteMapping("/{id}")
 	public ResponseEntity<RestResponse<Void>> delete(@PathVariable(name = "id", required = true) Long id) {
-//		RestStatus<?> restStatus = new RestStatus<>(HttpStatus.OK, RECORD_DELETED_SUCCESS_MESSAGE);
-//		employeeService.delete(id);
-//		final RestResponse<Void> response = new RestResponse<>(null, restStatus);
-//		return new ResponseEntity<>(response, HttpStatus.OK);
-		
-		RestStatus<?> restStatus = new RestStatus<>(HttpStatus.OK, RECORD_ACTIVE_SUCCESS_MESSAGE);
+		RestStatus<?> restStatus = new RestStatus<>(HttpStatus.OK, RECORD_DELETED_SUCCESS_MESSAGE);
 		employeeService.delete(id);
 		final RestResponse<Void> response = new RestResponse<>(null, restStatus);
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
-	@PatchMapping("/{id}/activate")
-	public ResponseEntity<RestResponse<Void>> activate(@PathVariable(name = "id", required = true) Long id) {
-		RestStatus<?> restStatus = new RestStatus<>(HttpStatus.OK, RECORD_ACTIVE_SUCCESS_MESSAGE);
-		employeeService.active(id);
-		final RestResponse<Void> response = new RestResponse<>(null, restStatus);
-		return new ResponseEntity<>(response, HttpStatus.OK);
-	}
-
-	@PatchMapping("/{id}/deactivate")
-	public ResponseEntity<RestResponse<Void>> deactivate(@PathVariable(name = "id", required = true) Long id) {
-		RestStatus<?> restStatus = new RestStatus<>(HttpStatus.OK, RECORD_DEACTIVE_SUCCESS_MESSAGE);
-		employeeService.deactive(id);
-		final RestResponse<Void> response = new RestResponse<>(null, restStatus);
-		return new ResponseEntity<>(response, HttpStatus.OK);
-	}
-
+	
+	 @PatchMapping("/{id}/status")
+	    public ResponseEntity<RestResponse<Void>> updateGenericStatus(@PathVariable(name = "id", required = true) Long id, @RequestParam(name = "status", required = true) GenericStatus status) {
+	        employeeService.updateGenericStatus(status, id);  
+	        RestStatus<?> restStatus = new RestStatus<>(HttpStatus.OK, RECORD_STATUS_UPDATE_SUCCESS);  
+	        final RestResponse<Void> response = new RestResponse<>(null, restStatus);
+	        return new ResponseEntity<>(response, HttpStatus.OK);
+	    }
+	 
 	@GetMapping("/download")
 	public ResponseEntity<ByteArrayResource> downloadCsv() {
 		String csvContent = employeeService.generateCsvContent();

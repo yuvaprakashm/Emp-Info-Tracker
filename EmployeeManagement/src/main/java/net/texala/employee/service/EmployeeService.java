@@ -1,7 +1,7 @@
 package net.texala.employee.service;
 
-
 import org.springframework.data.domain.Page;
+import net.texala.employee.enums.GenericStatus;
 import net.texala.employee.model.Employee;
 import net.texala.employee.vo.EmployeeVo;
 
@@ -15,13 +15,11 @@ public interface EmployeeService {
 	
 	public EmployeeVo add(EmployeeVo employeeVo);
 
-	public int active(Long id);
-
-	public int deactive(Long id);
-
+	public void updateGenericStatus(GenericStatus status,Long id);
+	
 	public void delete(Long id);
 
-	public EmployeeVo update(EmployeeVo employeeVo, Long id, boolean partialUpdate);
+	public EmployeeVo update(EmployeeVo employeeVo, Long id);
 
 	public String generateCsvContent();
 

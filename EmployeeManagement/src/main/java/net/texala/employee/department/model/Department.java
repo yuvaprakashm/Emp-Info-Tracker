@@ -17,9 +17,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.format.annotation.DateTimeFormat;
-
-import com.fasterxml.jackson.annotation.JsonBackReference;
-
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 import net.texala.employee.enums.GenericStatus;
@@ -56,8 +54,8 @@ public class Department {
 	@Column(name = BUDGET)
 	private BigDecimal budget;
 
-	@OneToMany(mappedBy = "department",cascade = CascadeType.ALL,fetch = FetchType.LAZY,orphanRemoval = true)
-	@JsonBackReference
+	@OneToMany(mappedBy = "department",cascade = CascadeType.REMOVE,fetch = FetchType.LAZY,  orphanRemoval = true)
+	@JsonIgnore
 	private List<Employee> employees;
 
 }

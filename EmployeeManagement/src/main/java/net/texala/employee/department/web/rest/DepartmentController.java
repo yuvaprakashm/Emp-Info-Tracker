@@ -24,6 +24,7 @@ import net.texala.employee.common.RestStatus;
 import net.texala.employee.department.model.Department;
 import net.texala.employee.department.service.DepartmentService;
 import net.texala.employee.department.vo.DepartmentVo;
+import net.texala.employee.enums.GenericStatus;
 
 @RestController
 @RequestMapping("/dept")
@@ -45,13 +46,6 @@ public class DepartmentController {
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
-//	@GetMapping("/")
-//	public ResponseEntity<RestResponse<List<DepartmentVo>>> findAll() {
-//		List<DepartmentVo> list = departmentService.findAll();
-//		RestStatus<List<DepartmentVo>> restStatus = new RestStatus<>(HttpStatus.OK, RECORD_FETCH_SUCCESS_MESSAGE);
-//		RestResponse<List<DepartmentVo>> response = new RestResponse<>(list, restStatus);
-//		return new ResponseEntity<>(response, HttpStatus.OK);
-//	}
 
 	@GetMapping("/{id}")
 	public ResponseEntity<RestResponse<Department>> findById(@PathVariable(name = "id", required = true) Long id) {
@@ -71,20 +65,10 @@ public class DepartmentController {
 	@PutMapping("/{id}")
 	public ResponseEntity<RestResponse<DepartmentVo>> update(@PathVariable(name = "id", required = true) Long id,
 			@RequestBody(required = true) DepartmentVo departmentVo) {
-		RestStatus<?> restStatus = new RestStatus<>(HttpStatus.OK, RECORD_UPDATE_SUCCESS_MESSAGE);
 		departmentVo.setDeptId(id);
+		RestStatus<?> restStatus = new RestStatus<>(HttpStatus.OK, RECORD_UPDATE_SUCCESS_MESSAGE);
 		final RestResponse<DepartmentVo> response = new RestResponse<>(
-				departmentService.update(departmentVo, id, false), restStatus);
-		return new ResponseEntity<>(response, HttpStatus.OK);
-	}
-
-	@PatchMapping("/{id}")
-	public ResponseEntity<RestResponse<DepartmentVo>> updatePatch(@PathVariable(name = "id", required = true) Long id,
-			@RequestBody(required = true) DepartmentVo departmentVo) {
-		RestStatus<?> restStatus = new RestStatus<>(HttpStatus.OK, RECORD_UPDATE_SUCCESS_MESSAGE);
-		departmentVo.setDeptId(id);
-		final RestResponse<DepartmentVo> response = new RestResponse<>(departmentService.update(departmentVo, id, true),
-				restStatus);
+				departmentService.update(departmentVo, id), restStatus);
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
@@ -96,22 +80,13 @@ public class DepartmentController {
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
-	@PatchMapping("/{id}/activate")
-	public ResponseEntity<RestResponse<Void>> activate(@PathVariable(name = "id", required = true) Long id) {
-		RestStatus<?> restStatus = new RestStatus<>(HttpStatus.OK, RECORD_ACTIVE_SUCCESS_MESSAGE);
-		departmentService.active(id);
-		final RestResponse<Void> response = new RestResponse<>(null, restStatus);
-		return new ResponseEntity<>(response, HttpStatus.OK);
-	}
-
-	@PatchMapping("/{id}/deactivate")
-	public ResponseEntity<RestResponse<Void>> deactivate(@PathVariable(name = "id", required = true) Long id) {
-		RestStatus<?> restStatus = new RestStatus<>(HttpStatus.OK, RECORD_DEACTIVE_SUCCESS_MESSAGE);
-		departmentService.deactive(id);
-		final RestResponse<Void> response = new RestResponse<>(null, restStatus);
-		return new ResponseEntity<>(response, HttpStatus.OK);
-	}
-
+	@PatchMapping("/{id}/status")
+    public ResponseEntity<RestResponse<Void>> updateGenericStatus(@PathVariable(name = "id", required = true) Long id, @RequestParam(name = "status", required = true) GenericStatus status) {
+        departmentService.updateGenericStatus(status, id);  
+        RestStatus<?> restStatus = new RestStatus<>(HttpStatus.OK, RECORD_STATUS_UPDATE_SUCCESS);  
+        final RestResponse<Void> response = new RestResponse<>(null, restStatus);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 	
 	@GetMapping("/download")
 	public ResponseEntity<ByteArrayResource> downloadCsv() {

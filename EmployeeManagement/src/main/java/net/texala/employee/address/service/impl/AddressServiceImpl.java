@@ -3,10 +3,11 @@ package net.texala.employee.address.service.impl;
 import static net.texala.employee.constants.Constants.*;
 import java.io.IOException;
 import java.io.StringWriter;
-import java.util.Date;
+import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
+import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -25,8 +26,7 @@ import net.texala.employee.common.CommonSpecification;
 import net.texala.employee.common.Utility;
 import net.texala.employee.enums.GenericStatus;
 import net.texala.employee.exception.Exception.ServiceException;
-import net.texala.employee.model.Employee;
-import net.texala.employee.repository.EmployeeRepository;
+import net.texala.employee.service.EmployeeService;
 
 @Service
 public class AddressServiceImpl implements AddressService {
@@ -36,19 +36,14 @@ public class AddressServiceImpl implements AddressService {
 	@Autowired
 	private AddressMapper addressMapper;
 	@Autowired
-	private EmployeeRepository employeeRepo;
-
+	private EmployeeService employeeService;
+	
 	@Override
 	public Page<AddressVo> search(Integer pageNo, Integer pageSize, String sortBy, String filterBy, String searchText) {
 		final Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(Utility.sortByValues(sortBy)));
 		final Specification<Address> joins = CommonSpecification.searchAddress(searchText, filterBy);
 		final Page<Address> page = addressRepo.findAll(joins, pageable);
 		return new PageImpl<>(addressMapper.toDtos(page.getContent()), pageable, page.getTotalElements());
-	}
-
-	@Override
-	public List<AddressVo> findAll() {
-		return addressMapper.toDtos(addressRepo.findAll());
 	}
 
 	@Override
@@ -60,82 +55,28 @@ public class AddressServiceImpl implements AddressService {
 
 	@Override
 	@Transactional
-	public AddressVo add(AddressVo addressVo, Long empId) {
+	public AddressVo add(AddressVo addressVo) {
 		try {
-			Employee employee = employeeRepo.findById(empId)
-					.orElseThrow(() -> new RuntimeException(EMPLOYEE_NOT_FOUND + empId));
-
-			Address address = new Address();
-			address.setStreet(addressVo.getStreet());
-			address.setCity(addressVo.getCity());
-			address.setState(addressVo.getState());
-			address.setZipcode(addressVo.getZipcode());
-			address.setStatus(addressVo.getStatus());
-			address.setCountry(addressVo.getCountry());
-			address.setCreatedDate(new Date());
-			address.setDoorNumber(addressVo.getDoorNumber());
-			address.setAddressType(addressVo.getAddressType());
-			address.setLandMark(addressVo.getLandMark());
-
-			address.setEmployee(employee);
-
-			address = addressRepo.save(address);
-
-			return addressMapper.toDto(address);
-		} catch (Exception e) {
+			Address address = addressMapper.toEntity(addressVo);
+			address.setEmployee(employeeService.findById(addressVo.getEmpId()));
+			return addressMapper.toDto(addressRepo.save(address));
+		 } catch (Exception e) {
 			throw new RuntimeException(FAILED_ADD_ADD + e.getMessage());
 		}
 	}
-
-	@Override
-	public AddressVo update(AddressVo addressVo, Long id, boolean partialUpdate) {
-		Address existingAddress = addressRepo.findById(id)
-				.orElseThrow(() -> new RuntimeException(ADDRESS_NOT_FOUND + id));
-		if (partialUpdate) {
-			if (addressVo.getStreet() != null) {
-				existingAddress.setStreet(addressVo.getStreet());
-			}
-			if (addressVo.getCity() != null) {
-				existingAddress.setCity(addressVo.getCity());
-			}
-			if (addressVo.getZipcode() != null) {
-				existingAddress.setZipcode(addressVo.getZipcode());
-			}
-		} else
-
-		{
-			existingAddress.setStreet(addressVo.getStreet());
-			existingAddress.setCity(addressVo.getCity());
-			existingAddress.setState(addressVo.getState());
-			existingAddress.setZipcode(addressVo.getZipcode());
-			existingAddress.setStatus(addressVo.getStatus());
-			existingAddress.setCreatedDate(addressVo.getCreatedDate());
-			existingAddress.setDoorNumber(addressVo.getDoorNumber());
-			existingAddress.setCountry(addressVo.getCountry());
-			existingAddress.setAddressType(addressVo.getAddressType());
-			existingAddress.setLandMark(addressVo.getLandMark());
-		}
-		Address updatedAddress = addressRepo.save(existingAddress);
-		return addressMapper.toDto(updatedAddress);
-
-	}
-
+	
+	@Transactional
 	@Override
 	public void delete(Long id) {
 		findById(id);
-		addressRepo.deleteById(id);
+		addressRepo.updateStatus(GenericStatus.DELETED, id);
 	}
 
 	@Transactional
 	@Override
-	public int active(Long id) {
-		return addressRepo.updateStatus(GenericStatus.ACTIVE, id);
-	}
-
-	@Transactional
-	@Override
-	public int deactive(Long id) {
-		return addressRepo.updateStatus(GenericStatus.DEACTIVE, id);
+	public void updateGenericStatus(GenericStatus status,Long id) {
+		findById(id);
+		addressRepo.updateStatus(status, id);
 	}
 
 	@Override
@@ -143,7 +84,8 @@ public class AddressServiceImpl implements AddressService {
 		StringWriter writer = new StringWriter();
 		try (@SuppressWarnings("deprecation")
 		CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT.withHeader(ADDRESS_HEADER))) {
-			List<AddressVo> addressList = findAll();
+			Page<AddressVo> addressList = search(0, Integer.MAX_VALUE, "createdDate:asc", Strings.EMPTY,
+					Strings.EMPTY);
 			if (addressList != null && !addressList.isEmpty()) {
 				for (AddressVo adddress : addressList) {
 					csvPrinter.printRecord(adddress.getId(), adddress.getStreet(), adddress.getCity(),
@@ -157,4 +99,25 @@ public class AddressServiceImpl implements AddressService {
 		}
 		return writer.toString();
 	}
+
+
+    @Override
+    public List<AddressVo> findAddressesByEmployeeId(Long employeeId) {
+        List<Address> addresses = addressRepo.findByEmployeeId(employeeId);
+        List<AddressVo> addressVo = new ArrayList<>();
+        for (Address address : addresses) {
+        	addressVo.add(addressMapper.toDto(address));
+		}
+        return addressVo;
+    }
+
+	@Override
+	public AddressVo update(AddressVo addressVo, Long id) {
+		findById(id);
+		addressVo.setId(id);
+		Address address = addressMapper.toEntity(addressVo);
+		address.setEmployee(employeeService.findById(addressVo.getEmpId()));
+		return addressMapper.toDto(addressRepo.save(address));
+	}
+
 }

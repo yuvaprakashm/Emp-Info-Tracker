@@ -3,7 +3,6 @@ package net.texala.employee.department.vo;
 import static net.texala.employee.constants.Constants.*;
 import java.math.BigDecimal;
 import java.util.Date;
-import java.util.List;
 import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
@@ -12,7 +11,6 @@ import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import lombok.Data;
 import net.texala.employee.enums.GenericStatus;
-import net.texala.employee.vo.EmployeeVo;
 
 @Data
 public class DepartmentVo {
@@ -41,6 +39,6 @@ public class DepartmentVo {
 	@DecimalMin(value = "0.0", inclusive = false, message = BUDGET_MIN_VALUE_ERROR_MESSAGE)
 	private BigDecimal budget;
 
-	private List<EmployeeVo> employees;
-
+//	private List<EmployeeVo> employees;
+	
 }

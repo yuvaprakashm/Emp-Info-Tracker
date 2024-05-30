@@ -15,7 +15,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import net.texala.employee.address.vo.AddressVo;
-import net.texala.employee.department.vo.DepartmentVo;
 import net.texala.employee.enums.Gender;
 import net.texala.employee.enums.GenericStatus;
 
@@ -41,7 +40,7 @@ public class EmployeeVo {
 
 	@NotBlank(message = EMAIL_REQUIRED)
 	@Email(message = EMAIL_VALID_ERROR_MESSAGE)
-	private String email;
+	private String email; 
 
 	@NotBlank(message = GENDER_REQUIRED)
 	private Gender gender;
@@ -72,7 +71,8 @@ public class EmployeeVo {
 	private String jobTitle;
 
 	private List<AddressVo> addresses;
-
-	private DepartmentVo department;
+	
+	 
+	private Long deptId;
 
 }

@@ -3,10 +3,9 @@ package net.texala.employee.department.service.impl;
 import static net.texala.employee.constants.Constants.*;
 import java.io.IOException;
 import java.io.StringWriter;
-import java.util.List;
-import javax.persistence.EntityManager;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
+import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -25,9 +24,6 @@ import net.texala.employee.department.service.DepartmentService;
 import net.texala.employee.department.vo.DepartmentVo;
 import net.texala.employee.enums.GenericStatus;
 import net.texala.employee.exception.Exception.ServiceException;
-import net.texala.employee.model.Employee;
-import net.texala.employee.repository.EmployeeRepository;
-import net.texala.employee.vo.EmployeeVo;
 
 @Service
 public class DepartmentServiceImpl implements DepartmentService {
@@ -36,10 +32,6 @@ public class DepartmentServiceImpl implements DepartmentService {
 	private DepartmentRepository departmentRepo;
 	@Autowired
 	private DepartmentMapper departmentMapper;
-	@Autowired
-	private EntityManager entityManager;
-	@Autowired
-	private EmployeeRepository employeeRepo;
 	
 	@Override
 	public Page<DepartmentVo> search(Integer pageNo, Integer pageSize, String sortBy, String filterBy,
@@ -48,11 +40,6 @@ public class DepartmentServiceImpl implements DepartmentService {
 		final Specification<Department> joins = CommonSpecification.searchDepartment(searchText, filterBy);
 		final Page<Department> page = departmentRepo.findAll(joins, pageable);
 		return new PageImpl<>(departmentMapper.toDtos(page.getContent()), pageable, page.getTotalElements());
-	}
-
-	@Override
-	public List<DepartmentVo> findAll() {
-		return departmentMapper.toDtos(departmentRepo.findAll());
 	}
 
 	@Override
@@ -66,82 +53,35 @@ public class DepartmentServiceImpl implements DepartmentService {
 	@Override
 	public DepartmentVo add(DepartmentVo departmentVo) {
 	    try {
-	         Department department = new Department();
-	         department.setDeptName(departmentVo.getDeptName());
-	         department.setStatus(departmentVo.getStatus());
-	         department.setCreatedDate(departmentVo.getCreatedDate());
-	         department.setDeptContactNumber(departmentVo.getDeptContactNumber());
-	         department.setEmailAddress(departmentVo.getEmailAddress());
-	         department.setBudget(departmentVo.getBudget());
+	    	 Department department = departmentMapper.toEntity(departmentVo);
 	         departmentRepo.save(department);
-	         List<EmployeeVo> employeeVos = departmentVo.getEmployees();
-	         for (EmployeeVo employeeVo : employeeVos) {
-				Employee employee = new Employee();
-				employee.setFirstName(employeeVo.getFirstName());
-				employee.setLastName(employeeVo.getLastName());
-				employee.setAge(employeeVo.getAge());
-				employee.setEmail(employeeVo.getEmail());
-				employee.setSalary(employeeVo.getSalary());
-				employee.setGender(employeeVo.getGender());
-				employee.setStatus(employeeVo.getStatus());
-				employee.setContactNumber(employeeVo.getContactNumber());
-				employee.setDateOfBirth(employeeVo.getDateOfBirth());
-				employee.setHireDate(employeeVo.getHireDate());
-				employee.setJobTitle(employeeVo.getJobTitle());
-				employee.setDepartment(department);
-				employeeRepo.save(employee);
-			}
 	         return departmentMapper.toDto(department);
 	    } catch (Exception e) {
-	        throw new RuntimeException("Failed to add department: " + e.getMessage());
+	        throw new RuntimeException(FAILED_ADD_DEPT + e.getMessage());
 	    }
 	}
 
 	@Transactional
 	@Override
-	public DepartmentVo update(DepartmentVo departmentVo, Long id, boolean partialUpdate) {
-		Department existingDepartment = departmentRepo.findById(id)
-				.orElseThrow(() -> new ServiceException(DEPARTMENT_NOT_FOUND + id));
-		if (partialUpdate) {
-			if (departmentVo.getDeptName() != null) {
-				existingDepartment.setDeptName(departmentVo.getDeptName());
-			}
-			if (departmentVo.getDeptContactNumber() != null) {
-				existingDepartment.setDeptContactNumber(departmentVo.getDeptContactNumber());
-			}
-			if (departmentVo.getEmailAddress() != null) {
-				existingDepartment.setEmailAddress(departmentVo.getEmailAddress());
-			}
-		} else {
-			existingDepartment.setDeptName(departmentVo.getDeptName());
-			existingDepartment.setStatus(departmentVo.getStatus());
-			existingDepartment.setCreatedDate(departmentVo.getCreatedDate());
-			existingDepartment.setDeptContactNumber(departmentVo.getDeptContactNumber());
-			existingDepartment.setEmailAddress(departmentVo.getEmailAddress());
-			existingDepartment.setBudget(departmentVo.getBudget());
-		}
-		Department updatedDepartment = departmentRepo.save(existingDepartment);
-		entityManager.flush();
-		return departmentMapper.toDto(updatedDepartment);
-	}
-
+	public DepartmentVo update(DepartmentVo departmentVo, Long id) {
+		findById(id);
+		Department dept = departmentMapper.toEntity(departmentVo);
+		return departmentMapper.toDto(departmentRepo.save(dept));
+}
+		 
+	@Transactional
 	@Override
 	public void delete(Long id) {
 		findById(id);
-		departmentRepo.deleteById(id);
+		departmentRepo.updateStatus(GenericStatus.DELETED, id);
 
 	}
 
 	@Transactional
 	@Override
-	public int active(Long id) {
-		return departmentRepo.updateStatus(GenericStatus.ACTIVE, id);
-	}
-
-	@Transactional
-	@Override
-	public int deactive(Long id) {
-		return departmentRepo.updateStatus(GenericStatus.DEACTIVE, id);
+	public void updateGenericStatus(GenericStatus status,Long id) {
+		findById(id);
+		departmentRepo.updateStatus(status, id);
 	}
 
 	@Override
@@ -149,7 +89,8 @@ public class DepartmentServiceImpl implements DepartmentService {
 		StringWriter writer = new StringWriter();
 		try (@SuppressWarnings("deprecation")
 		CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT.withHeader(DEPARTMENT_HEADER))) {
-			List<DepartmentVo> departmentList = findAll();
+			Page<DepartmentVo> departmentList =  search(0, Integer.MAX_VALUE, "createdDate:asc", Strings.EMPTY,
+					Strings.EMPTY);
 			if (departmentList != null && !departmentList.isEmpty()) {
 				for (DepartmentVo department : departmentList) {
 					csvPrinter.printRecord(department.getDeptId(), department.getDeptName(),
@@ -161,5 +102,10 @@ public class DepartmentServiceImpl implements DepartmentService {
 			e.printStackTrace();
 		}
 		return writer.toString();
+	}
+
+	@Override
+	public DepartmentVo findDepartmentVoById(Long id) {
+		return departmentMapper.toDto(findById(id));
 	}
 }

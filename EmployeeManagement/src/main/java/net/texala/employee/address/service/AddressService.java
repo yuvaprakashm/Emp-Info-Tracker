@@ -2,28 +2,26 @@ package net.texala.employee.address.service;
 
 import java.util.List;
 import org.springframework.data.domain.Page;
-
 import net.texala.employee.address.model.Address;
 import net.texala.employee.address.vo.AddressVo;
+import net.texala.employee.enums.GenericStatus;
 
 public interface AddressService {
 
 	public Page<AddressVo> search(Integer pageNo, Integer pageSize, String sortBy, String filterBy, String searchText);
 
-	public List<AddressVo> findAll();
-
 	public Address findById(Long id);
 
-	AddressVo add(AddressVo addressVo, Long empId);
+	public AddressVo add(AddressVo addressVo);
 
-	public AddressVo update(AddressVo addressVo, Long id, boolean partialUpdate);
+	public AddressVo update(AddressVo addressVo, Long id);
 
-	public int active(Long id);
-
-	public int deactive(Long id);
+	public void updateGenericStatus(GenericStatus status,Long id);
 
 	public void delete(Long id);
 
 	public String generateCsvContent();
+	
+	List<AddressVo> findAddressesByEmployeeId(Long employeeId);
 
 }
