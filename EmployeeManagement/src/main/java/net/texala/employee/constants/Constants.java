@@ -33,6 +33,8 @@ public class Constants {
 	public static final String DOB_PAST_ERROR_MESSAGE = "Date of birth should be in the past";
 	public static final String JOB_TITLE_LENGTH_ERROR_MESSAGE = "Job title length should not exceed maximum characters";
 	public static final String FAILED_ADD_EMP = "Failed to add employee: ";
+	
+	
 	public static final String DEPARTMENT_MASTER = "department_master";
 	public static final String DEPT_ID = "deptId";
 	public static final String DEPT_NAME = "deptName";
@@ -57,7 +59,11 @@ public class Constants {
 	public static final String EMAIL_ADDRESS = "EmailAddress";
 	public static final String BUDGET = "Budget";
 	public static final String DEPT_CONTACT_NUMBER_REQUIRED = "Department contact number is required";
-	public static final String  RECORD_STATUS_UPDATE_SUCCESS = "Record status updated successfully";
+	public static final String RECORD_STATUS_UPDATE_SUCCESS = "Record status updated successfully";
+	public static final String DEPT_WITH_NAME = "Department with Name";
+	public static final String ALREADY_EXISTS = " already exists.";
+	
+	
 	public static final String ADDRESS_MASTER = "address_master";
 	public static final String ID = "id";
 	public static final String STREET = "street";

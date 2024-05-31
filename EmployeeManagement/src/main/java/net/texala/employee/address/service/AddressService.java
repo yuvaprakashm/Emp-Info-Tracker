@@ -14,7 +14,7 @@ public interface AddressService {
 
 	public AddressVo add(AddressVo addressVo);
 
-	public AddressVo update(AddressVo addressVo, Long id);
+	public AddressVo update(AddressVo addressVo);
 
 	public void updateGenericStatus(GenericStatus status,Long id);
 

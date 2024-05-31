@@ -18,6 +18,8 @@ public interface AddressMapper {
     AddressVo toDto(Address address);
 
     List<AddressVo> toDtos(List<Address> addresses);
+
+	List<AddressVo> toDtoList(List<Address> findByEmployeeId);
     
     
 }

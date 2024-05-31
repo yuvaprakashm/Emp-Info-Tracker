@@ -53,6 +53,9 @@ public class DepartmentServiceImpl implements DepartmentService {
 	@Override
 	public DepartmentVo add(DepartmentVo departmentVo) {
 	    try {
+	    	if (departmentRepo.existsByDeptName(departmentVo.getDeptName())) {
+				throw new IllegalArgumentException(DEPT_WITH_NAME + departmentVo.getDeptName() + ALREADY_EXISTS);
+			}
 	    	 Department department = departmentMapper.toEntity(departmentVo);
 	         departmentRepo.save(department);
 	         return departmentMapper.toDto(department);

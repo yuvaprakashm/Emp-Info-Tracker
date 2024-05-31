@@ -15,4 +15,8 @@ public interface DepartmentRepository extends JpaRepository<Department, Long>, J
 	@Modifying
 	@Query(UPDATE_DEPARTMENT_STATUS)
 	public int updateStatus(GenericStatus status, Long id);
+	
+	boolean existsByDeptName(String deptName);
+	
+	
 }

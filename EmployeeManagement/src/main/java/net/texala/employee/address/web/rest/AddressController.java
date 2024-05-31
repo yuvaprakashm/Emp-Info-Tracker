@@ -65,7 +65,7 @@ public class AddressController {
 			@RequestBody(required = true) AddressVo addressVo) {
 		addressVo.setId(id);
 		RestStatus<?> restStatus = new RestStatus<>(HttpStatus.OK, RECORD_UPDATE_SUCCESS_MESSAGE);
-		final RestResponse<AddressVo> response = new RestResponse<>(addressService.update(addressService.update(addressVo, id), id), restStatus);
+		final RestResponse<AddressVo> response = new RestResponse<>(addressService.update(addressVo), restStatus);
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 

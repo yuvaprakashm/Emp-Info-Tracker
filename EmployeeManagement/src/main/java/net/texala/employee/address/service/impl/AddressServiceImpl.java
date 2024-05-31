@@ -56,13 +56,9 @@ public class AddressServiceImpl implements AddressService {
 	@Override
 	@Transactional
 	public AddressVo add(AddressVo addressVo) {
-		try {
-			Address address = addressMapper.toEntity(addressVo);
-			address.setEmployee(employeeService.findById(addressVo.getEmpId()));
-			return addressMapper.toDto(addressRepo.save(address));
-		 } catch (Exception e) {
-			throw new RuntimeException(FAILED_ADD_ADD + e.getMessage());
-		}
+		Address address = addressMapper.toEntity(addressVo);
+		address.setEmployee(employeeService.findById(addressVo.getEmpId()));
+		return addressMapper.toDto(addressRepo.save(address));
 	}
 	
 	@Transactional
@@ -103,18 +99,12 @@ public class AddressServiceImpl implements AddressService {
 
     @Override
     public List<AddressVo> findAddressesByEmployeeId(Long employeeId) {
-        List<Address> addresses = addressRepo.findByEmployeeId(employeeId);
-        List<AddressVo> addressVo = new ArrayList<>();
-        for (Address address : addresses) {
-        	addressVo.add(addressMapper.toDto(address));
-		}
-        return addressVo;
+    	return addressMapper.toDtoList(addressRepo.findByEmployeeId(employeeId));
     }
 
 	@Override
-	public AddressVo update(AddressVo addressVo, Long id) {
-		findById(id);
-		addressVo.setId(id);
+	public AddressVo update(AddressVo addressVo) {
+		findById(addressVo.getId());
 		Address address = addressMapper.toEntity(addressVo);
 		address.setEmployee(employeeService.findById(addressVo.getEmpId()));
 		return addressMapper.toDto(addressRepo.save(address));

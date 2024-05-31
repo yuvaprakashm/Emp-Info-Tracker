@@ -13,6 +13,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import org.hibernate.annotations.Where;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.format.annotation.DateTimeFormat;
 import lombok.Getter;
@@ -25,6 +26,7 @@ import net.texala.employee.model.Employee;
 @Getter
 @Setter
 @Table(name = ADDRESS_MASTER)
+@Where(clause = "status != 'DELETED'")
 public class Address {
 
 	@Id
