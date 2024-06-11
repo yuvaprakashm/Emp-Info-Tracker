@@ -3,6 +3,7 @@ package net.texala.employee.address.service.impl;
 import static net.texala.employee.constants.Constants.*;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
@@ -48,7 +49,8 @@ public class AddressServiceImpl implements AddressService {
 	@Override
 	public Address findById(Long id) {
 		return addressRepo.findById(id)
-				.orElseThrow(() -> new ServiceException(ADDRESS_NOT_FOUND + id)); 
+				.orElseThrow(() -> new ServiceException(ADDRESS_NOT_FOUND + id));
+		 
 	}
 
 	@Override
@@ -94,13 +96,13 @@ public class AddressServiceImpl implements AddressService {
 		return writer.toString();
 	}
 
+
     @Override
     public List<AddressVo> findAddressesByEmployeeId(Long employeeId) {
-         return addressMapper.toDtos(addressRepo.findByEmployeeId(employeeId));
-     }
+    	return addressMapper.toDtoList(addressRepo.findByEmployeeId(employeeId));
+    }
 
 	@Override
-	@Transactional
 	public AddressVo update(AddressVo addressVo) {
 		findById(addressVo.getId());
 		Address address = addressMapper.toEntity(addressVo);

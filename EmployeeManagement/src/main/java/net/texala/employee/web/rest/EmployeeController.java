@@ -26,13 +26,13 @@ import net.texala.employee.enums.GenericStatus;
 import net.texala.employee.service.EmployeeService;
 import net.texala.employee.vo.EmployeeVo;
 
-@RestController
 @RequestMapping("/emp")
+@RestController
 @AllArgsConstructor
 public class EmployeeController {
 	@Autowired
 	private final EmployeeService employeeService;
-	
+
 	@GetMapping("/search")
 	public ResponseEntity<RestResponse<Page<EmployeeVo>>> search(
 			@RequestParam(name = PAGE_NO, required = false, defaultValue = "0") Integer pageNo,
@@ -49,8 +49,7 @@ public class EmployeeController {
 	@GetMapping("/{id}")
 	public ResponseEntity<RestResponse<EmployeeVo>> findById(@PathVariable(name = "id", required = true) Long id) {
 		RestStatus<EmployeeVo> restStatus = new RestStatus<>(HttpStatus.OK, RECORD_FETCH_SUCCESS_MESSAGE);
-		final RestResponse<EmployeeVo> response = new RestResponse<>(employeeService.findEmployeeVoById(id),
-				restStatus);
+		final RestResponse<EmployeeVo> response = new RestResponse<>(employeeService.findEmployeeVoById(id), restStatus);
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
@@ -67,8 +66,7 @@ public class EmployeeController {
 			@RequestBody(required = true) @Valid EmployeeVo employeeVo) {
 		employeeVo.setId(id);
 		RestStatus<?> restStatus = new RestStatus<>(HttpStatus.OK, RECORD_UPDATE_SUCCESS_MESSAGE);
-		final RestResponse<EmployeeVo> response = new RestResponse<>(employeeService.update(employeeVo, id),
-				restStatus);
+		final RestResponse<EmployeeVo> response = new RestResponse<>(employeeService.update(employeeVo, id), restStatus);
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
@@ -80,15 +78,15 @@ public class EmployeeController {
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
-	@PatchMapping("/{id}/status")
-	public ResponseEntity<RestResponse<Void>> updateGenericStatus(@PathVariable(name = "id", required = true) Long id,
-			@RequestParam(name = "status", required = true) GenericStatus status) {
-		employeeService.updateGenericStatus(status, id);
-		RestStatus<?> restStatus = new RestStatus<>(HttpStatus.OK, RECORD_STATUS_UPDATE_SUCCESS);
-		final RestResponse<Void> response = new RestResponse<>(null, restStatus);
-		return new ResponseEntity<>(response, HttpStatus.OK);
-	}
-
+	
+	 @PatchMapping("/{id}/status")
+	    public ResponseEntity<RestResponse<Void>> updateGenericStatus(@PathVariable(name = "id", required = true) Long id, @RequestParam(name = "status", required = true) GenericStatus status) {
+	        employeeService.updateGenericStatus(status, id);  
+	        RestStatus<?> restStatus = new RestStatus<>(HttpStatus.OK, RECORD_STATUS_UPDATE_SUCCESS);  
+	        final RestResponse<Void> response = new RestResponse<>(null, restStatus);
+	        return new ResponseEntity<>(response, HttpStatus.OK);
+	    }
+	 
 	@GetMapping("/download")
 	public ResponseEntity<ByteArrayResource> downloadCsv() {
 		String csvContent = employeeService.generateCsvContent();
