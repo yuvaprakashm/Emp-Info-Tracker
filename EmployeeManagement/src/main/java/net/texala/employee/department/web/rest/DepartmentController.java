@@ -46,7 +46,6 @@ public class DepartmentController {
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
-
 	@GetMapping("/{id}")
 	public ResponseEntity<RestResponse<Department>> findById(@PathVariable(name = "id", required = true) Long id) {
 		RestStatus<Department> restStatus = new RestStatus<>(HttpStatus.OK, RECORD_FETCH_SUCCESS_MESSAGE);
@@ -67,8 +66,8 @@ public class DepartmentController {
 			@RequestBody(required = true) DepartmentVo departmentVo) {
 		departmentVo.setDeptId(id);
 		RestStatus<?> restStatus = new RestStatus<>(HttpStatus.OK, RECORD_UPDATE_SUCCESS_MESSAGE);
-		final RestResponse<DepartmentVo> response = new RestResponse<>(
-				departmentService.update(departmentVo, id), restStatus);
+		final RestResponse<DepartmentVo> response = new RestResponse<>(departmentService.update(departmentVo, id),
+				restStatus);
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
@@ -81,13 +80,14 @@ public class DepartmentController {
 	}
 
 	@PatchMapping("/{id}/status")
-    public ResponseEntity<RestResponse<Void>> updateGenericStatus(@PathVariable(name = "id", required = true) Long id, @RequestParam(name = "status", required = true) GenericStatus status) {
-        departmentService.updateGenericStatus(status, id);  
-        RestStatus<?> restStatus = new RestStatus<>(HttpStatus.OK, RECORD_STATUS_UPDATE_SUCCESS);  
-        final RestResponse<Void> response = new RestResponse<>(null, restStatus);
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
-	
+	public ResponseEntity<RestResponse<Void>> updateGenericStatus(@PathVariable(name = "id", required = true) Long id,
+			@RequestParam(name = "status", required = true) GenericStatus status) {
+		departmentService.updateGenericStatus(status, id);
+		RestStatus<?> restStatus = new RestStatus<>(HttpStatus.OK, RECORD_STATUS_UPDATE_SUCCESS);
+		final RestResponse<Void> response = new RestResponse<>(null, restStatus);
+		return new ResponseEntity<>(response, HttpStatus.OK);
+	}
+
 	@GetMapping("/download")
 	public ResponseEntity<ByteArrayResource> downloadCsv() {
 		String csvContent = departmentService.generateCsvContent();

@@ -30,8 +30,10 @@ import java.util.List;
 @RequestMapping("/add")
 @AllArgsConstructor
 public class AddressController {
+	
 	@Autowired
 	private final AddressService addressService;
+	
 	@GetMapping("/search")
 	public ResponseEntity<RestResponse<Page<AddressVo>>> search(
 			@RequestParam(name = PAGE_NO, required = false, defaultValue = "0") Integer pageNo,
