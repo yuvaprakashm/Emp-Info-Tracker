@@ -30,6 +30,7 @@ import net.texala.employee.vo.EmployeeVo;
 @RestController
 @AllArgsConstructor
 public class EmployeeController {
+	
 	@Autowired
 	private final EmployeeService employeeService;
 
@@ -77,7 +78,6 @@ public class EmployeeController {
 		final RestResponse<Void> response = new RestResponse<>(null, restStatus);
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
-
 	
 	 @PatchMapping("/{id}/status")
 	    public ResponseEntity<RestResponse<Void>> updateGenericStatus(@PathVariable(name = "id", required = true) Long id, @RequestParam(name = "status", required = true) GenericStatus status) {

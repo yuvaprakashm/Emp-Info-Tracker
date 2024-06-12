@@ -3,7 +3,6 @@ package net.texala.employee.address.service.impl;
 import static net.texala.employee.constants.Constants.*;
 import java.io.IOException;
 import java.io.StringWriter;
-import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
@@ -37,7 +36,7 @@ public class AddressServiceImpl implements AddressService {
 	private AddressMapper addressMapper;
 	@Autowired
 	private EmployeeService employeeService;
-	
+
 	@Override
 	public Page<AddressVo> search(Integer pageNo, Integer pageSize, String sortBy, String filterBy, String searchText) {
 		final Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(Utility.sortByValues(sortBy)));
@@ -48,9 +47,8 @@ public class AddressServiceImpl implements AddressService {
 
 	@Override
 	public Address findById(Long id) {
-		return addressRepo.findById(id)
-				.orElseThrow(() -> new ServiceException(ADDRESS_NOT_FOUND + id));
-		 
+		return addressRepo.findById(id).orElseThrow(() -> new ServiceException(ADDRESS_NOT_FOUND + id));
+
 	}
 
 	@Override
@@ -60,7 +58,7 @@ public class AddressServiceImpl implements AddressService {
 		address.setEmployee(employeeService.findById(addressVo.getEmpId()));
 		return addressMapper.toDto(addressRepo.save(address));
 	}
-	
+
 	@Transactional
 	@Override
 	public void delete(Long id) {
@@ -70,7 +68,7 @@ public class AddressServiceImpl implements AddressService {
 
 	@Transactional
 	@Override
-	public void updateGenericStatus(GenericStatus status,Long id) {
+	public void updateGenericStatus(GenericStatus status, Long id) {
 		findById(id);
 		addressRepo.updateStatus(status, id);
 	}
@@ -80,8 +78,7 @@ public class AddressServiceImpl implements AddressService {
 		StringWriter writer = new StringWriter();
 		try (@SuppressWarnings("deprecation")
 		CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT.withHeader(ADDRESS_HEADER))) {
-			Page<AddressVo> addressList = search(0, Integer.MAX_VALUE, "createdDate:asc", Strings.EMPTY,
-					Strings.EMPTY);
+			Page<AddressVo> addressList = search(0, Integer.MAX_VALUE, "createdDate:asc", Strings.EMPTY, Strings.EMPTY);
 			if (addressList != null && !addressList.isEmpty()) {
 				for (AddressVo adddress : addressList) {
 					csvPrinter.printRecord(adddress.getId(), adddress.getStreet(), adddress.getCity(),
@@ -96,13 +93,13 @@ public class AddressServiceImpl implements AddressService {
 		return writer.toString();
 	}
 
-
-    @Override
-    public List<AddressVo> findAddressesByEmployeeId(Long employeeId) {
-    	return addressMapper.toDtoList(addressRepo.findByEmployeeId(employeeId));
-    }
+	@Override
+	public List<AddressVo> findAddressesByEmployeeId(Long employeeId) {
+		return addressMapper.toDtos(addressRepo.findByEmployeeId(employeeId));
+	}
 
 	@Override
+	@Transactional
 	public AddressVo update(AddressVo addressVo) {
 		findById(addressVo.getId());
 		Address address = addressMapper.toEntity(addressVo);
