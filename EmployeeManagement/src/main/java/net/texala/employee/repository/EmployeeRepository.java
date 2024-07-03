@@ -15,4 +15,5 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long>, JpaSp
 	@Modifying
 	@Query(UPDATE_EMPLOYEE_STATUS)
 	public int updateStatus(GenericStatus status, Long id);
+
 }

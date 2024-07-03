@@ -85,4 +85,5 @@ public class Employee {
 	@ManyToOne(fetch = FetchType.LAZY,optional = false)
 	@JoinColumn(name = "department_id")
 	private Department department;
+
 }
