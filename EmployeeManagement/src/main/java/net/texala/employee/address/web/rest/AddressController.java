@@ -93,4 +93,8 @@ public class AddressController {
 		headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"address-data.csv\"");
 		return ResponseEntity.ok().headers(headers).contentType(MediaType.parseMediaType("text/csv")).body(resource);
 	}
+	 @GetMapping("/add")
+	    public String addressHome() {
+	        return "Address home page";
+	    }
 }
