@@ -1,15 +1,6 @@
 package net.texala.employee.department.web.rest;
 
-import static net.texala.employee.constants.Constants.FILTER_BY;
-import static net.texala.employee.constants.Constants.PAGE_NO;
-import static net.texala.employee.constants.Constants.PAGE_SIZE;
-import static net.texala.employee.constants.Constants.RECORD_ADD_SUCCESS_MESSAGE;
-import static net.texala.employee.constants.Constants.RECORD_DELETED_SUCCESS_MESSAGE;
-import static net.texala.employee.constants.Constants.RECORD_FETCH_SUCCESS_MESSAGE;
-import static net.texala.employee.constants.Constants.RECORD_STATUS_UPDATE_SUCCESS;
-import static net.texala.employee.constants.Constants.RECORD_UPDATE_SUCCESS_MESSAGE;
-import static net.texala.employee.constants.Constants.SEARCH_TEXT;
-import static net.texala.employee.constants.Constants.SORT_BY;
+import static net.texala.employee.constants.Constants.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.domain.Page;
@@ -41,8 +32,7 @@ import net.texala.employee.enums.GenericStatus;
 public class DepartmentController {
 	@Autowired
 	private final DepartmentService departmentService;
-	
-	
+
 	@GetMapping("/search")
 	public ResponseEntity<RestResponse<Page<DepartmentVo>>> search(
 			@RequestParam(name = PAGE_NO, required = false, defaultValue = "0") Integer pageNo,
@@ -106,5 +96,4 @@ public class DepartmentController {
 		headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"department-data.csv\"");
 		return ResponseEntity.ok().headers(headers).contentType(MediaType.parseMediaType("text/csv")).body(resource);
 	}
-	
 }

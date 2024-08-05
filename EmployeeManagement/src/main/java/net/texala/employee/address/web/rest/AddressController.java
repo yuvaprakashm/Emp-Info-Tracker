@@ -1,16 +1,5 @@
 package net.texala.employee.address.web.rest;
 
-import static net.texala.employee.constants.Constants.FILTER_BY;
-import static net.texala.employee.constants.Constants.PAGE_NO;
-import static net.texala.employee.constants.Constants.PAGE_SIZE;
-import static net.texala.employee.constants.Constants.RECORD_ADD_SUCCESS_MESSAGE;
-import static net.texala.employee.constants.Constants.RECORD_DELETED_SUCCESS_MESSAGE;
-import static net.texala.employee.constants.Constants.RECORD_FETCH_SUCCESS_MESSAGE;
-import static net.texala.employee.constants.Constants.RECORD_STATUS_UPDATE_SUCCESS;
-import static net.texala.employee.constants.Constants.RECORD_UPDATE_SUCCESS_MESSAGE;
-import static net.texala.employee.constants.Constants.SEARCH_TEXT;
-import static net.texala.employee.constants.Constants.SORT_BY;
-import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.domain.Page;
@@ -34,6 +23,8 @@ import net.texala.employee.address.vo.AddressVo;
 import net.texala.employee.common.RestResponse;
 import net.texala.employee.common.RestStatus;
 import net.texala.employee.enums.GenericStatus;
+import static net.texala.employee.constants.Constants.*;
+import java.util.List;
 
 @RestController
 @RequestMapping("/add")
@@ -41,8 +32,6 @@ import net.texala.employee.enums.GenericStatus;
 public class AddressController {
 	@Autowired
 	private final AddressService addressService;
-
-	
 	@GetMapping("/search")
 	public ResponseEntity<RestResponse<Page<AddressVo>>> search(
 			@RequestParam(name = PAGE_NO, required = false, defaultValue = "0") Integer pageNo,
