@@ -1,11 +1,13 @@
 package net.texala.employee.repository;
 
-import static net.texala.employee.constants.Constants.*;
+import static net.texala.employee.constants.Constants.UPDATE_EMPLOYEE_STATUS;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+
 import net.texala.employee.enums.GenericStatus;
 import net.texala.employee.model.Employee;
 
@@ -15,5 +17,4 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long>, JpaSp
 	@Modifying
 	@Query(UPDATE_EMPLOYEE_STATUS)
 	public int updateStatus(GenericStatus status, Long id);
-
 }
