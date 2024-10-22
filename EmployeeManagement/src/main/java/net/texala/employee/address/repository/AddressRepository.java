@@ -19,3 +19,4 @@ public interface AddressRepository extends JpaRepository<Address, Long>, JpaSpec
 
 	List<Address> findByEmployeeId(Long employeeId);
 }
+ 
